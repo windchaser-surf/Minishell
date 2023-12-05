@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/05 18:12:35 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/05 19:01:53 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,27 @@ typedef struct s_parser		//a node is piece of element that you need to pass to t
 _Bool	ft_basic_error_checker(char *command);
 
 //Felix functions
+
+//BUILTIN
+
+//cd.c 
+void    cd_builtin(char *cmd, t_list **env_copy);
+void	pwd_builtin(void);
+
+//echo.c
+void    echo_builtin(char **arg);
+
+//env.c
+void init_env(char **env, t_list **env_copy);
+void print_env(t_list *env_copy);
+
+//export.c
+void	export_builtin(char *cmd, t_list **env_copy);
+void	print_export(t_list *env_copy);
+int	    check_exist(char *var, t_list *env_copy);
+
+//unset.c
+void    builtin_unset(t_list **env_copy, char *var);
 
 //lexer and parser
 
