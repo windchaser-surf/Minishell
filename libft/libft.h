@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/15 09:42:04 by luari             #+#    #+#             */
-/*   Updated: 2023/12/02 14:48:53 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/06 15:56:16 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <limits.h>
 # include <unistd.h>
 # include "ft_get_next_line.h"
+# include "printf/ft_printf.h"
 
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);

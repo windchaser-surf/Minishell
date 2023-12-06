@@ -6,7 +6,7 @@
 #    By: rluari <rluari@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/10 15:38:38 by rluari            #+#    #+#              #
-#    Updated: 2023/12/06 12:15:01 by rluari           ###   ########.fr        #
+#    Updated: 2023/12/06 15:55:05 by rluari           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,14 @@ SRCS			=	ft_isalnum.c ft_isprint.c ft_memcmp.c  ft_putchar_fd.c ft_split.c \
 					ft_putstr_fd.c  ft_strjoin.c ft_strmapi.c ft_strtrim.c ft_striteri.c	\
 					ft_get_next_line.c ft_get_next_line_utils.c ft_putnbr_base.c ft_atoi_base.c \
 					ft_strlcpy.c ft_strcpy.c \
+					printf/ft_putnbr_fd_int.c		\
+					printf/ft_print_dec.c		\
+					printf/ft_print_hex.c		\
+					printf/ft_print_char.c		\
+					printf/ft_print_pointer.c	\
+					printf/ft_print_string.c	\
+					printf/ft_print_uns.c		\
+					printf/ft_do_the_comparison.c	\
 
 BONUS_SRCS		=	ft_lstadd_back.c ft_lstadd_front.c ft_lstclear.c \
 					ft_lstdelone.c ft_lstlast.c ft_lstnew.c ft_lstsize.c ft_lstiter.c \
@@ -42,7 +50,7 @@ $(NAME):		$(OBJS)
 					ar rcs $(NAME) $(OBJS)
 
 clean:
-					$(RM) $(OBJS)
+					$(RM) $(OBJS) $(BONUS_OBJS)
 
 fclean:			clean
 					$(RM) $(NAME)
