@@ -6,7 +6,7 @@
 #    By: rluari <rluari@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/10 15:38:38 by rluari            #+#    #+#              #
-#    Updated: 2023/12/04 16:06:10 by rluari           ###   ########.fr        #
+#    Updated: 2023/12/06 12:15:01 by rluari           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ SRCS			=	ft_isalnum.c ft_isprint.c ft_memcmp.c  ft_putchar_fd.c ft_split.c \
 					ft_toupper.c ft_calloc.c  ft_isdigit.c ft_memchr.c  ft_memset.c  \
 					ft_putstr_fd.c  ft_strjoin.c ft_strmapi.c ft_strtrim.c ft_striteri.c	\
 					ft_get_next_line.c ft_get_next_line_utils.c ft_putnbr_base.c ft_atoi_base.c \
-					ft_strlcpy.c \
+					ft_strlcpy.c ft_strcpy.c \
 
 BONUS_SRCS		=	ft_lstadd_back.c ft_lstadd_front.c ft_lstclear.c \
 					ft_lstdelone.c ft_lstlast.c ft_lstnew.c ft_lstsize.c ft_lstiter.c \
@@ -32,7 +32,7 @@ CC				=	cc
 
 RM				=	rm -f
 
-CFLAGS			=	-Wall -Wextra -Werror -g -O3 #-fsanitize=address,undefined,leak
+CFLAGS			=	-Wall -Wextra -Werror -g -O3 -fsanitize=address,undefined,leak
 
 NAME			=	libft.a
 

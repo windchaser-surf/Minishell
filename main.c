@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/05 18:10:48 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/06 12:39:32 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,21 +25,22 @@ int main(int argc, char **argv, char **envp)
 		return (ft_putstr_fd("Error: arguments are not accepted.\n", 2), 1);
 	while (1)
 	{
-		command = readline("MyShell> ");
-		//command = "   < infile.txt | ls -a ";
-		add_history(command);
+		command = readline("Minishell> ");
+		add_history(command); 	
 		
-		if (ft_basic_error_checker(command))	// 1 if error, 0 if correct.
-		{
-			ft_putstr_fd("Error: basic error in command.\n", 2);
-			free(command);
+		if (ft_basic_error_checker(&command) == 1)	// 1 if error, 0 if correct.
 			continue;
-		}
 
 		lexed_list = ft_lexer(command);	// This function will tokenize the command and store it in a linked list called t_lexer.
-		//ft_print_lexer_list(lexed_list);
+		ft_print_lexer_list(lexed_list);
+		//free(command);
 		parsed_list = ft_parser(lexed_list);	// This function will parse the command and store it in a linked list called t_parser.
+		//free lexed_list
+		ft_free_lexer(lexed_list);
+		
+		
 		// Fork a new process
+		break ;
 	}
 
 	printf("Exiting MyShell...\n");

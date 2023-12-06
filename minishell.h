@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/05 18:12:35 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/06 15:04:45 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,8 @@
 # include <fcntl.h>
 # include <stdbool.h>
 
-//Lexer
-
-typedef struct t_variable {
+typedef struct t_variable
+{
 	char	*name;
 	char	*value;
 	bool	is_quoted;
@@ -46,15 +45,14 @@ typedef enum WordTyp
 	HEREDOC		//<<
 }	WordTyp;
 
-
-typedef struct s_lexer {
+typedef struct s_lexer
+{
 	char	*word;
 	WordTyp	type;			//1: word, 2: redirection, 3: input, 4: double redirection, 5: heredoc, 6: pipe
 	int		exec_num;		//the number of the command in the pipe, for example, "ls | cat | wc" -> 1 for ls, 2 for cat, 3 for wc
 	//struct s_lexer	*next;
 } t_lexer;
 
-//Parsing
 typedef struct s_parser		//a node is piece of element that you need to pass to the execve function
 {
 	//struct s_parser	*next;
@@ -67,25 +65,51 @@ typedef struct s_parser		//a node is piece of element that you need to pass to t
 	int		fd_pipe[2];		//in case there are multiple commands, we use dup2() and make the write end the fd_out
 }	t_parser;
 
+//Syntax checking
+_Bool	ft_basic_error_checker(char **command);
+int		ft_ends_with_spec(char *command);
+_Bool	ft_unmatched_quotes(char *command);
+int		ft_ends_with_spec(char *command);
+_Bool	ft_is_empty_command(char *command);
 
-_Bool	ft_basic_error_checker(char *command);
+//BUILTIN
 
-//Felix functions
+//cd.c 
+void    cd_builtin(char *cmd, t_list **env_copy);
+void	pwd_builtin(void);
 
-//lexer and parser
+//echo.c
+void    echo_builtin(char **arg);
 
+//env.c
+void init_env(char **env, t_list **env_copy);
+void print_env(t_list *env_copy);
+
+//export.c
+void	export_builtin(char *cmd, t_list **env_copy);
+void	print_export(t_list *env_copy);
+int	    check_exist(char *var, t_list *env_copy);
+
+//unset.c
+void    builtin_unset(t_list **env_copy, char *var);
+
+//BUILTIN END
+
+
+//lexer and it's utils
 t_list	*ft_lexer(char *command);
-t_list	*ft_parser(t_list *lexed_list);
-
-//parser and lexer utils
 
 int		ft_check_word_first_letter(char c, t_list *lexer_head);
 void	ft_skip_spaces(char *str, int *i);
 void	ft_skip_to_closing_quote(char *command, int *i, char close_char);
 void	ft_free_lexer(t_list *lexer_head);
 void	ft_print_lexer_list(t_list *list);
+int		ft_check_for_empty_command(t_list *list_head);
+void	ft_free_array(char **arr);
+//Parser and it's utils
+t_list	*ft_parser(t_list *lexed_list);
 
-//parser
+void	ft_free_parser(t_list *parser_head);
 
 
 //exec_utils

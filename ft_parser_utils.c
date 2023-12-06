@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/04 17:46:05 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/06 13:40:20 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,25 @@ void	ft_skip_spaces(char *str, int *i)
 
 void	ft_skip_to_closing_quote(char *command, int *i, char close_char)
 {
-	while (command[*i] != close_char)
+	if (!command)
+		return ;
+	while (command[*i] && command[*i] != close_char)
 		(*i)++;
+}
+
+void	ft_free_array(char **arr)
+{
+	int	i;
+
+	i = 0;
+	if (arr == NULL)
+		return ;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
 }
 
 void	ft_free_lexer(t_list *lexer_head)
@@ -54,6 +71,25 @@ void	ft_free_lexer(t_list *lexer_head)
 		free(lexer_head);
 		lexer_head = tmp;
 		if (lexer_head == NULL)
+			break ;
+	}
+}
+
+void	ft_free_parser(t_list *parser_head)
+{
+	t_list	*tmp;
+
+	while (parser_head)
+	{
+		tmp = parser_head->next;
+		free(((t_parser *)parser_head->content)->cmd_path);
+		ft_free_array(((t_parser *)parser_head->content)->cmd_args);
+		ft_free_array(((t_parser *)parser_head->content)->infile);
+		ft_free_array(((t_parser *)parser_head->content)->outfile);
+		free(parser_head->content);
+		free(parser_head);
+		parser_head = tmp;
+		if (parser_head == NULL)
 			break ;
 	}
 }

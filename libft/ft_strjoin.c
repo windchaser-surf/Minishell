@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/10 08:34:01 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/01 20:05:04 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/05 20:55:08 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,5 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		j++;
 	}
 	res[i] = '\0';
-	if (s1)
-		free((char *)s1);
 	return (res);
 }

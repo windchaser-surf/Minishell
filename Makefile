@@ -8,7 +8,7 @@ CC			= cc
 
 LDFLAGS 	= -lreadline
 
-CFLAGS		= -Wall -Werror -Wextra -g #-fsanitize=address,undefined,leak -fno-omit-frame-pointer
+CFLAGS		= -Wall -Werror -Wextra -g -fsanitize=address,undefined,leak -fno-omit-frame-pointer
 
 RM			= rm -rf
 
