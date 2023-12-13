@@ -40,7 +40,7 @@ CC				=	cc
 
 RM				=	rm -f
 
-CFLAGS			=	-Wall -Wextra -Werror -g -O3 -fsanitize=address,undefined,leak
+CFLAGS			=	-Wall -Wextra -Werror -Wno-error=unused-result -g -O3 -fsanitize=address,undefined,leak
 
 NAME			=	libft.a
 

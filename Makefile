@@ -1,6 +1,7 @@
 NAME		= minishell
 
-SRC			= main.c ft_parser_utils.c ft_basic_error_checker.c ft_lexer.c ft_parser.c builtin/cd.c builtin/echo.c env.c builtin/export.c builtin/unset.c
+SRC			= main.c ft_parser_utils.c ft_basic_error_checker.c ft_lexer.c ft_lexer_utils.c ft_parser.c builtin/cd.c builtin/echo.c env.c \
+				#builtin/unset.c builtin/export.c 
 
 OBJS		= $(SRC:.c=.o)
 
@@ -8,7 +9,7 @@ CC			= cc
 
 LDFLAGS 	= -lreadline
 
-CFLAGS		= -Wall -Werror -Wextra -g -fsanitize=address,undefined,leak -fno-omit-frame-pointer
+CFLAGS		= -Wall -Werror -Wextra -Wno-error=unused-result -g -fsanitize=address,undefined,leak -fno-omit-frame-pointer
 
 RM			= rm -rf
 

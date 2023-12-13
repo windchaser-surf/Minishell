@@ -20,7 +20,7 @@ void print_env(t_list *env_copy)
 	while (tmp != NULL)
 	{
 		if(ft_strchr(tmp->content, '='))
-			printf("%s\n", tmp->content);
+			printf("%s\n", (char *)tmp->content);
 		tmp = tmp -> next;
 	}
 }

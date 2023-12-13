@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lexer.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/06 13:41:39 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/12 16:13:33 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ t_list	*ft_lexer(char *command)
 	}
 	while (command[i])
 	{
-		if (command[i] == ' ')
+		if (command[i] == ' ' && command[i - 1] != '\'' && command[i - 1] != '\"')
 		{
 			lexer_node = (t_lexer *)malloc(sizeof(t_lexer));
 			if (lexer_node == NULL)
@@ -154,11 +154,11 @@ t_list	*ft_lexer(char *command)
 		}
 		else if (command[i] == '\'' || command[i] == '\"')
 		{
-			ft_skip_to_closing_quote(command + i, &i, command[i]);
+			ft_skip_to_closing_quote(command, &i, command[i]);
 			lexer_node = (t_lexer *)malloc(sizeof(t_lexer));
 			if (lexer_node == NULL)
 				return (NULL);
-			lexer_node->word = ft_substr(command, start + 1, i - start );	//to add also the " or '
+			lexer_node->word = ft_substr(command, start, i - start + 1 );	//to add also the " or '
 			lexer_node->type = prev_wt;
 			lexer_node->exec_num = exec_num;
 			new = ft_lstnew(lexer_node);
@@ -167,7 +167,8 @@ t_list	*ft_lexer(char *command)
 			ft_lstadd_back(&list_head, new);
 			prev_wt = WORD;
 			i++;
-			ft_skip_spaces(command + i + 1, &i);
+			if (command[i])
+				ft_skip_spaces(command + i + 1, &i);
 			if (prev_wt != WORD)
 			{
 				if (ft_check_word_first_letter(command[i], list_head) == 1)
@@ -178,7 +179,7 @@ t_list	*ft_lexer(char *command)
 		else
 			i++;
 	}
-	if (command[i - 1] != ' ')
+	if (command[i - 1] != ' ' && command[i - 1] != '\'' && command[i - 1] != '\"')
 	{
 		lexer_node = (t_lexer *)malloc(sizeof(t_lexer));
 		if (lexer_node == NULL)
@@ -192,7 +193,7 @@ t_list	*ft_lexer(char *command)
 		ft_lstadd_back(&list_head, new);
 	}
 	if (ft_check_for_empty_command(list_head) == 1)
-		return (ft_free_lexer(list_head), NULL);
+		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'", 2), ft_free_lexer(list_head), NULL);
 	//return (ft_free_lexer(list_head), free(command), NULL);
 
 	return (list_head);

@@ -128,6 +128,8 @@ _Bool	ft_basic_error_checker(char **command)	//handle if "'''''" stb
 	new_command = NULL;
 	len = ft_strlen(*command);
 	i = len - 1;
+	(void)i;
+	(void)len;
 	if (ft_is_empty_command(*command))
 		return (free(*command), 1);
 	if (ft_unmatched_quotes(*command))
@@ -144,6 +146,7 @@ _Bool	ft_basic_error_checker(char **command)	//handle if "'''''" stb
 		ft_strcpy(*command, new_command);
 		printf("command: %s\n", *command);
 	}
+	free(new_command);
 	if (ft_ends_with_spec(*command) == 2)	//ends with redirection character
 		return (ft_putstr_fd("Minishell: syntax error near unexpected token `newline'\n", 2), free(*command), 1);
 	
