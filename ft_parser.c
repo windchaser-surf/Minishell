@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/13 11:50:26 by codespace        ###   ########.fr       */
+/*   Updated: 2023/12/13 17:06:30 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,9 @@ t_list	*ft_parser(t_list *lexed_list)
 			prev_was_word = 0;
 		}
 		if (lexed_item->type == REDIRECTION)
-			ft_handle_redirs(&parser_node, lexed_item, &error, &out_list_head);
+			ft_handle_redirs(&parser_node, lexed_item, &error, lexed_item->type);
 		else if (lexed_item->type == DOUBLE_REDIRECTION)
-			ft_handle_redirs(&parser_node, lexed_item, &error, &out_list_head);
+			ft_handle_redirs(&parser_node, lexed_item, &error, lexed_item->type);
 		else if (lexed_item->type == INPUT)
 			ft_handle_input(&parser_node, lexed_item, &error);
 		else if (lexed_item->type == HEREDOC)

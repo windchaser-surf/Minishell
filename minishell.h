@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/13 11:08:45 by codespace        ###   ########.fr       */
+/*   Updated: 2023/12/14 14:33:22 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,11 @@ typedef enum WordTyp
 	HEREDOC		//<<
 }	WordTyp;
 
-typedef struct s_out
+/*typedef struct s_out
 {
 	char			*outfile_str;
 	WordTyp			type;
-}	t_out;
+}	t_out;*/
 
 typedef struct s_lexer
 {
@@ -63,14 +63,11 @@ typedef struct s_parser		//a node is piece of element that you need to pass to t
 {
 	char	*cmd_path;		//the path of the command, for example, "/bin/ls", or BUILTIN or NULL
 	char	**cmd_args;		//the arguments of the command, for example, "ls -l, just like in Pipex"
-	char	*infile;		//double pointer because there can be multiple input files, for example, "cat < file1 < file2"
-	_Bool 	error_in_files;	//if there is an error in the input files, we don't execute the command
 	char	*heredoc;
-	t_list	*outfile;
 	int		exit_code;
 	int		fd_in;
 	int		fd_out;
-	int		fd_pipe[2];		//in case there are multiple commands, we use dup2() and make the write end the fd_out
+	int		*fd_pipe;		//in case there are multiple commands, we use dup2() and make the write end the fd_out
 }	t_parser;
 
 //Syntax checking
@@ -119,8 +116,12 @@ t_list	*ft_parser(t_list *lexed_list);
 
 void	ft_free_parser(t_list *parser_head);
 char	**ft_realloc_array(char **array, char *new_item);
-void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, int *error, t_list **outfiles);
 void	ft_init_parser_node(t_parser **parser_node);
+void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, WordTyp	type);
+void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
+void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
+void	ft_handle_word(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, _Bool *prev_was_word);
+int		ft_is_redirsign(char c);
 //exec_utils
 
 void    close_fds(int *fds);
