@@ -6,13 +6,13 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 10:39:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/04 16:51:25 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/14 18:19:27 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void print_env(t_list *env_copy)
+int print_env(t_list *env_copy)
 {
 	t_list *tmp;
 	
@@ -20,20 +20,36 @@ void print_env(t_list *env_copy)
 	while (tmp != NULL)
 	{
 		if(ft_strchr(tmp->content, '='))
-			printf("%s\n", (char *)tmp->content);
+			printf("%s\n", (char *)(tmp->content));
 		tmp = tmp -> next;
 	}
+	return (EXIT_SUCCESS);
 }
 
-void init_env(char **env, t_list **env_copy)
+int init_env(char **env, t_list **env_copy)
 {
+	char	*new_content;
+	t_list	*new_element;
+	
 	*env_copy = NULL; 
 	if (env == NULL)
-		return ; //Exit MINISHELL?
+		return (EXIT_FAILURE); //Exit MINISHELL?
 	while (*env != NULL)
 	{
-		ft_lstadd_back(&*env_copy, ft_lstnew((void *)ft_strdup(*env)));
+		new_content = ft_strdup(*env);
+		if (new_content == NULL)
+		{
+			ft_lstclear(env_copy);
+			return (MALLOC_ERR);
+		}
+		new_element = ft_lstnew((void *)new_content);
+		if (new_element == NULL)
+		{
+			ft_lstclear(env_copy);
+			return (MALLOC_ERR);
+		}
+		ft_lstadd_back(&*env_copy, new_element);
 		env++;
 	}
-	//print_all(*env_copy);
+	return (EXIT_SUCCESS);
 }
