@@ -6,7 +6,7 @@
 #    By: rluari <rluari@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/10 15:38:38 by rluari            #+#    #+#              #
-#    Updated: 2023/12/06 15:55:05 by rluari           ###   ########.fr        #
+#    Updated: 2023/12/14 16:50:11 by rluari           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,9 +16,9 @@ SRCS			=	ft_isalnum.c ft_isprint.c ft_memcmp.c  ft_putchar_fd.c ft_split.c \
 					ft_strnstr.c ft_tolower.c ft_bzero.c   ft_isascii.c	ft_strncpy.c \
 					ft_memmove.c ft_putnbr_fd.c  ft_strdup.c  ft_strlen.c  ft_strrchr.c \
 					ft_toupper.c ft_calloc.c  ft_isdigit.c ft_memchr.c  ft_memset.c  \
-					ft_putstr_fd.c  ft_strjoin.c ft_strmapi.c ft_strtrim.c ft_striteri.c	\
+					ft_putstr_fd.c  ft_strjoin.c ft_strjoin_free.c ft_strmapi.c ft_strtrim.c \
 					ft_get_next_line.c ft_get_next_line_utils.c ft_putnbr_base.c ft_atoi_base.c \
-					ft_strlcpy.c ft_strcpy.c \
+					ft_striteri.c ft_strlcpy.c ft_strcpy.c \
 					printf/ft_putnbr_fd_int.c		\
 					printf/ft_print_dec.c		\
 					printf/ft_print_hex.c		\

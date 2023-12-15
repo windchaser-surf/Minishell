@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/14 15:59:13 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/14 16:24:52 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,18 +119,11 @@ t_list	*ft_lexer(char *command)
 			}
 			start = i;
 			prev_wt = WORD;
-			//i++;
-			
 		}
 		else if (command[i] == '>' )	//we alreaady know that it doesnt end with a redir char
 		{
 			ft_make_lnode(start, i, prev_wt, exec_num, &list_head, command);
 			
-			//if it turns out that you have to check what's before the FtRedir operator
-			//based on this site:
-			// https://www.gnu.org/software/bash/manual/bash.html#Redirecting-Input
-			//then here we have to implement a function that goes backward and checks the number
-			//which will be the fd
 			prev_wt = REDIRECTION;
 			if (command[i + 1] == '>')
 			{
@@ -146,7 +139,6 @@ t_list	*ft_lexer(char *command)
 					return (NULL);
 			}
 			start = i;
-			//i++;
 		}
 		else if (command[i] == '<')
 		{
@@ -166,7 +158,6 @@ t_list	*ft_lexer(char *command)
 					return (NULL);
 			}
 			start = i;
-			//i++;
 		}
 		else if (command[i] == '\'' || command[i] == '\"')
 		{
@@ -182,7 +173,6 @@ t_list	*ft_lexer(char *command)
 	}
 	if (ft_check_for_empty_command(list_head) == 1)
 		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'", 2), ft_free_lexer(list_head), NULL);
-	//return (ft_free_lexer(list_head), free(command), NULL);
-
+	
 	return (list_head);
 }

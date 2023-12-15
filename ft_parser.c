@@ -6,17 +6,16 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/13 17:06:30 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/15 16:40:47 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_list	*ft_parser(t_list *lexed_list)
+t_list	*ft_parser(t_list *lexed_list, t_list **env_copy)
 {
 	t_list		*list_head;
 	t_list		*new;
-	t_list		*out_list_head;
 
 	t_parser	*parser_node;
 	t_lexer		*lexed_item;
@@ -29,7 +28,6 @@ t_list	*ft_parser(t_list *lexed_list)
 	list_head = NULL;
 	new = NULL;
 	parser_node = NULL;
-	out_list_head = NULL;
 	if (lexed_list == NULL)
 		return (NULL);
 	while (lexed_list)
@@ -41,7 +39,7 @@ t_list	*ft_parser(t_list *lexed_list)
 			{
 				new = ft_lstnew(parser_node);
 				if (new == NULL)
-					return (ft_free_parser(list_head) ,NULL);
+					return (ft_free_parser(list_head), NULL);
 				ft_lstadd_back(&list_head, new);
 			}
 			parser_node = (t_parser *)malloc(sizeof(t_parser));
@@ -60,7 +58,7 @@ t_list	*ft_parser(t_list *lexed_list)
 		else if (lexed_item->type == HEREDOC)
 			ft_handle_heredoc(&parser_node, lexed_item, &error);
 		else if (lexed_item->type == WORD)
-			ft_handle_word(&parser_node, lexed_item, &error, &prev_was_word);
+			ft_handle_word(&parser_node, lexed_item, &error, &prev_was_word, env_copy);
 		else
 			printf("Error: unknown type\n");
 		if (error)
@@ -70,7 +68,6 @@ t_list	*ft_parser(t_list *lexed_list)
 	new = ft_lstnew(parser_node);
 	if (new == NULL)
 		return (ft_free_parser(list_head) ,NULL);
-	ft_lstadd_back(&list_head, ft_lstnew(new));
-	
+	ft_lstadd_back(&list_head, new);
 	return (list_head);
 }

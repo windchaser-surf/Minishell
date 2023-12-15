@@ -3,14 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 10:39:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/14 18:19:27 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/15 13:13:54 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	del(void *content)
+{
+	free(content);
+}
 
 int print_env(t_list *env_copy)
 {
@@ -26,6 +31,18 @@ int print_env(t_list *env_copy)
 	return (EXIT_SUCCESS);
 }
 
+void	free_env_ll(t_list *env_copy)
+{
+	t_list *tmp;
+	
+	tmp = env_copy;
+	while (tmp != NULL)
+	{
+		free(tmp->content);
+		tmp = tmp -> next;
+	}
+}
+
 int init_env(char **env, t_list **env_copy)
 {
 	char	*new_content;
@@ -39,16 +56,16 @@ int init_env(char **env, t_list **env_copy)
 		new_content = ft_strdup(*env);
 		if (new_content == NULL)
 		{
-			ft_lstclear(env_copy);
-			return (MALLOC_ERR);
+			ft_lstclear(env_copy, del);
+			return (EXIT_FAILURE);	//MALLOC ERROR
 		}
 		new_element = ft_lstnew((void *)new_content);
 		if (new_element == NULL)
 		{
-			ft_lstclear(env_copy);
-			return (MALLOC_ERR);
+			ft_lstclear(env_copy, del);
+			return (EXIT_FAILURE);
 		}
-		ft_lstadd_back(&*env_copy, new_element);
+		ft_lstadd_back(env_copy, new_element);
 		env++;
 	}
 	return (EXIT_SUCCESS);

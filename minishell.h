@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/14 14:33:22 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/15 16:37:17 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,9 @@ void	pwd_builtin(void);
 void    echo_builtin(char **arg);
 
 //env.c
-void init_env(char **env, t_list **env_copy);
-void print_env(t_list *env_copy);
-
+int 	init_env(char **env, t_list **env_copy);
+int 	print_env(t_list *env_copy);
+void	del(void *content);
 //export.c
 void	export_builtin(char *cmd, t_list **env_copy);
 void	print_export(t_list *env_copy);
@@ -112,7 +112,7 @@ int		ft_check_for_empty_command(t_list *list_head);
 void	ft_free_array(char **arr);
 
 //Parser and it's utils
-t_list	*ft_parser(t_list *lexed_list);
+t_list	*ft_parser(t_list *lexed_list, t_list **env_copy);
 
 void	ft_free_parser(t_list *parser_head);
 char	**ft_realloc_array(char **array, char *new_item);
@@ -120,7 +120,7 @@ void	ft_init_parser_node(t_parser **parser_node);
 void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, WordTyp	type);
 void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
-void	ft_handle_word(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, _Bool *prev_was_word);
+void	ft_handle_word(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, _Bool *prev_was_word, t_list **env_copy);
 int		ft_is_redirsign(char c);
 //exec_utils
 
