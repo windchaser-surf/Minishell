@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/14 16:24:52 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/15 20:20:24 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ t_list	*ft_lexer(char *command)
 			}
 			i++;
 			ft_skip_spaces(command + i, &i);
-			if (prev_wt != WORD)
+			if (prev_wt != WORD && prev_wt != HEREDOC)
 			{
 				if (ft_check_word_first_letter(command[i], list_head) == 1)
 					return (NULL);

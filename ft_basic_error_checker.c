@@ -43,8 +43,8 @@ int	ft_variable_syntax_check(char *var, int *i)	// 1 if error, 0 if correct. A v
 		j++;
 	}
 	*i += j;
-	if (ft_check_existence_of_var(var, j) == 0)
-		return (ft_putstr_fd("Error: Variable does not exist", 2), 1);
+	/*if (ft_check_existence_of_var(var, j) == 0)
+		return (ft_putstr_fd("Error: Variable does not exist", 2), 1);*/
 	return (0);
 }
 

@@ -6,14 +6,13 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/15 17:04:08 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/17 18:47:06 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/ft_get_next_line.h"
-#include "libft/libft.h"
+
 #include "minishell.h"
-#include <unistd.h>
+
 
 void	ft_init_parser_node(t_parser **parser_node)
 {
@@ -28,14 +27,16 @@ void	ft_init_parser_node(t_parser **parser_node)
 void	ft_free_parser(t_list *parser_head)
 {
 	t_list	*tmp;
+	t_parser *parser_node;
 
 	while (parser_head)
 	{
 		tmp = parser_head->next;
-		if (ft_strcmp( ((t_parser *)parser_head->content)->cmd_path , "BUILTIN") != 0)
-			free(((t_parser *)parser_head->content)->cmd_path);
-		ft_free_array(((t_parser *)parser_head->content)->cmd_args);
-		free(((t_parser *)parser_head->content)->heredoc);
+		parser_node = (t_parser *)parser_head->content;
+		if (parser_node->cmd_path && ft_strcmp( parser_node->cmd_path , "BUILTIN") != 0)
+			free(parser_node->cmd_path);
+		ft_free_array(parser_node->cmd_args);
+		free(parser_node->heredoc);
 		free(parser_head->content);
 		free(parser_head);
 		parser_head = tmp;
@@ -73,7 +74,7 @@ void	ft_perror_and_free(char *str)
 {
 	char	*asd;
 
-	asd = ft_strjoin("Minishell", str);
+	asd = ft_strjoin("Minishell: ", str);
 	//todo: what if malloc fails?
 	perror(asd);
 	free(asd);
@@ -107,6 +108,7 @@ void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, _Bool *error,
 		close ((*parser_node)->fd_out);
 	if (outfile_name == NULL)
 	{
+		perror("Malloc failed");
 		*error = 1;
 		return ;
 	}
@@ -234,7 +236,7 @@ char	*ft_get_env_value(t_list **env, char *var_name)
 		env_var = ft_cut_until_equal((*env)->content);
 		//printf("env_name: %s\n", env_name);
 		if (ft_strcmp(env_name, env_var) == 0)
-			return (free(env_name), free(env_var),(*env)->content);
+			return (free(env_name), free(env_var),ft_substr((*env)->content, i + 1, ft_strlen((*env)->content) - i - 1));
 		free(env_var);
 		*env = (*env)->next;
 	}

@@ -1,7 +1,7 @@
 NAME		= minishell
 
 SRC			= main.c ft_parser_utils.c ft_basic_error_checker.c ft_lexer.c ft_lexer_utils.c ft_parser.c builtin/cd.c builtin/echo.c env.c \
-				#builtin/unset.c builtin/export.c 
+				ft_expander.c #builtin/unset.c builtin/export.c 
 
 OBJS		= $(SRC:.c=.o)
 

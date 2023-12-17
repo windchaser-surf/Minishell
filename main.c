@@ -6,12 +6,13 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/15 16:37:29 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/17 18:46:18 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
 #include "minishell.h"
+#include <readline/readline.h>
 
 void	ft_print_parser_list(t_list **parser_head)
 {
@@ -26,10 +27,13 @@ void	ft_print_parser_list(t_list **parser_head)
 		i = 0;
 		printf("cmd_path: %s\n", parser_node->cmd_path);
 		printf("cmd_args: ");
-		while (parser_node->cmd_args[i])
-		{
-			printf("%s ", parser_node->cmd_args[i]);
-			i++;
+		if (parser_node->cmd_args)
+		{	
+			while (parser_node->cmd_args[i])
+			{
+				printf("%s ", parser_node->cmd_args[i]);
+				i++;
+			}
 		}
 		printf("\n");
 		printf("fd_in: %d\n", parser_node->fd_in);
@@ -70,7 +74,6 @@ int main(int argc, char **argv, char **envp)
 	if (argc > 1)
 		return (ft_putstr_fd("Error: arguments are not accepted.\n", 2), 1);
 	exit_code = 0;
-	//setting the env
 	while (1)
 	{
 		command = readline("Minishell> ");
@@ -82,8 +85,11 @@ int main(int argc, char **argv, char **envp)
 		lexed_list = ft_lexer(command);	// This function will tokenize the command and store it in a linked list called t_lexer.
 		//ft_print_lexer_list(lexed_list);
 		//free(command);
+		ft_expander(&lexed_list, env_copy);
+		//continue;
 		parsed_list = ft_parser(lexed_list, env_copy);
-		
+		if (!parsed_list)
+			continue ;
 		/*if (!parsed_list)
 			continue ;*/
 		//exit_code = ((t_parser *)(ft_lstlast(parsed_list)->content))->exit_code;
@@ -93,10 +99,10 @@ int main(int argc, char **argv, char **envp)
 		//close the open fd-s
 		ft_free_lexer(lexed_list);
 		ft_free_parser(parsed_list);
-		//ft_free_env(env_copy);
 		
 	}
 	
+	//ft_free_env(env_copy);
 	printf("Exiting MyShell...\n");
 
 	return (0);
