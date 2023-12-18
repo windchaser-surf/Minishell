@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/17 18:44:47 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/18 11:46:01 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,18 +129,13 @@ char	*ft_expand_dquote(char *str, int *i, t_list **env_copy)	//from ab"cde"fg"hi
 	return (new_str);
 }
 
-void insertList(t_list *insertAfter, t_list *newList) {
-    if (!insertAfter || !newList) {
-        printf("Invalid input.\n");
-        return;
-    }
-
-    // Insert the new list
-    newList->next = insertAfter->next;
-    insertAfter->next = newList;
+void ft_insert_between(t_list *insertAfter, t_list *newList) {
+    (void)insertAfter;
+	(void)newList;
+	return ;
 }
 
-void	ft_expand_with_split(t_list **lexer_node, int *i, t_list **env_copy, t_lexer *actual_node)
+void	ft_expand_with_split(t_list **lexed_list_head, t_list **current_node, int *i, t_list **env_copy)
 {
 	//1.get_var_name
 	//2.get_var_value
@@ -148,31 +143,40 @@ void	ft_expand_with_split(t_list **lexer_node, int *i, t_list **env_copy, t_lexe
 	//3.if var value has a space AND not word or heredoc, then ERROR
 	//3.if var value has a space, then split, and insert new t_lexer nodes
 	
-	char	**val_content;
 	char	*new_str;
-	int		k;
-	t_lexer	*tmp;
+	t_lexer *actual_lexer_node = (t_lexer *)(*current_node)->content;
+	//int		k;
+	t_list	*tmp;
 	t_list	*new_nodes_head;
 	
-	new_str = malloc(sizeof(char) * ft_strlen(actual_node->word) + 1);
+	new_str = malloc(sizeof(char) * ft_strlen(actual_lexer_node->word) + 1);
 	if (!new_str)
 		return ;
 	new_nodes_head = NULL;
-	ft_strncpy(new_str, actual_node->word, (size_t)*i);	//copy everything before the quote
+	ft_strncpy(new_str, actual_lexer_node->word, (size_t)*i);	//copy everything before the quote
 	new_str[*i] = '\0';
-	new_str = ft_expand_variable(new_str, i, actual_node->word, env_copy);
-	if (ft_strchr(new_str, ' ') != NULL && (actual_node->type != WORD || actual_node->type != HEREDOC))
+	new_str = ft_expand_variable(new_str, i, actual_lexer_node->word, env_copy);
+	if (ft_strchr(new_str, ' ') != NULL)
 	{
 		printf("ERROR: bash: $hd: ambiguous redirect\n");	//TODO
 		return ;
 	}
 
-	new_nodes_head = ft_lexer(new_str);
-
-	//insert new nodes to the original lexer_node list
-	insertList(*lexer_node - 1, new_nodes_head);
+	new_nodes_head = ft_lexer(new_str);	//including the original, so we need to free that
+	
+	//make new_nodes_head's last node to point at the original's next node
+	ft_lstlast(new_nodes_head)->next = (*current_node)->next;
+	
+	//make the previous node point to the new_nodes_head
+	tmp = *lexed_list_head;
+	while (tmp->next != *current_node)
+		tmp = tmp->next;
+	tmp->next = new_nodes_head;
 	
 	//free actual node and make the pervious "next" point to the new_nodes_head
+	free(actual_lexer_node->word);
+	free((*current_node)->content);
+	free(*current_node);
 	///TODO
 	
 }
@@ -203,7 +207,7 @@ void	ft_expander(t_list **lexed_list, t_list **env_copy)
 				else if (lexer_node->word[i] == '$')	//expand, split | insert another lexer_node if needed | abc$a
 				{
 					//if has space (splitable) AND not word or heredoc, then error: bash: $hd: ambiguous redirect
-					ft_expand_with_split(lexed_list, &i, env_copy, lexer_node);	
+					ft_expand_with_split(lexed_list ,&tmp, &i, env_copy);	
 				}
 				else
 					i++;

@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/17 18:47:06 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/18 11:52:57 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,9 +122,9 @@ void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, _Bool *error,
 	else
 	{
 		if (type == REDIRECTION)
-			(*parser_node)->fd_out = open(outfile_name, O_WRONLY | O_CREAT | O_TRUNC);
+			(*parser_node)->fd_out = open(outfile_name, O_WRONLY | O_CREAT | O_TRUNC, 644);
 		else if (type == DOUBLE_REDIRECTION)
-			(*parser_node)->fd_out = open(outfile_name, O_WRONLY | O_CREAT | O_APPEND);
+			(*parser_node)->fd_out = open(outfile_name, O_WRONLY | O_CREAT | O_APPEND, 644);
 	}
 	
 	if ((*parser_node)->fd_out == -1)
