@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/18 11:46:01 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/18 14:12:02 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ char	*ft_get_var_value(int *vns, char *str, int i, t_list **env_copy)	//0, str t
 	while (str[i + *vns] && (ft_isalnum(str[i + *vns]) || str[i + *vns] == '_'))	//example: ab"cd$ef"gh -->var name is "ef"
 		(*vns)++;
 	var_name = ft_substr(str, (unsigned int)i, (size_t)(*vns));
-	var_value = ft_get_env_value(env_copy, var_name);
+	var_value = ft_get_env_value(*env_copy, var_name);
 	free(var_name);
 	if (!var_value)
 		var_value = ft_strdup("");	//if variable does not exist, then var_value = ""
@@ -66,7 +66,7 @@ char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy)
 	int		new_str_original_size;
 
 	*i += 1;	//skip the $
-	
+	vns = 0;
 	//1. cutting the variable name
 	var_value = ft_get_var_value(&vns, str, *i, env_copy);	//0, str that has the whole command with the var, str index where we encountered the $
 
