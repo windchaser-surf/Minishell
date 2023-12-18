@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/18 11:59:53 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/18 13:45:20 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 void	ft_handle_word(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, _Bool *prev_was_word, t_list **env_copy);
 int		ft_is_redirsign(char c);
-char	*ft_get_env_value(t_list **env, char *var_name);
+char	*ft_get_env_value(t_list *env, char *var_name);
 char	*ft_cut_until_equal(char *str);
 //exec_utils
 

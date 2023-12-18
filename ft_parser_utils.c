@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/18 12:18:55 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/18 13:45:09 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,7 @@ char	*ft_cut_until_equal(char *str)
 	return (new_str);
 }
 
-char	*ft_get_env_value(t_list **env, char *var_name)
+char	*ft_get_env_value(t_list *env, char *var_name)
 {
 	int		i;
 	char	*env_name;
@@ -231,14 +231,14 @@ char	*ft_get_env_value(t_list **env, char *var_name)
 	env_name = ft_substr(var_name, 0, i);
 	if (env_name == NULL)
 		return (NULL);
-	while (*env)
+	while (env)
 	{
-		env_var = ft_cut_until_equal((*env)->content);
+		env_var = ft_cut_until_equal((env)->content);
 		//printf("env_name: %s\n", env_name);
 		if (ft_strcmp(env_name, env_var) == 0)
-			return (free(env_name), free(env_var),ft_substr((*env)->content, i + 1, ft_strlen((*env)->content) - i - 1));
+			return (free(env_name), free(env_var),ft_substr((env)->content, i + 1, ft_strlen((env)->content) - i - 1));
 		free(env_var);
-		*env = (*env)->next;
+		env = (env)->next;
 	}
 	free(env_name);
 	return (NULL);
@@ -256,7 +256,7 @@ char	*ft_get_path(t_list **env, char *cmd)
 		cmd = "BUILTIN";
 		return (cmd);
 	}
-	path = ft_get_env_value(env, "PATH");
+	path = ft_get_env_value(*env, "PATH");
 	if (path == NULL)
 		return (NULL);
 	path_dirs = ft_split(path, ':');
