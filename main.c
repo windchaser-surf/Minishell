@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/17 18:46:18 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/18 11:54:07 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,8 @@ int main(int argc, char **argv, char **envp)
 			continue ;*/
 		//exit_code = ((t_parser *)(ft_lstlast(parsed_list)->content))->exit_code;
 		ft_print_parser_list(&parsed_list);
-		
+		exit_code = execution_main(parsed_list, env_copy);
+
 		// execution();
 		//close the open fd-s
 		ft_free_lexer(lexed_list);

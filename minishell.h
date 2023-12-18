@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/18 11:44:45 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/18 11:59:53 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@
 # include <fcntl.h>
 # include <stdbool.h>
 
+#define MALLOC_ERR 1 
+#define CMD_NOT_FOUND 127
+
 typedef struct t_variable
 {
 	char	*name;
@@ -45,6 +48,14 @@ typedef enum WordTyp
 	DOUBLE_REDIRECTION, //>>
 	HEREDOC		//<<
 }	WordTyp;
+
+typedef struct s_pipex
+{
+	int	*pid;
+	int	n;
+	int	nbr_p;
+	int	*p;
+}			t_pipex;
 
 /*typedef struct s_out
 {
@@ -80,24 +91,41 @@ _Bool	ft_is_empty_command(char *command);
 //BUILTIN
 
 //cd.c 
-void    cd_builtin(char *cmd, t_list **env_copy);
-void	pwd_builtin(void);
+int	cd_builtin(char *cmd, t_list **env_copy);
+int	ft_pwd_builtin(void);
 
 //echo.c
-void    echo_builtin(char **arg);
+void    ft_echo_builtin(char **arg);
 
 //env.c
-int 	init_env(char **env, t_list **env_copy);
-int 	print_env(t_list *env_copy);
+int	 init_env(char **env, t_list **env_copy);
+int	 print_env(t_list *env_copy);
 void	del(void *content);
+
 //export.c
-void	export_builtin(char *cmd, t_list **env_copy);
-void	print_export(t_list *env_copy);
+int	export_builtin(char *cmd, t_list **env_copy);
+int	print_export(t_list *env_copy);
 int	    check_exist(char *var, t_list *env_copy);
 
 //unset.c
-void    builtin_unset(t_list **env_copy, char *var);
+int    builtin_unset(t_list **env_copy, char *var);
 
+//exec1.c
+int    execution_main(t_list *tokens, t_list **env_copy);
+
+//exec2.c
+void	execution(t_parser *command, t_list **env_copy);
+char	**convert_lst_to_arr(t_list *env_copy);
+
+//check_builtin.c
+int check_builtin(char *str);
+int run_builtins(t_parser *command, t_list **env_copy);
+
+//exit.c
+int    builtin_exit(char **arg);
+
+//free. currently in cd file
+void	free_2d(char **str);
 //BUILTIN END
 
 //Lexer and it's utils

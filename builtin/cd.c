@@ -6,37 +6,44 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:23:05 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/05 18:24:02 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/18 10:33:31 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	pwd_builtin(void)
+int	ft_pwd_builtin(void)
 {
 	char cwd[4097];
 	
 	if (getcwd(cwd, 4096) == NULL)
-		printf("Error with PWD\n"); //Error message;
+	{
+		perror("pwd");
+		return (EXIT_FAILURE);
+	}
 	printf("%s\n", cwd);
+	return (EXIT_SUCCESS);
 }
 
-void	set_old_env(t_list **env_copy, char *old_pwd)
+void	ft_set_old_env(t_list **env_copy, char *old_pwd)
 {
 	t_list *tmp;
 
 	tmp = *env_copy;
-	while (tmp->content)
+	while (tmp)
 	{
 		if (!ft_strncmp(tmp->content, "OLDPWD=", 7))
 			break; 
 		tmp = tmp -> next;
 	}
-	free(tmp->content);
-	tmp->content = ft_strjoin("OLDPWD=", old_pwd);
+	if (tmp)
+	{
+		free(tmp->content);
+		tmp->content = ft_strjoin("OLDPWD=", old_pwd);
+	}
 }
 
-void	set_new_env(t_list **env_copy)
+void	ft_set_new_env(t_list **env_copy)
 {
 	t_list *tmp;
 	char	new_pwd[4097];
@@ -44,44 +51,93 @@ void	set_new_env(t_list **env_copy)
 	if (getcwd(new_pwd, 4096) == NULL)
 		printf("Error with getting new cwd\n");
 	tmp = *env_copy;
-	while (tmp->content)
+	while (tmp)
 	{
 		if (!ft_strncmp(tmp->content, "PWD=", 4))
 			break; 
 		tmp = tmp -> next;
 	}
-	free(tmp->content);
-	tmp->content = ft_strjoin("PWD=", new_pwd);
+	if (tmp)
+	{	
+		free(tmp->content);
+		tmp->content = ft_strjoin("PWD=", new_pwd);
+	}
 }
+
+int	ft_change_to_home(t_list **env_copy)
+{
+	char old_pwd[4097];
+
+	if (getcwd(old_pwd, 4096) == NULL)
+	{
+		perror("cd");
+		return (EXIT_FAILURE);
+	}
+	if (chdir(getenv("HOME")) == -1)
+	{
+		perror("cd");
+		return (EXIT_FAILURE);
+	}
+	ft_set_old_env(env_copy, old_pwd);
+	ft_set_new_env(env_copy);	
+	return (EXIT_SUCCESS);
+}
+
+int	ft_change_to_previous(t_list **env_copy)
+{
+	char old_pwd[4097];
+
+	if (getcwd(old_pwd, 4096) == NULL)
+	{
+		perror("cd");
+		return (EXIT_FAILURE);
+	}
+	if(chdir(getenv("OLDPWD")) == -1)
+	{
+		perror("cd");
+		return (EXIT_FAILURE);
+	}
+	ft_set_old_env(env_copy, old_pwd);
+	ft_set_new_env(env_copy);	
+	return (EXIT_SUCCESS);
+}
+
+int ft_change_to_dir(char *cmd, t_list **env_copy)
+{
+	char old_pwd[4097];
+	char *error;
+
+	if (getcwd(old_pwd, 4096) == NULL)
+	{
+		error = ft_strjoin("cd: ", cmd);
+		perror(error);
+		free(error);
+		return (EXIT_FAILURE);
+	}
+	if (chdir(cmd) == -1)
+	{
+		error = ft_strjoin("cd: ", cmd);
+		perror(error);
+		free(error);
+		return (EXIT_FAILURE);
+	}	
+	ft_set_old_env(env_copy, old_pwd);
+	ft_set_new_env(env_copy);
+	return (EXIT_SUCCESS);
+}
+
 //cd function
 // - cd => change dir to home
 // - cd - => change dir to OLDPWD
 // - cd - => with Path! 
-void    cd_builtin(char *cmd, t_list **env_copy)
+int    cd_builtin(char *cmd, t_list **env_copy)
 {
-	char old_pwd[4097];
-
 	if (cmd == NULL)
-	{
-		if (getcwd(old_pwd, 4096) == NULL)
-			printf("Error with getting cwd\n");
-		if (chdir(getenv("HOME")) == -1)
-			return ; //print error code
-	}
+		return (ft_change_to_home(env_copy));
 	else if (!ft_strncmp(cmd, "-", 2))
-	{
-		if (getcwd(old_pwd, 4096) == NULL)
-			printf("Error with getting cwd\n");
-		if(chdir(getenv("OLDPWD")) == -1)
-			printf("Error with changing to OLDPWD");
-	}
+		return(ft_change_to_previous(env_copy));
 	else if (cmd)
-	{
-		if (getcwd(old_pwd, 4096) == NULL)
-			printf("Error with getting cwd\n");
-		if (chdir(cmd) == -1)
-			printf("cd: no such file or directory: %s\n", cmd);
-	}
-	set_old_env(env_copy, old_pwd);
-	set_new_env(env_copy);		
+		return (ft_change_to_dir(cmd, env_copy));
+	return (EXIT_SUCCESS);	
 }
+

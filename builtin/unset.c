@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 10:50:44 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/05 16:58:04 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/18 09:57:52 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,28 +38,29 @@ void	del_env_var(t_list **env_copy, char *var)
 		prev->next = current->next;
 	}
     // Freigabe des Speichers des gelöschten Knotens
-    ft_lstdelone(current);
+    ft_lstdelone(current, del);
 }
-void    builtin_unset(t_list **env_copy, char *var)
+int    builtin_unset(t_list **env_copy, char *var)
 {
 	t_list *tmp;
 	
 	tmp = *env_copy;
 	if (var == NULL)
-		return ; //if there is no var nothing happen
+		return (EXIT_SUCCESS); //if there is no var nothing happen
 	if (check_exist(var, *env_copy) && ft_strchr(var, '=') == NULL)
 		{
 			while (tmp)
 			{
-				if (!ft_strncmp((tmp)->content, var, ft_strlen(var))\
-					&& ((tmp)->content[ft_strlen(var)] == '=' ||\
-					(tmp)->content[ft_strlen(var)] == '\0'))
+				if (!ft_strncmp(((char *)tmp->content), var, ft_strlen(var))\
+					&& (((char *)tmp->content)[ft_strlen(var)] == '=' ||\
+					((char *)tmp->content)[ft_strlen(var)] == '\0'))
 				{
 					del_env_var(env_copy, var);
-					return ;
+					return (EXIT_SUCCESS);
 				}	//ft_lstdelone(env_copy);
 					//Wir müssen hier noch die Pointer richtig setzen!! die lstdelone ist noch falsch
 				(tmp) = (tmp) -> next;
 			}
 		}
+		return (EXIT_SUCCESS);
 }

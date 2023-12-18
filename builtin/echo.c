@@ -6,13 +6,13 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 10:17:32 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/11/29 10:41:43 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/18 10:33:41 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void    echo_builtin(char **arg)
+void    ft_echo_builtin(char **arg)
 {
 	int i; 
 	int option;
@@ -33,4 +33,5 @@ void    echo_builtin(char **arg)
 	}
 	if (option == 0)
 		write(1, "\n", 1);
+// Hier muss noch der exit code hinzugefügt werden! 
 }
