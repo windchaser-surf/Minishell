@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 11:17:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/18 10:42:09 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/18 12:34:54 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,10 @@ int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, int n)
 		
 		if (command->fd_out != -1)
 		{
-			dup2(command->fd_out, 1);
+			if (command->cmd_path == NULL)
+				dup2(data->p[(n * 2) - 2], command->fd_out);
+			else
+				dup2(command->fd_out, 1);
 			close(command->fd_out);
 
 		}
@@ -140,10 +143,10 @@ int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, int n)
 				dup2(data->p[1 + (2 * n)], 1);
 		}
 		ft_pipe_closer(data);
-		if (!ft_strncmp(command->cmd_path, "builtin", 8))
-			exit (run_builtins(command, env_copy));
-		else if (command->cmd_path == NULL)
+		if (command->cmd_path == NULL)
 			exit (127);
+		else if (!ft_strncmp(command->cmd_path, "BUILTIN", 8))
+			exit (run_builtins(command, env_copy));
 
 		else 
 			execution(command, env_copy);		
