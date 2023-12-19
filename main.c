@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/18 11:54:07 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/19 13:04:58 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	ft_print_parser_list(t_list **parser_head)
 		{	
 			while (parser_node->cmd_args[i])
 			{
-				printf("%s ", parser_node->cmd_args[i]);
+				printf("%s |", parser_node->cmd_args[i]);
 				i++;
 			}
 		}
@@ -77,15 +77,15 @@ int main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		command = readline("Minishell> ");
-		add_history(command); 	
 		
 		if (ft_basic_error_checker(&command) == 1)	// 1 if error, 0 if correct.
 			continue;
-
+		add_history(command); 
+		
 		lexed_list = ft_lexer(command);	// This function will tokenize the command and store it in a linked list called t_lexer.
 		//ft_print_lexer_list(lexed_list);
 		//free(command);
-		ft_expander(&lexed_list, env_copy);
+		ft_expander(&lexed_list, env_copy, exit_code);
 		//continue;
 		parsed_list = ft_parser(lexed_list, env_copy);
 		if (!parsed_list)

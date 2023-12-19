@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/18 13:45:20 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/19 12:45:38 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,12 +140,12 @@ int		ft_check_for_empty_command(t_list *list_head);
 void	ft_free_array(char **arr);
 
 //Expander
-void	ft_expander(t_list **lexed_list, t_list **env_copy);
+void	ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code);
 
 char	*ft_remove_quote(char *str, int *i, char c);
-char	*ft_expand_dquote(char *str, int *i, t_list **env_copy);
+char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code);
 void	ft_expand_with_split(t_list **lexed_list_head ,t_list **lexer_node, int *i, t_list **env_copy);
-char	*ft_get_var_value(int *vns, char *str, int i, t_list **env_copy);
+char	*ft_get_var_value(char *var_name, char *str, int *i, t_list **env_copy);
 char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy);
 
 

@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/18 13:45:09 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/18 15:17:00 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,6 +226,8 @@ char	*ft_get_env_value(t_list *env, char *var_name)
 	char	*env_var;
 
 	i = 0;
+	//TODO: $?
+	
 	while (var_name[i] && var_name[i] != '=')
 		i++;
 	env_name = ft_substr(var_name, 0, i);
