@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/19 13:04:58 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 12:05:15 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,19 +66,19 @@ int main(int argc, char **argv, char **envp)
 	t_list	*parsed_list;
 	int		exit_code;
 	
+	if (argc > 1)
+		return (ft_putstr_fd("Minishell: arguments are not accepted.\n", 2), 1);
 	env_copy = (t_list **)malloc(sizeof(t_list *));
 	if (init_env(envp, env_copy) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	//ft_print_env(*env_copy);
 	(void)argv;
-	if (argc > 1)
-		return (ft_putstr_fd("Error: arguments are not accepted.\n", 2), 1);
 	exit_code = 0;
 	while (1)
 	{
 		command = readline("Minishell> ");
 		
-		if (ft_basic_error_checker(&command) == 1)	// 1 if error, 0 if correct.
+		if (ft_basic_error_checker(&command, &exit_code) == 1)	// 1 if error, 0 if correct.
 			continue;
 		add_history(command); 
 		
@@ -86,8 +86,9 @@ int main(int argc, char **argv, char **envp)
 		//ft_print_lexer_list(lexed_list);
 		//free(command);
 		ft_expander(&lexed_list, env_copy, exit_code);
-		//continue;
-		parsed_list = ft_parser(lexed_list, env_copy);
+		//continue ;
+		parsed_list = ft_parser(lexed_list, &exit_code, env_copy);
+		ft_free_lexer(lexed_list);
 		if (!parsed_list)
 			continue ;
 		/*if (!parsed_list)
@@ -98,7 +99,6 @@ int main(int argc, char **argv, char **envp)
 
 		// execution();
 		//close the open fd-s
-		ft_free_lexer(lexed_list);
 		ft_free_parser(parsed_list);
 		
 	}

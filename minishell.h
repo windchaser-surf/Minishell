@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/19 12:45:38 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 12:47:16 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ typedef struct s_parser		//a node is piece of element that you need to pass to t
 }	t_parser;
 
 //Syntax checking
-_Bool	ft_basic_error_checker(char **command);
+_Bool	ft_basic_error_checker(char **command, int *error_code);
 int		ft_ends_with_spec(char *command);
 _Bool	ft_unmatched_quotes(char *command);
 int		ft_ends_with_spec(char *command);
@@ -131,6 +131,14 @@ void	free_2d(char **str);
 //Lexer and it's utils
 t_list	*ft_lexer(char *command);
 
+typedef struct s_lexer_helper {
+	t_list	*list_head;
+	int		start;
+	int		i;
+	int		prev_wt;
+	int		exec_num;
+}	t_lexer_helper;
+
 int		ft_check_word_first_letter(char c, t_list *lexer_head);
 void	ft_skip_spaces(char *str, int *i);
 void	ft_skip_to_closing_quote(char *command, int *i, char close_char);
@@ -139,29 +147,46 @@ void	ft_print_lexer_list(t_list *list);
 int		ft_check_for_empty_command(t_list *list_head);
 void	ft_free_array(char **arr);
 
+
 //Expander
 void	ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code);
 
 char	*ft_remove_quote(char *str, int *i, char c);
 char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code);
-void	ft_expand_with_split(t_list **lexed_list_head ,t_list **lexer_node, int *i, t_list **env_copy);
+char	*ft_expand_with_split(t_list **lexed_list_head ,t_list **lexer_node, int *i, t_list **env_copy, int *exit_code);
+
 char	*ft_get_var_value(char *var_name, char *str, int *i, t_list **env_copy);
 char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy);
-
+char	*ft_get_var_name(char *str);
+char	*ft_handle_dollar_question(char *new_str, int *exit_code, int *i, char *str);
 
 //Parser and it's utils
-t_list	*ft_parser(t_list *lexed_list, t_list **env_copy);
+t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy);
+
+typedef struct s_parser_helper {
+	t_list		*list_head;
+	t_list		*new;
+	t_parser	*parser_node;
+	t_lexer		*lexed_item;
+	int			ith_command;
+	_Bool		error;
+	_Bool		prev_was_word;
+}	t_parser_helper;
 
 void	ft_free_parser(t_list *parser_head);
 char	**ft_realloc_array(char **array, char *new_item);
 void	ft_init_parser_node(t_parser **parser_node);
-void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, WordTyp	type);
+void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp	type);
 void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
-void	ft_handle_word(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, _Bool *prev_was_word, t_list **env_copy);
+_Bool	ft_handle_word(t_parser_helper *helper, t_list **env_copy);
+
+_Bool	ft_set_exit_error_code_empty_arg(t_parser **parser_node, int exit_code);
 int		ft_is_redirsign(char c);
 char	*ft_get_env_value(t_list *env, char *var_name);
 char	*ft_cut_until_equal(char *str);
+void	ft_perror_and_free(char *str);
+
 //exec_utils
 
 void    close_fds(int *fds);
