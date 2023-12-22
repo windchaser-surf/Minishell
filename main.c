@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 12:05:15 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 21:07:03 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,9 +83,9 @@ int main(int argc, char **argv, char **envp)
 		add_history(command); 
 		
 		lexed_list = ft_lexer(command);	// This function will tokenize the command and store it in a linked list called t_lexer.
-		//ft_print_lexer_list(lexed_list);
 		//free(command);
 		ft_expander(&lexed_list, env_copy, exit_code);
+		ft_print_lexer_list(lexed_list);
 		//continue ;
 		parsed_list = ft_parser(lexed_list, &exit_code, env_copy);
 		ft_free_lexer(lexed_list);
