@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 11:22:30 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 12:47:04 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,43 +283,45 @@ void	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
 	}
 }
 
-/*void	ft_set_error_code_empty_arg(t_parser **parser_node)
+_Bool	ft_set_exit_error_code_empty_arg(t_parser **parser_node, int exit_code)
 {
 	char	*ec;
+
+	if (ft_strcmp((*parser_node)->cmd_args[0], "exit") != 0 || (*parser_node)->cmd_args[1] != NULL)
+		return (0);
 	ec = ft_itoa(exit_code);
+	if (!ec)
+		return (perror("Malloc failed"), 1);
+	(*parser_node)->cmd_args = ft_realloc_array((*parser_node)->cmd_args, ec);
+	free(ec);
+	return (0);
+}
 
-	if ((*parser_node)->cmd_args[1] == NULL)
-		(*parser_node)->cmd_args = ft_realloc_array((*parser_node)->cmd_args, );
-
-
-}*/
-
-_Bool	ft_handle_word(t_parser **parser_node, t_lexer *lexed_item, _Bool *prev_was_word, t_list **env_copy)
+_Bool	ft_handle_word(t_parser_helper *helper, t_list **env_copy)
 {
-	if (*prev_was_word == 0)
+	if (helper->prev_was_word == 0)
 	{
-		(*parser_node)->cmd_args = (char **)malloc(sizeof(char *) * 2);
-		if ((*parser_node)->cmd_args == NULL)
+		helper->parser_node->cmd_args = (char **)malloc(sizeof(char *) * 2);
+		if (helper->parser_node->cmd_args == NULL)
 			return (perror("Malloc failed"), 1);
-		if (ft_strchr(lexed_item->word, '/') != NULL)	// "/usr/bin/grep"
-			ft_handle_absolute_command(parser_node, lexed_item);
+		if (ft_strchr(helper->lexed_item->word, '/') != NULL)	// "/usr/bin/grep"
+			ft_handle_absolute_command(&(helper->parser_node), helper->lexed_item);
 		else	// "grep"
 		{
-			(*parser_node)->cmd_path = ft_get_path(env_copy, lexed_item->word);
-			(*parser_node)->cmd_args[0] = ft_strdup(lexed_item->word);
+			helper->parser_node->cmd_path = ft_get_path(env_copy, helper->lexed_item->word);
+			helper->parser_node->cmd_args[0] = ft_strdup(helper->lexed_item->word);
 		}
-		if ((*parser_node)->cmd_args[0] == NULL)
+		if (helper->parser_node->cmd_args[0] == NULL)
 			return (perror("Malloc failed"), 1);
-		(*parser_node)->cmd_args[1] = NULL;
-		*prev_was_word = 1;
+		helper->parser_node->cmd_args[1] = NULL;
+		helper->prev_was_word = 1;
 	}
 	else
 	{
-		(*parser_node)->cmd_args = ft_realloc_array((*parser_node)->cmd_args, lexed_item->word);
-		if ((*parser_node)->cmd_args == NULL)
+		helper->parser_node->cmd_args = ft_realloc_array(helper->parser_node->cmd_args, helper->lexed_item->word);
+		if (helper->parser_node->cmd_args == NULL)
 			return (perror("Malloc failed"), 1);
 	}
-	//ft_set_error_code_empty_arg(parser_node);
 	return (0);
 }
 
