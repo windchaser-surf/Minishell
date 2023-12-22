@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 10:44:50 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 13:28:18 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,38 @@ _Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command)
 	return (0);
 }
 
+_Bool	ft_lexer_while(t_lexer_helper *helper, char *command)
+{
+	if (command[helper->i] == ' ')	//a word ends with a space or a redirection sign
+	{
+		if (ft_handle_lexer_word(helper, command) == 1)
+			return (NULL);
+	}
+	else if (command[helper->i] == '|')
+	{
+		if (ft_handle_lexer_new_command(helper, command) == 1)
+			return (NULL);
+	}
+	else if (command[helper->i] == '>' )	//we alreaady know that it doesnt end with a redir char
+	{
+		if (ft_handle_lexer_redir(helper, command) == 1)
+			return (NULL);
+	}
+	else if (command[helper->i] == '<')
+	{
+		if (ft_handle_lexer_input(helper, command) == 1)
+			return (NULL);
+	}
+	else if (command[helper->i] == '\'' || command[helper->i] == '\"')
+	{
+		ft_skip_to_closing_quote(command, &(helper->i), command[helper->i]);
+		helper->i++;
+	}
+	else
+		helper->i++;
+	return (0);
+}
+
 t_list	*ft_lexer(char *command)
 {
 	t_lexer_helper	helper;
@@ -161,33 +193,8 @@ t_list	*ft_lexer(char *command)
 		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), NULL);
 	while (command[helper.i])
 	{
-		if (command[helper.i] == ' ')	//a word ends with a space or a redirection sign
-		{
-			if (ft_handle_lexer_word(&helper, command) == 1)
-				return (NULL);
-		}
-		else if (command[helper.i] == '|')
-		{
-			if (ft_handle_lexer_new_command(&helper, command) == 1)
-				return (NULL);
-		}
-		else if (command[helper.i] == '>' )	//we alreaady know that it doesnt end with a redir char
-		{
-			if (ft_handle_lexer_redir(&helper, command) == 1)
-				return (NULL);
-		}
-		else if (command[helper.i] == '<')
-		{
-			if (ft_handle_lexer_input(&helper, command) == 1)
-				return (NULL);
-		}
-		else if (command[helper.i] == '\'' || command[helper.i] == '\"')
-		{
-			ft_skip_to_closing_quote(command, &(helper.i), command[helper.i]);
-			helper.i++;
-		}
-		else
-			helper.i++;
+		if (ft_lexer_while(&helper, command) == 1)
+			return (NULL);
 	}
 	if (helper.start != helper.i)
 		ft_make_lnode(&helper, command);
