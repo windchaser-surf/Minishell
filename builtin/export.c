@@ -6,7 +6,7 @@
 /*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 12:17:52 by felix             #+#    #+#             */
-/*   Updated: 2023/12/22 09:45:31 by felix            ###   ########.fr       */
+/*   Updated: 2023/12/22 16:09:57 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,18 +110,23 @@ int	print_export(t_list *env_copy)
 	return (EXIT_SUCCESS);
 }
 
+int	err_msg_not_valid(void)
+{
+	ft_putstr_fd("export: Not a valid identifier\n", STDERR_FILENO);
+	return (EXIT_FAILURE);	
+}
+
 int	valid_new_variable(char *cmd)
 {
 	int	i;
 
 	i = 0;
+	if (cmd[0] == '=')
+		return (err_msg_not_valid());
 	while (cmd[i] && cmd[i] != '=')
 	{
-		if (cmd[0] >= '0' && cmd[0] <= '9')
-		{
-			ft_putstr_fd("export: Not a valid identifier\n", STDERR_FILENO);
-			return (EXIT_FAILURE);
-		}
+		if ((cmd[0] >= '0' && cmd[0] <= '9') || cmd[0] == '=')
+			return(err_msg_not_valid());
 		if (cmd[i] >= 'A' && cmd[i] <= 'Z')
 			i++;
 		else if (cmd[i] >= 'a' && cmd[i] <= 'z')
@@ -131,10 +136,7 @@ int	valid_new_variable(char *cmd)
 		else if (cmd[i] == '_')
 			i++;
 		else
-		{
-			ft_putstr_fd("export: Not a valid identifier\n", STDERR_FILENO);
-			return (EXIT_FAILURE);
-		}
+			return(err_msg_not_valid());
 	}
 	return (EXIT_SUCCESS);
 }

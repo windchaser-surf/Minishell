@@ -6,7 +6,7 @@
 /*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 15:19:37 by felix            ###   ########.fr       */
+/*   Updated: 2023/12/22 17:59:32 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ _Bool	ft_is_empty_command(char *command);
 //BUILTIN
 
 //cd.c 
-int	cd_builtin(char *cmd, t_list **env_copy);
+int    cd_builtin(char **cmd, t_list **env_copy);
 int	ft_pwd_builtin(void);
 
 //echo.c
@@ -121,7 +121,7 @@ void	free_2d(char **str);
 void	dup_heredoc(t_parser *command);
 
 //exec1.c
-int exec_builtins(t_parser *command, t_list **env_copy, int exit_code, int pid_check);
+int exec_builtins(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens);
 void	ft_file_closer_single(t_parser *command);
 int	child_process(t_parser *command, t_list **env_copy);
 int	cmd_path_NULL(t_parser *command);
@@ -137,9 +137,12 @@ int	n_execution(t_list *tokens, t_list **env_copy, int exit_code);
 //check_builtin.c
 int check_builtin(char *str);
 int run_builtins(t_parser *command, t_list **env_copy, int error_code, int pid_check);
+int run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, t_list *tokens);
+
 
 //exit.c
 int    builtin_exit(char **arg, int exit_code, int pid_check);
+int    builtin_exit_parent(char **arg, int exit_code, t_list *tokens);
 
 //free. currently in cd file
 void	free_2d(char **str);

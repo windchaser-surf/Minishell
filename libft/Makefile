@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: rluari <rluari@student.42.fr>              +#+  +:+       +#+         #
+#    By: felix <felix@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/10 15:38:38 by rluari            #+#    #+#              #
-#    Updated: 2023/12/14 16:50:11 by rluari           ###   ########.fr        #
+#    Updated: 2023/12/22 15:33:10 by felix            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,7 +40,7 @@ CC				=	cc
 
 RM				=	rm -f
 
-CFLAGS			=	-Wall -Wextra -Werror -Wno-error=unused-result -g -O3 -fsanitize=address,undefined,leak
+CFLAGS			=	-Wall -Wextra -Werror -Wno-error=unused-result -g -O3 #-fsanitize=address,undefined,leak
 
 NAME			=	libft.a
 

@@ -6,13 +6,13 @@
 /*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 11:17:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/22 14:31:17 by felix            ###   ########.fr       */
+/*   Updated: 2023/12/22 17:42:55 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int exec_builtins(t_parser *command, t_list **env_copy, int exit_code, int pid_check)
+int exec_builtins(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens)
 {
 		if (command->fd_in != -1)
 		{
@@ -25,7 +25,7 @@ int exec_builtins(t_parser *command, t_list **env_copy, int exit_code, int pid_c
 			dup2(command->fd_out, 1);
 			close(command->fd_out);
 		}
-		return(run_builtins(command, env_copy, exit_code, pid_check));
+		return(run_builtins_parent(command, env_copy, exit_code, tokens));
 }
 
 void	ft_file_closer_single(t_parser *command)

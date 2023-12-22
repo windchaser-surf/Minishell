@@ -6,7 +6,7 @@
 /*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:40:12 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/22 15:04:54 by felix            ###   ########.fr       */
+/*   Updated: 2023/12/22 17:49:33 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,22 +67,26 @@ int exit_too_many(int pid_check)
 	return (1);
 }
 
-void exit_not_numeric(int pid_check)
+void exit_not_numeric(int pid_check, t_list *tokens)
 {
 	if (pid_check == 1)
 		ft_putstr_fd("exit: needs a numeric parameter\n", STDERR_FILENO);
 	else
 		ft_putstr_fd("exit\nexit: needs a numeric parameter\n", STDERR_FILENO);
+	if (tokens)
+		ft_free_parser(tokens);
 	exit (2);
 }
 
-void exit_with_number(int pid_check, char *numb) //hier kommt noch die nummer hin
+void exit_with_number(int pid_check, char *numb, t_list *tokens) //hier kommt noch die nummer hin
 {
 	unsigned char c;
 	
 	if (pid_check == 0)
 		printf("exit\n");
 	c = ft_atoi_long(numb);
+	if (tokens)
+		ft_free_parser(tokens);
 	exit (c); //Zahl muss noch richtig umgerechnet werden
 }
 
@@ -105,8 +109,33 @@ int    builtin_exit(char **arg, int exit_code, int pid_check)
 	if (check == 0 && i > 2)
 		return(exit_too_many(pid_check));
 	else if (check == 1)
-		exit_not_numeric(pid_check);
+		exit_not_numeric(pid_check, NULL);
 	else if (check == 0 && i == 2)
-		exit_with_number(pid_check, arg[1]);
+		exit_with_number(pid_check, arg[1], NULL);
+	return (EXIT_SUCCESS);
+}
+
+int    builtin_exit_parent(char **arg, int exit_code, t_list *tokens)
+{
+	int i;
+	int check;
+
+	check = 0;
+	i = 0; 
+	while (arg[i])
+		i++;
+	if ( i == 1)
+	{
+		printf("exit\n");
+		ft_free_parser(tokens);
+		exit (exit_code);
+	}
+	check = check_for_number(arg[1]);
+	if (check == 0 && i > 2)
+		return(exit_too_many(0));
+	else if (check == 1)
+		exit_not_numeric(0, tokens);
+	else if (check == 0 && i == 2)
+		exit_with_number(0, arg[1], tokens);
 	return (EXIT_SUCCESS);
 }

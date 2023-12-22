@@ -10,7 +10,7 @@ CC			= cc
 
 LDFLAGS 	= -lreadline
 
-CFLAGS		= -Wall -Werror -Wextra -Wno-error=unused-result -g -fsanitize=address,undefined,leak -fno-omit-frame-pointer
+CFLAGS		= -Wall -Werror -Wextra -Wno-error=unused-result -g #-fsanitize=address,undefined,leak -fno-omit-frame-pointer
 
 RM			= rm -rf
 

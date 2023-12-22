@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 11:00:12 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 15:52:01 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,7 +247,7 @@ void	ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_list **current_node, t_
 
 	free(new_current->content);
 	free(new_current);
-	ft_print_lexer_list(*lexed_list_head);
+	//ft_print_lexer_list(*lexed_list_head);
 	*i = original_word_len;
 }
 
