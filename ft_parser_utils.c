@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 12:47:04 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 21:01:06 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,23 +80,29 @@ void	ft_perror_and_free(char *str)
 	free(asd);
 }
 
-void	ft_find_cmd_path(char **cmd)
+_Bool	ft_is_path_invalid(char *cmd, t_parser **parser_node)
 {
-	if (ft_strchr(*cmd, '/') != NULL)	//it is an absolute path
+	int		i;
+	char	*path;
+
+	i = ft_strlen(cmd) - 1;
+	while (cmd[i] != '/')
+		i--;
+	path = ft_substr(cmd, 0, i);
+	if (!path)
+		return (perror("Malloc failed"), 1);
+	if (access(path, F_OK) == 0)
+		return (free(path), 0);
+	else
 	{
-		if (access(*cmd, F_OK) == 0)
-			return ;
-		else
-		{
-			ft_putstr_fd("Minishell: ", 2);
-			ft_putstr_fd(*cmd, 2);
-			ft_putstr_fd(": No such file or directory\n", 2);
-			free(*cmd);
-			*cmd = NULL;
-		}
+		ft_putstr_fd("Minishell: ", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		free(path);
+		(*parser_node)->exit_code = 127;
+		return (1);
 	}
-	else	//it is a relative path
-	{}
+
 }
 
 void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp	type)
@@ -274,7 +280,13 @@ char	*ft_get_path(t_list **env, char *cmd)
 
 void	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
 {
-	(*parser_node)->cmd_path = ft_strdup(lexed_item->word);
+	if (ft_is_path_invalid(lexed_item->word, parser_node) == 1)
+	{
+		(*parser_node)->cmd_path = NULL;
+		
+	}
+	else
+		(*parser_node)->cmd_path = ft_strdup(lexed_item->word);
 	(*parser_node)->cmd_args[0] = ft_get_cmd_name(lexed_item->word);
 	if (ft_is_builtin((*parser_node)->cmd_args[0]))
 	{

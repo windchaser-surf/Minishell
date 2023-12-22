@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 11:00:12 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 20:29:57 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,12 +144,11 @@ char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code)	//fr
 		return (perror("Malloc failed"), NULL);
 	ft_strncpy(new_str, str, (size_t)*i);	//copy everything before the quote
 	new_str[*i] = '\0';
-	
 	(*i)++;	//skip the quote
 	j = *i - 1;
 	while (str[*i] && str[*i] != '\"')	//copy everything between the quotes
 	{
-		if (str[*i] == '$' && !(str[(*i) + 1] == '\0' || str[(*i) + 1] == '$'))	//expand variable if it is not the last char or another $
+		if (str[*i] == '$' && (ft_isalpha(str[(*i) + 1]) || str[(*i) + 1] == '?' || str[(*i) + 1] == '_'))	//expand variable if it is not the last char or another $
 		{
 			if (str[(*i) + 1] == '?')
 			{
@@ -161,7 +160,6 @@ char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code)	//fr
 			}
 			else
 				new_str = ft_expand_variable(new_str, i, str, env_copy);	//it expands and attaches to the end of the string
-			//new_str = ft_expand_variable(new_str, i, str, env_copy);	//it expands and attaches to the end of the string
 			j = ft_strlen(new_str);
 		}
 		else
@@ -174,11 +172,7 @@ char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code)	//fr
 	int tmp_i = *i;
 	*i = j;
 	while (str[tmp_i])	//copy everything after the quote
-	{
-		new_str[j] = str[tmp_i];
-		tmp_i++;
-		j++;
-	}
+		new_str[j++] = str[tmp_i++];
 	new_str[j] = '\0';
 	free(str);
 	return (new_str);

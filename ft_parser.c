@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 13:13:14 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 21:13:42 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,13 @@ _Bool	ft_create_new_command(t_parser_helper *helper, int exit_code, _Bool last)
 	return (0);
 }
 
+_Bool	ft_is_empty_lexed_lode(char *str, t_list *lexed_list)
+{
+	if (str[0] == '\0')
+		return (lexed_list = lexed_list->next, 1);
+	return (0);
+}
+
 t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy)
 {
 	t_parser_helper	helper;
@@ -56,6 +63,8 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy)
 	while (lexed_list)
 	{
 		helper.lexed_item = lexed_list->content;
+		if (ft_is_empty_lexed_lode(helper.lexed_item->word, lexed_list))
+			continue ;
 		if (helper.lexed_item->exec_num > helper.ith_command)
 		{
 			if (ft_create_new_command(&helper, *exit_code, 0) == 1)
@@ -73,11 +82,5 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy)
 	}
 	if (ft_create_new_command(&helper, *exit_code, 0) == 1)
 		return (NULL);
-	/*if (ft_set_exit_error_code_empty_arg(&(helper.parser_node), *exit_code) == 1)
-		return (ft_free_parser(helper.list_head), NULL);
-	helper.new = ft_lstnew(helper.parser_node);
-	if (helper.new == NULL)
-		return (ft_free_parser(helper.list_head), perror("Malloc failed"), NULL);
-	ft_lstadd_back(&(helper.list_head), helper.new);*/
 	return (helper.list_head);
 }
