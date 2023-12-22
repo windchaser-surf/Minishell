@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:40:12 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/18 09:52:42 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/22 15:04:54 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,79 @@
 	//auch minus zahlen müssen richt converted werden und wenn sie 9223372036854775807 größer sind dann ist es außerhalb der 
 	//Max long long range und zählt dann nicht mehr als numerischer parameter
 } */
+long long	ft_atoi_long(const char *str)
+{
+	int			i;
+	long long	result;
+	long long	pre;
 
-int    builtin_exit(char **arg)
+	pre = 1;
+	i = 0;
+	result = 0;
+	while (str[i] && (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13)))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
+	{
+		if (str[i] == '-')
+			pre *= -1;
+		i++;
+	}
+	while (str[i] >= '0' && str[i] <= '9')
+	{
+		result = result * 10 + (str[i] - '0');
+		i++;
+	}
+	return (result * pre);
+}
+
+int check_for_number(char *arg)
+{
+	int	n;
+	
+	n = 0;
+	if (arg[0] == '-' || arg[0] =='+')
+		n++;
+	while (arg[n])
+	{
+		if ((arg[n] < '0' || arg[n] > '9'))
+			return (1);
+		n++;
+	}
+	return (0);
+}
+//if pid_check == 1 => child_process
+int exit_too_many(int pid_check)
+{
+	if (pid_check == 1)
+		ft_putstr_fd("exit: too many arguments\n", STDERR_FILENO);
+	else	
+		ft_putstr_fd("exit\nexit: too many arguments\n", STDERR_FILENO);
+	return (1);
+}
+
+void exit_not_numeric(int pid_check)
+{
+	if (pid_check == 1)
+		ft_putstr_fd("exit: needs a numeric parameter\n", STDERR_FILENO);
+	else
+		ft_putstr_fd("exit\nexit: needs a numeric parameter\n", STDERR_FILENO);
+	exit (2);
+}
+
+void exit_with_number(int pid_check, char *numb) //hier kommt noch die nummer hin
+{
+	unsigned char c;
+	
+	if (pid_check == 0)
+		printf("exit\n");
+	c = ft_atoi_long(numb);
+	exit (c); //Zahl muss noch richtig umgerechnet werden
+}
+
+int    builtin_exit(char **arg, int exit_code, int pid_check)
 {
 	int i;
 	int check;
-	int	n;
 
 	check = 0;
 	i = 0; 
@@ -30,30 +97,16 @@ int    builtin_exit(char **arg)
 		i++;
 	if ( i == 1)
 	{
-		printf("exit\n");
-		exit (0);
+		if (pid_check == 0)
+			printf("exit\n");
+		exit (exit_code);
 	}
-	n = 0;
-	while (arg[1][n])
-	{
-		if (arg[1][n] < '0' || arg[1][n] > '9')
-			check = 1;
-		n++;
-	}
+	check = check_for_number(arg[1]);
 	if (check == 0 && i > 2)
-	{
-		ft_putstr_fd("exit\nexit: too many arguments\n", STDERR_FILENO);
-		return (1);
-	}
+		return(exit_too_many(pid_check));
 	else if (check == 1)
-	{
-		ft_putstr_fd("exit\nexit: needs a numeric parameter\n", STDERR_FILENO);
-		exit (2);
-	}
+		exit_not_numeric(pid_check);
 	else if (check == 0 && i == 2)
-	{
-		printf("exit\n");
-		exit (0); //Zahl muss noch richtig umgerechnet werden
-	}
+		exit_with_number(pid_check, arg[1]);
 	return (EXIT_SUCCESS);
 }

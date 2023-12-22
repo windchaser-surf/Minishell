@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 10:50:44 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/18 09:57:52 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/22 13:40:42 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,51 +16,73 @@
 
 void	del_env_var(t_list **env_copy, char *var)
 {
-    //t_list	**tmp;
 	t_list	*current;
     t_list	*prev;
 
-	//tmp = env_copy;
 	current = *env_copy;
 	prev = NULL;
-    // Durchsuche die Liste, um das Element zu finden
-    while (current != NULL && ft_strncmp(current->content, var, ft_strlen(var)))
+    while (current != NULL && (ft_strncmp(current->content, var, ft_strlen(var))\
+		 || (((char *)(current)->content)[ft_strlen(var)] != '=')))
 	{
-        prev = current;
+		prev = current;
         current = current->next;
 	}
-
-    // Überprüfe, ob das Element am Anfang der Liste steht
     if (prev == NULL) 
     	*env_copy = current->next;
     else 
     {
 		prev->next = current->next;
 	}
-    // Freigabe des Speichers des gelöschten Knotens
-    ft_lstdelone(current, del);
+    if (current)
+		ft_lstdelone(current, del);
 }
-int    builtin_unset(t_list **env_copy, char *var)
+
+
+
+int	check_exist_unset(char *var, t_list *env_copy)
+{	
+	int	i;
+	t_list	*tmp;
+	
+	tmp = env_copy;
+	i = 0;
+	while (var[i] && var[i] != '=')
+		i++;
+	while (tmp)
+	{
+		if (!ft_strncmp(tmp->content, var, i))
+			return (1);
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+int    builtin_unset(t_list **env_copy, char **var)
 {
 	t_list *tmp;
+	int	i; 
 	
-	tmp = *env_copy;
-	if (var == NULL)
+	i = 1;
+	if (var[i] == NULL)
 		return (EXIT_SUCCESS); //if there is no var nothing happen
-	if (check_exist(var, *env_copy) && ft_strchr(var, '=') == NULL)
+	while (var[i])
+	{
+		tmp = *env_copy;
+		if (check_exist_unset(var[i], tmp) && ft_strchr(var[i], '=') == NULL)
 		{
 			while (tmp)
 			{
-				if (!ft_strncmp(((char *)tmp->content), var, ft_strlen(var))\
-					&& (((char *)tmp->content)[ft_strlen(var)] == '=' ||\
-					((char *)tmp->content)[ft_strlen(var)] == '\0'))
+				if (!ft_strncmp(((char *)(tmp)->content), var[i], ft_strlen(var[i]))\
+					&& (((char *)(tmp)->content)[ft_strlen(var[i])] == '=' ||\
+					((char *)(tmp)->content)[ft_strlen(var[i])] == '\0'))
 				{
-					del_env_var(env_copy, var);
-					return (EXIT_SUCCESS);
-				}	//ft_lstdelone(env_copy);
-					//Wir müssen hier noch die Pointer richtig setzen!! die lstdelone ist noch falsch
+					del_env_var(env_copy, var[i]);
+					break ;
+				}
 				(tmp) = (tmp) -> next;
 			}
 		}
-		return (EXIT_SUCCESS);
+		i++;
+	}
+	return (EXIT_SUCCESS);
 }
