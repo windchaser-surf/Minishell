@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lexer.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/15 20:20:24 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 10:44:50 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
 #include "minishell.h"
-#include <ctype.h>
 
 void	ft_print_lexer_list(t_list *list)
 {
@@ -52,127 +51,147 @@ int	ft_check_for_empty_command(t_list *list_head)
 	return (0);
 }
 
-void	ft_make_lnode(int start, int i, WordTyp prev_wt, int exec_num, t_list **list_head, char *command)
+_Bool	ft_make_lnode(t_lexer_helper *helper, char *command)
 {
 	t_lexer	*lexer_node;
 	t_list	*new;
 
-	if (start == i)
-		return ;
+	if (helper->start == helper->i)
+		return (0);
 	lexer_node = (t_lexer *)malloc(sizeof(t_lexer));
 	if (lexer_node == NULL)
-		return ;
-	lexer_node->word = ft_substr(command, start, i - start);
-	lexer_node->type = prev_wt;
-	lexer_node->exec_num = exec_num;
+		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
+	lexer_node->word = ft_substr(command, helper->start, helper->i - helper->start);
+	lexer_node->type = helper->prev_wt;
+	lexer_node->exec_num = helper->exec_num;
 	new = ft_lstnew(lexer_node);
 	if (new == NULL)
-		return ;
-	ft_lstadd_back(list_head, new);
+		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
+	ft_lstadd_back(&(helper->list_head), new);
+	return (0);
+}
+
+void	ft_init_lexer_helper(t_lexer_helper *helper, char *command)
+{
+	helper->i = 0;
+	helper->exec_num = 0;
+	helper->prev_wt = WORD;
+	helper->list_head = NULL;
+	ft_skip_spaces(command + helper->i, &(helper->i));
+	helper->start = helper->i;
+}
+
+_Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command)
+{
+	if (ft_make_lnode(helper, command) == 1)
+		return (1);
+	helper->prev_wt = WORD;
+	ft_skip_spaces(command + helper->i, &(helper->i));
+	if (helper->prev_wt != WORD)
+		if (ft_check_word_first_letter(command[helper->i], helper->list_head) == 1)
+			return (1);
+	helper->start = helper->i;
+	return (0);
+}
+
+_Bool	ft_handle_lexer_new_command(t_lexer_helper *helper, char *command)
+{
+	if (ft_make_lnode(helper, command) == 1)
+		return (1);
+	helper->exec_num++;
+	helper->i++;
+	ft_skip_spaces(command + helper->i, &(helper->i));
+	if (!(isalnum(command[helper->i]) || ft_is_redirsign(command[helper->i]))) //for this case: cat asd | | >of1
+		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), ft_free_lexer(helper->list_head), 1);
+	helper->start = helper->i;
+	helper->prev_wt = WORD;
+	return (0);
+}
+
+_Bool	ft_handle_lexer_redir(t_lexer_helper *helper, char *command)
+{
+	if (ft_make_lnode(helper, command) == 1)
+		return (1);
+			
+	helper->prev_wt = REDIRECTION;
+	if (command[helper->i + 1] == '>')
+	{
+		helper->prev_wt = DOUBLE_REDIRECTION;
+		helper->i++;
+	}
+	helper->i++;
+	ft_skip_spaces(command + helper->i, &(helper->i));
+	
+	if (helper->prev_wt != WORD)
+	{
+		if (ft_check_word_first_letter(command[helper->i], helper->list_head) == 1)//for this case: cat asd > >of1
+			return (NULL);
+	}
+	helper->start = helper->i;
+	return (0);
+}
+
+_Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command)
+{
+	if (ft_make_lnode(helper, command) == 1)
+		return (1);
+	helper->prev_wt = INPUT;
+	if (command[helper->i + 1] == '<')
+	{
+		helper->prev_wt = HEREDOC;
+		helper->i++;
+	}
+	helper->i++;
+	ft_skip_spaces(command + helper->i, &(helper->i));
+	if (helper->prev_wt != WORD && helper->prev_wt != HEREDOC)
+	{
+		if (ft_check_word_first_letter(command[helper->i], helper->list_head) == 1)
+			return (1);
+	}
+	helper->start = helper->i;
+	return (0);
 }
 
 t_list	*ft_lexer(char *command)
 {
-	t_list	*list_head;
-	int		i;
-	int		start;
-	int		exec_num;
+	t_lexer_helper	helper;
 
-	i = 0;
-	exec_num = 0;
-	WordTyp	prev_wt = WORD;
-	list_head = NULL;
-	ft_skip_spaces(command + i, &i);
-	start = i;
-	if (command[i] == '|')
+	ft_init_lexer_helper(&helper, command);
+	if (command[helper.i] == '|')
+		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), NULL);
+	while (command[helper.i])
 	{
-		ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2);
-		return (NULL);
-	}
-	while (command[i])
-	{
-		if (command[i] == ' ')	//a word ends with a space or a redirection sign
+		if (command[helper.i] == ' ')	//a word ends with a space or a redirection sign
 		{
-			ft_make_lnode(start, i, prev_wt, exec_num, &list_head, command);
-			prev_wt = WORD;
-			ft_skip_spaces(command + i, &i);
-			if (prev_wt != WORD)
-			{
-				if (ft_check_word_first_letter(command[i], list_head) == 1)
-					return (NULL);
-			}
-			start = i;
-		}
-		else if (command[i] == '|')
-		{
-			ft_make_lnode(start, i, prev_wt, exec_num, &list_head, command);
-			exec_num++;
-			i++;
-			ft_skip_spaces(command + i, &i);
-			if (!(isalnum(command[i]) || ft_is_redirsign(command[i]))) //for this case: cat asd | | >of1
-			{
-				ft_putstr_fd("Error: syntax error here:", 2);
-				ft_putchar_fd(command[i], 2);
-				ft_putstr_fd("'\n", 2);
-				ft_free_lexer(list_head);
+			if (ft_handle_lexer_word(&helper, command) == 1)
 				return (NULL);
-			}
-			start = i;
-			prev_wt = WORD;
 		}
-		else if (command[i] == '>' )	//we alreaady know that it doesnt end with a redir char
+		else if (command[helper.i] == '|')
 		{
-			ft_make_lnode(start, i, prev_wt, exec_num, &list_head, command);
-			
-			prev_wt = REDIRECTION;
-			if (command[i + 1] == '>')
-			{
-				prev_wt = DOUBLE_REDIRECTION;
-				i++;
-			}
-			i++;
-			ft_skip_spaces(command + i, &i);
-			
-			if (prev_wt != WORD)
-			{
-				if (ft_check_word_first_letter(command[i], list_head) == 1)//for this case: cat asd > >of1
-					return (NULL);
-			}
-			start = i;
+			if (ft_handle_lexer_new_command(&helper, command) == 1)
+				return (NULL);
 		}
-		else if (command[i] == '<')
+		else if (command[helper.i] == '>' )	//we alreaady know that it doesnt end with a redir char
 		{
-			ft_make_lnode(start, i, prev_wt, exec_num, &list_head, command);
-
-			prev_wt = INPUT;
-			if (command[i + 1] == '<')
-			{
-				prev_wt = HEREDOC;
-				i++;
-			}
-			i++;
-			ft_skip_spaces(command + i, &i);
-			if (prev_wt != WORD && prev_wt != HEREDOC)
-			{
-				if (ft_check_word_first_letter(command[i], list_head) == 1)
-					return (NULL);
-			}
-			start = i;
+			if (ft_handle_lexer_redir(&helper, command) == 1)
+				return (NULL);
 		}
-		else if (command[i] == '\'' || command[i] == '\"')
+		else if (command[helper.i] == '<')
 		{
-			ft_skip_to_closing_quote(command, &i, command[i]);
-			i++;
+			if (ft_handle_lexer_input(&helper, command) == 1)
+				return (NULL);
+		}
+		else if (command[helper.i] == '\'' || command[helper.i] == '\"')
+		{
+			ft_skip_to_closing_quote(command, &(helper.i), command[helper.i]);
+			helper.i++;
 		}
 		else
-			i++;
+			helper.i++;
 	}
-	if (start != i)
-	{
-		ft_make_lnode(start, i, prev_wt, exec_num, &list_head, command);
-	}
-	if (ft_check_for_empty_command(list_head) == 1)
-		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'", 2), ft_free_lexer(list_head), NULL);
-	
-	return (list_head);
+	if (helper.start != helper.i)
+		ft_make_lnode(&helper, command);
+	if (ft_check_for_empty_command(helper.list_head) == 1)
+		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'", 2), ft_free_lexer(helper.list_head), NULL);
+	return (helper.list_head);
 }

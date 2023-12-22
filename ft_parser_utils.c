@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/18 15:17:00 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 11:22:30 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,41 +99,35 @@ void	ft_find_cmd_path(char **cmd)
 	{}
 }
 
-void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, WordTyp	type)
+void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp	type)
 {
-	char	*outfile_name;
+	//char	*outfile_name;
 
-	outfile_name = ft_strdup(lexed_item->word);
+	//outfile_name = ft_strdup(lexed_item->word);
 	if ((*parser_node)->fd_out != -1)	// if there is already an outfile, close it
 		close ((*parser_node)->fd_out);
-	if (outfile_name == NULL)
-	{
-		perror("Malloc failed");
-		*error = 1;
-		return ;
-	}
-	if (access(outfile_name, F_OK) != -1)	//file exists
+	/*if (outfile_name == NULL)
+		if ((*error = 1), perror("Malloc failed"), 1) return;*/
+	if (access(lexed_item->word, F_OK) != -1)	//file exists
 	{
 		if (type == REDIRECTION)
-			(*parser_node)->fd_out = open(outfile_name, O_WRONLY | O_TRUNC);	//truncate the file
+			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_TRUNC);	//truncate the file
 		else if (type == DOUBLE_REDIRECTION)
-			(*parser_node)->fd_out = open(outfile_name, O_WRONLY | O_APPEND);	//append to the file
+			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_APPEND);	//append to the file
 	}
 	else
 	{
 		if (type == REDIRECTION)
-			(*parser_node)->fd_out = open(outfile_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (type == DOUBLE_REDIRECTION)
-			(*parser_node)->fd_out = open(outfile_name, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	}
-	
 	if ((*parser_node)->fd_out == -1)
 	{
 		(*parser_node)->exit_code = 1;
-		ft_perror_and_free(outfile_name);
+		ft_perror_and_free(lexed_item->word);
 	}
-	free(outfile_name);
-
+	//free(outfile_name);
 }
 
 void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error)
@@ -226,8 +220,6 @@ char	*ft_get_env_value(t_list *env, char *var_name)
 	char	*env_var;
 
 	i = 0;
-	//TODO: $?
-	
 	while (var_name[i] && var_name[i] != '=')
 		i++;
 	env_name = ft_substr(var_name, 0, i);
@@ -254,18 +246,14 @@ char	*ft_get_path(t_list **env, char *cmd)
 	int		i;
 
 	if (ft_is_builtin(cmd))
-	{
-		cmd = "BUILTIN";
-		return (cmd);
-	}
+		return (cmd = "BUILTIN", cmd);
 	path = ft_get_env_value(*env, "PATH");
-	if (path == NULL)
-		return (NULL);
 	path_dirs = ft_split(path, ':');
+	free(path);
 	if (path_dirs == NULL)
 		return (NULL);
-	i = 0;
-	while (path_dirs[i])
+	i = -1;
+	while (path_dirs[++i])
 	{
 		cmd_path = ft_strjoin(path_dirs[i], "/");
 		cmd_path = ft_strjoin_free(cmd_path, cmd);
@@ -275,49 +263,53 @@ char	*ft_get_path(t_list **env, char *cmd)
 			return (cmd_path);
 		}
 		free(cmd_path);
-		i++;
 	}
-	ft_free_array(path_dirs);
-	return (NULL);
-
+	return (ft_free_array(path_dirs), NULL);
 }
 
-void	ft_handle_word(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, _Bool *prev_was_word, t_list **env_copy)
-{
 	
-	//handle absoulte and relative path, jani/ls is wrong, ls is correct, /user/bin/ls is correct
-	//the first WORD is the program name, every other word in order vecomes a parameter
-	//if the command (first WORD) doesnt exist or wrong path if given by /, then set exit_error to 1
+//handle absoulte and relative path, jani/ls is wrong, ls is correct, /user/bin/ls is correct
+//the first WORD is the program name, every other word in order vecomes a parameter
+//if the command (first WORD) doesnt exist or wrong path if given by /, then set exit_error to 1
 
+void	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
+{
+	(*parser_node)->cmd_path = ft_strdup(lexed_item->word);
+	(*parser_node)->cmd_args[0] = ft_get_cmd_name(lexed_item->word);
+	if (ft_is_builtin((*parser_node)->cmd_args[0]))
+	{
+		free ((*parser_node)->cmd_path);
+		(*parser_node)->cmd_path = "BUILTIN";
+	}
+}
+
+/*void	ft_set_error_code_empty_arg(t_parser **parser_node)
+{
+	char	*ec;
+	ec = ft_itoa(exit_code);
+
+	if ((*parser_node)->cmd_args[1] == NULL)
+		(*parser_node)->cmd_args = ft_realloc_array((*parser_node)->cmd_args, );
+
+
+}*/
+
+_Bool	ft_handle_word(t_parser **parser_node, t_lexer *lexed_item, _Bool *prev_was_word, t_list **env_copy)
+{
 	if (*prev_was_word == 0)
 	{
 		(*parser_node)->cmd_args = (char **)malloc(sizeof(char *) * 2);
 		if ((*parser_node)->cmd_args == NULL)
-		{
-			*error = 1;
-			return ;
-		}
+			return (perror("Malloc failed"), 1);
 		if (ft_strchr(lexed_item->word, '/') != NULL)	// "/usr/bin/grep"
-		{
-			(*parser_node)->cmd_path = ft_strdup(lexed_item->word);
-			(*parser_node)->cmd_args[0] = ft_get_cmd_name(lexed_item->word);
-			if (ft_is_builtin((*parser_node)->cmd_args[0]))
-			{
-				free ((*parser_node)->cmd_path);
-				(*parser_node)->cmd_path = "BUILTIN";
-			}
-		}
+			ft_handle_absolute_command(parser_node, lexed_item);
 		else	// "grep"
 		{
 			(*parser_node)->cmd_path = ft_get_path(env_copy, lexed_item->word);
 			(*parser_node)->cmd_args[0] = ft_strdup(lexed_item->word);
 		}
-		
 		if ((*parser_node)->cmd_args[0] == NULL)
-		{
-			*error = 1;
-			return ;
-		}
+			return (perror("Malloc failed"), 1);
 		(*parser_node)->cmd_args[1] = NULL;
 		*prev_was_word = 1;
 	}
@@ -325,11 +317,10 @@ void	ft_handle_word(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, _
 	{
 		(*parser_node)->cmd_args = ft_realloc_array((*parser_node)->cmd_args, lexed_item->word);
 		if ((*parser_node)->cmd_args == NULL)
-		{
-			*error = 1;
-			return ;
-		}
+			return (perror("Malloc failed"), 1);
 	}
+	//ft_set_error_code_empty_arg(parser_node);
+	return (0);
 }
 
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error)
@@ -343,21 +334,15 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error)
 	{
 		delim = ft_substr(lexed_item->word, 1, ft_strlen(lexed_item->word) - 2);
 		if (delim == NULL)
-		{
-			*error = 1;
-			return ;
-		}
+			if ((*error = 1), perror("Malloc failed"), 1) return;
 	}
 	else
-	{
 		delim = ft_strdup(lexed_item->word);
-	}
 	while (1)
 	{
 		tmp = readline("> ");
 		if (ft_strcmp(delim, tmp) == 0)
 			break ;
-		
 		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, tmp);
 		(*parser_node)->heredoc = ft_strjoin((*parser_node)->heredoc, "\n");
 		free(tmp);

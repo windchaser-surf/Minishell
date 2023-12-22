@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/19 13:01:34 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 11:00:12 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,37 +46,38 @@ char	*ft_get_var_value(char *var_name, char *str, int *i, t_list **env_copy)	//0
 {
 	char 	*var_value;
 	//int		j;
-	//int		subvar_size;
-	//char	*subvar_name;
 	(void)str;
 	(void)i;
 	(void)env_copy;
 
-	//subvar_size = 0;
 	//2. getting the variable value
 	var_value = ft_get_env_value(*env_copy, var_name);
 	//j = 0;
-	/*while (ft_strchr(var_value, '$') != NULL)	//there is another variable ato be expanded
-	{	//todo
-		while (var_value[j] != '$')
-			j++;
-		j++;
-		while (var_value[j + subvar_size] && (ft_isalnum(var_value[j + subvar_size]) || var_value[j + subvar_size] == '_'))	//example: ab"cd$ef"gh -->var name is "ef"
-			subvar_size++;
-		subvar_name = ft_substr(var_value, (unsigned int)j, (size_t)subvar_size);
-		char *sub_var_value = ft_get_env_value(*env_copy, subvar_name);
-		
-		var_value = ft_strjoin_free(var_value, sub_var_value);
-
-		free(subvar_name);
-		free(sub_var_value);
-		subvar_size = 0;
-	}*/
 	free(var_name);
 	if (!var_value)
 		var_value = ft_strdup("");	//if variable does not exist, then var_value = ""
 
 	return (var_value);
+}
+
+char	*ft_get_var_name(char *str)
+{
+	char	*res;
+	int		j;
+
+	j = 0;
+	res = malloc(sizeof(char) * ft_strlen(&str[j]) + 1);
+	if (!res)
+		return (perror("Malloc failed"), NULL);
+	res[j] = '$';
+	j++;
+	while (str[j] && (ft_isalnum(str[j]) || str[j] == '_'))
+	{
+		res[j] = str[j];
+		j++;
+	}
+	res[j] = '\0';
+	return (res);
 }
 
 char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy)
@@ -99,9 +100,9 @@ char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy)
 	
 	//3. concatenating it to the end of the string and removing the $var_name
 	new_str_original_size = ft_strlen(new_str);
-	tmp = malloc(new_str_original_size + ft_strlen(&str[*i]) + 2);	//update len with the variable value
+	tmp = malloc(new_str_original_size + ft_strlen(&str[*i]) - (vns + 1) + ft_strlen(var_value) + 2);	//update len with the variable value
 	if (!tmp)
-		return NULL;
+		return (perror("Malloc failed"), NULL);
 	ft_strcpy(tmp, new_str);	//copy everything before the $
 	free(new_str);
 	new_str = tmp;
@@ -113,6 +114,26 @@ char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy)
 	return (new_str);
 }
 
+char	*ft_handle_dollar_question_q(char *new_str, int *exit_code, int *i, char *str)
+{
+	char	*tmp;
+	char	*exit_code_str;
+
+	exit_code_str = ft_itoa(*exit_code);
+	tmp = malloc(sizeof(char) * ( ft_strlen(new_str) + ft_strlen(exit_code_str) + ft_strlen(&str[*i + 2]) )); // -1 for the last ", -2 for the $?, +1 for the \0
+	if (!tmp || !exit_code_str)
+		return (perror("Malloc failed"), NULL);
+	ft_strcpy(tmp, new_str);
+	ft_strlcat(tmp, exit_code_str, ft_strlen(new_str) + ft_strlen(exit_code_str) + 1);
+	//ft_strlcat(tmp, str + *i + 2, ft_strlen(tmp) + ft_strlen(&str[*i + 2]) + 1);
+	*i += 2;
+	//*exit_code = 0;
+	free(new_str);
+	free(exit_code_str);
+	new_str = tmp;
+	return (new_str);
+}
+
 char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code)	//from ab"cde"fg"hi" to abcdefghi, and setting i to the position of f
 {
 	char	*new_str;
@@ -120,7 +141,7 @@ char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code)	//fr
 	
 	new_str = malloc(sizeof(char) * ft_strlen(str) - 2 + 1);
 	if(!new_str)
-		return NULL;
+		return (perror("Malloc failed"), NULL);
 	ft_strncpy(new_str, str, (size_t)*i);	//copy everything before the quote
 	new_str[*i] = '\0';
 	
@@ -132,14 +153,15 @@ char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code)	//fr
 		{
 			if (str[(*i) + 1] == '?')
 			{
-				char *exit_code_str = ft_itoa(exit_code);
+				new_str = ft_handle_dollar_question_q(new_str, &exit_code, i, str);
+				/*char *exit_code_str = ft_itoa(exit_code);
 				ft_strlcat(new_str, exit_code_str, ft_strlen(new_str) + ft_strlen(exit_code_str) + 1);
 				free(exit_code_str);
-				(*i) += 1;
+				(*i) += 1;*/
 			}
 			else
 				new_str = ft_expand_variable(new_str, i, str, env_copy);	//it expands and attaches to the end of the string
-			new_str = ft_expand_variable(new_str, i, str, env_copy);	//it expands and attaches to the end of the string
+			//new_str = ft_expand_variable(new_str, i, str, env_copy);	//it expands and attaches to the end of the string
 			j = ft_strlen(new_str);
 		}
 		else
@@ -162,58 +184,135 @@ char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code)	//fr
 	return (new_str);
 }
 
-void ft_insert_between(t_list *insertAfter, t_list *newList) {
-    (void)insertAfter;
-	(void)newList;
-	return ;
+void	ft_do_the_swapping(t_list *new_nodes_head, t_list **current_node, t_list **lexed_list_head, t_list *new_current)
+{
+	t_list *tmp;
+	t_list *tmp2;
+	
+	tmp = *lexed_list_head;
+	if (tmp == *current_node)
+		*lexed_list_head = new_nodes_head;
+	else
+	{
+		while (tmp->next != *current_node && tmp->next)
+			tmp = tmp->next;
+		tmp->next = new_nodes_head;	
+	}
+	tmp2 = new_nodes_head;
+	while (tmp2->next != new_current && tmp2->next)	//stop one before the last node of the newly created lexed list
+		tmp2 = tmp2->next;
+	if (tmp2->next == NULL && *lexed_list_head == new_nodes_head)
+		*lexed_list_head = *current_node;
+	else if (tmp2->next == NULL)
+		tmp->next = *current_node;
+	else
+		tmp2->next = *current_node;	//make the one before the last node of the newly created lexed list point to the original's next node
+	
 }
 
-void	ft_expand_with_split(t_list **lexed_list_head, t_list **current_node, int *i, t_list **env_copy)
+void	ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_list **current_node, t_list **lexed_list_head, t_lexer *original_lexer_node, int *i)
 {
-	//1.get_var_name
-	//2.get_var_value
-	//if var_value == NULL, then var_value = ""
-	//3.if var value has a space AND not word or heredoc, then ERROR
-	//3.if var value has a space, then split, and insert new t_lexer nodes
-	
-	char	*new_str;
-	t_lexer *actual_lexer_node = (t_lexer *)(*current_node)->content;
-	//int		k;
-	t_list	*tmp;
-	t_list	*new_nodes_head;
-	
-	new_str = malloc(sizeof(char) * ft_strlen(actual_lexer_node->word) + 1);
-	if (!new_str)
-		return ;
-	new_nodes_head = NULL;
-	
-	//copy everything before the quote
-	ft_strncpy(new_str, actual_lexer_node->word, (size_t)*i);	
-	new_str[*i] = '\0';
-	new_str = ft_expand_variable(new_str, i, actual_lexer_node->word, env_copy);
-	if (ft_strchr(new_str, ' ') != NULL)
-	{
-		printf("ERROR: bash: $hd: ambiguous redirect\n");	//TODO: error message
-		return ;
-	}
 
-	new_nodes_head = ft_lexer(new_str);	//including the original, so we need to free that
+	t_list *new_current;
+	t_lexer *new_current_lexer;
+	int j;
 	
 	//make new_nodes_head's last node to point at the original's next node
-	ft_lstlast(new_nodes_head)->next = (*current_node)->next;
+	new_current = ft_lstlast(new_nodes_head);
+	new_current_lexer = (t_lexer *)new_current->content;
 	
-	//make the previous node point to the new_nodes_head
-	tmp = *lexed_list_head;
-	while (tmp->next != *current_node)
-		tmp = tmp->next;
-	tmp->next = new_nodes_head;
+	int original_word_len = ft_strlen(new_current_lexer->word);	//the length of the last node's word before realloc
+	char *tmp_word = malloc(sizeof(char) * (ft_strlen(new_current_lexer->word) + ft_strlen(&original_lexer_node->word[*i]) + 1));
+	if (!tmp_word)
+		return ;
+	ft_strcpy(tmp_word, new_current_lexer->word);	//copy the last new lexed node's word into the temp
+	free(new_current_lexer->word);
+	new_current_lexer->word = tmp_word;
 	
-	//free actual node and make the pervious "next" point to the new_nodes_head
-	free(actual_lexer_node->word);
-	free((*current_node)->content);
-	free(*current_node);
-	///TODO
+	j = original_word_len;
+	int tmp_i = *i;
+	while (original_lexer_node->word[tmp_i])
+	{
+		new_current_lexer->word[j] = original_lexer_node->word[tmp_i];
+		tmp_i++;
+		j++;
+	}
+	new_current_lexer->word[j] = '\0';
+
+	ft_do_the_swapping(new_nodes_head, current_node, lexed_list_head, new_current);
+	//make the node before the current_node point to the new_nodes_head
+
+	free(original_lexer_node->word);
+	original_lexer_node->word = new_current_lexer->word;
+
+	free(new_current->content);
+	free(new_current);
+	ft_print_lexer_list(*lexed_list_head);
+	*i = original_word_len;
+}
+
+void	ft_print_ambig_redir(char *var_name)
+{
+	ft_putstr_fd("Minishell: ", 2);
+	ft_putstr_fd(var_name, 2);
+	ft_putstr_fd(": ambiguous redirect\n", 2);
+}
+
+char	*ft_handle_dollar_question(char *new_str, int *exit_code, int *i, char *str)
+{
+	char	*tmp;
+	char	*exit_code_str;
+
+	exit_code_str = ft_itoa(*exit_code);
+	int asd = ft_strlen(new_str) + ft_strlen(exit_code_str) + ft_strlen(&str[*i + 2]) + 1;
+	tmp = malloc(sizeof(char) * (ft_strlen(new_str) + ft_strlen(exit_code_str) + ft_strlen(&str[*i + 2]) + 1));
+	(void)asd;
+	if (!tmp || !exit_code_str)
+		return (perror("Malloc failed"), NULL);
+	ft_strcpy(tmp, new_str);
+	ft_strlcat(tmp, exit_code_str, ft_strlen(new_str) + ft_strlen(exit_code_str) + 1);
+	ft_strlcat(tmp, str + *i + 2, ft_strlen(tmp) + ft_strlen(&str[*i + 2]) + 1);
+	*i += ft_strlen(exit_code_str);
+	//*exit_code = 0;
+	free(new_str);
+	free(exit_code_str);
+	new_str = tmp;
+	return (new_str);
+}
+
+char	*ft_expand_with_split(t_list **lexed_list_head, t_list **current_node, int *i, t_list **env_copy, int *exit_code)
+{
+	char	*new_str;
+	t_lexer *orig_lex_node;
+	t_list	*new_nodes_head;
+
+	orig_lex_node  = (t_lexer *)(*current_node)->content;	//we are in this one, only in this
+	if (orig_lex_node->word[*i + 1] == '\0' || orig_lex_node->word[*i + 1] == '$')	//if it is the last char or another $, then it is not a variable, so we return
+		return ((*i)++, orig_lex_node->word);
+	new_str = malloc(sizeof(char) * ft_strlen(orig_lex_node->word) + 1);
+	if (!new_str)
+		return (perror("Malloc failed"), NULL);
+	new_nodes_head = NULL;
 	
+	//copy everything before the $ sign
+	ft_strncpy(new_str, orig_lex_node->word, (size_t)*i);	
+	new_str[*i] = '\0';
+	if (orig_lex_node->word[(*i) + 1] == '?')
+		return (ft_handle_dollar_question(new_str, exit_code, i, orig_lex_node->word));
+	new_str = ft_expand_variable(new_str, i, orig_lex_node->word, env_copy);
+	if (!new_str[0])
+		return (free(orig_lex_node->word), *i = 0, new_str);
+	if (ft_strchr(new_str, ' ') != NULL && orig_lex_node->type != WORD && orig_lex_node->type != HEREDOC)
+		return (ft_print_ambig_redir(ft_get_var_name(orig_lex_node->word)), *exit_code = 1, NULL);
+	
+	//create the new lexed list's nodes based on the actual new_str (without the rest after the $)
+	new_nodes_head = ft_lexer(new_str);	//including the original, so we need to free that
+	
+	free(new_str);
+	//get the the last node of the new lexed list
+
+	ft_insert_new_lexed_nodes(new_nodes_head, current_node, lexed_list_head, orig_lex_node, i);
+	return (orig_lex_node->word);
 }
 
 void	ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
@@ -227,29 +326,22 @@ void	ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 	{
 		lexer_node = (t_lexer *)tmp->content;
 		i = 0;
-		if (lexer_node->type != HEREDOC)	//make shorter with only one while without if
+		while (lexer_node->word[i] && lexer_node->type != HEREDOC)
 		{
-			while (lexer_node->word[i])
+			if (lexer_node->word[i] == '\'')
+				lexer_node->word = ft_remove_quote(lexer_node->word, &i, '\'');	//no expand, no split | abc'a$b'c --> abcabc, i was 3, now 5
+			else if (lexer_node->word[i] == '\"')
+				lexer_node->word = ft_expand_dquote(lexer_node->word, &i, env_copy, exit_code);	//expand, no split | abc"a$b"c --> abcabc, i was 3, now 3
+			else if (lexer_node->word[i] == '$')	//expand, split | insert another lexer_node if needed | abc$a
+				lexer_node->word = ft_expand_with_split(lexed_list ,&tmp, &i, env_copy, &exit_code);
+			else
+				i++;
+			if (!lexer_node->word)
 			{
-				if (lexer_node->word[i] == '\'')
-				{
-					lexer_node->word = ft_remove_quote(lexer_node->word, &i, '\'');	//no expand, no split | abc'a$b'c --> abcabc, i was 3, now 5
-				}
-				else if (lexer_node->word[i] == '\"')
-				{
-					lexer_node->word = ft_expand_dquote(lexer_node->word, &i, env_copy, exit_code);	//expand, no split | abc"a$b"c --> abcabc, i was 3, now 3
-					
-				}
-				else if (lexer_node->word[i] == '$')	//expand, split | insert another lexer_node if needed | abc$a
-				{
-					//if has space (splitable) AND not word or heredoc, then error: bash: $hd: ambiguous redirect
-					ft_expand_with_split(lexed_list ,&tmp, &i, env_copy);	
-				}
-				else
-					i++;
+				ft_free_lexer(*lexed_list);
+				return ;
 			}
 		}
-		printf("word: %s\n", lexer_node->word);
 		tmp = tmp->next;
 	}
 }

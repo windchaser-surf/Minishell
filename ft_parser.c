@@ -3,71 +3,72 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/15 16:40:47 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/21 21:22:42 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+void	ft_init_parser_helper_struct(t_parser_helper *helper)
+{
+	helper->error = 0;
+	helper->ith_command = -1;
+	helper->list_head = NULL;
+	helper->new = NULL;
+	helper->parser_node = NULL;
+}
+
+_Bool	ft_create_new_command(t_parser_helper *helper)
+{
+	if (helper->ith_command != -1)
+	{
+		helper->new = ft_lstnew(helper->parser_node);
+		if (helper->new == NULL)
+			return (ft_free_parser(helper->list_head), perror("Malloc failed"), 1);
+		ft_lstadd_back(&(helper->list_head), helper->new);
+	}
+	helper->parser_node = (t_parser *)malloc(sizeof(t_parser));
+	if (helper->parser_node == NULL)
+		return (ft_free_parser(helper->list_head), perror("Malloc failed"), 1);
+	ft_init_parser_node(&(helper->parser_node));
+	helper->ith_command = helper->lexed_item->exec_num;
+	helper->prev_was_word = 0;
+	return (0);
+}
+
 t_list	*ft_parser(t_list *lexed_list, t_list **env_copy)
 {
-	t_list		*list_head;
-	t_list		*new;
+	t_parser_helper	helper;
 
-	t_parser	*parser_node;
-	t_lexer		*lexed_item;
-	int			ith_command;
-	_Bool		error;
-	_Bool		prev_was_word;
-
-	error = 0;
-	ith_command = -1;
-	list_head = NULL;
-	new = NULL;
-	parser_node = NULL;
+	ft_init_parser_helper_struct(&helper);
 	if (lexed_list == NULL)
 		return (NULL);
 	while (lexed_list)
 	{
-		lexed_item = lexed_list->content;
-		if (lexed_item->exec_num > ith_command)
+		helper.lexed_item = lexed_list->content;
+		if (helper.lexed_item->exec_num > helper.ith_command)
 		{
-			if (ith_command != -1)
-			{
-				new = ft_lstnew(parser_node);
-				if (new == NULL)
-					return (ft_free_parser(list_head), NULL);
-				ft_lstadd_back(&list_head, new);
-			}
-			parser_node = (t_parser *)malloc(sizeof(t_parser));
-			if (parser_node == NULL)
-				return (ft_free_parser(list_head), NULL);
-			ft_init_parser_node(&parser_node);
-			ith_command = lexed_item->exec_num;
-			prev_was_word = 0;
+			if (ft_create_new_command(&helper) == 1)
+				return (NULL);
 		}
-		if (lexed_item->type == REDIRECTION)
-			ft_handle_redirs(&parser_node, lexed_item, &error, lexed_item->type);
-		else if (lexed_item->type == DOUBLE_REDIRECTION)
-			ft_handle_redirs(&parser_node, lexed_item, &error, lexed_item->type);
-		else if (lexed_item->type == INPUT)
-			ft_handle_input(&parser_node, lexed_item, &error);
-		else if (lexed_item->type == HEREDOC)
-			ft_handle_heredoc(&parser_node, lexed_item, &error);
-		else if (lexed_item->type == WORD)
-			ft_handle_word(&parser_node, lexed_item, &error, &prev_was_word, env_copy);
-		else
-			printf("Error: unknown type\n");
-		if (error)
-			return (ft_free_parser(list_head), NULL);
+		if (helper.lexed_item->type == REDIRECTION || helper.lexed_item->type == DOUBLE_REDIRECTION)
+			ft_handle_redirs(&(helper.parser_node), helper.lexed_item, helper.lexed_item->type);
+		else if (helper.lexed_item->type == INPUT)
+			ft_handle_input(&(helper.parser_node), helper.lexed_item, &(helper.error));
+		else if (helper.lexed_item->type == HEREDOC)
+			ft_handle_heredoc(&(helper.parser_node), helper.lexed_item, &(helper.error));
+		else if (helper.lexed_item->type == WORD)
+			helper.error = ft_handle_word(&(helper.parser_node), helper.lexed_item, &(helper.prev_was_word), env_copy);
+		if (helper.error)
+			return (ft_free_parser(helper.list_head), NULL);
 		lexed_list = lexed_list->next;
 	}
-	new = ft_lstnew(parser_node);
-	if (new == NULL)
-		return (ft_free_parser(list_head) ,NULL);
-	ft_lstadd_back(&list_head, new);
-	return (list_head);
+	helper.new = ft_lstnew(helper.parser_node);
+	if (helper.new == NULL)
+		return (ft_free_parser(helper.list_head), perror("Malloc failed"), NULL);
+	ft_lstadd_back(&(helper.list_head), helper.new);
+	return (helper.list_head);
 }
