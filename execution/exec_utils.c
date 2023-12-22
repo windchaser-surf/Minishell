@@ -1,37 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   echo.c                                             :+:      :+:    :+:   */
+/*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/29 10:17:32 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/19 17:53:40 by fwechsle         ###   ########.fr       */
+/*   Created: 2023/12/20 13:21:35 by fwechsle          #+#    #+#             */
+/*   Updated: 2023/12/20 13:23:17 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int    ft_echo_builtin(char **arg)
+void	dup_heredoc(t_parser *command)
 {
-	int i; 
-	int option;
+	int tmp_pipe[2];
 
-	option = 0;
-	i = 1;
-	if (!ft_strncmp(arg[1], "-n", 3))
+	if (pipe(tmp_pipe) == -1)
 	{
-		option = 1;
-		i++;
-	}
-	while (arg[i])
+		perror("pipe: ");
+		exit(EXIT_FAILURE);
+	}			
+	write(tmp_pipe[1], command->heredoc, ft_strlen(command->heredoc));
+	close(tmp_pipe[1]);
+	if (dup2(tmp_pipe[0], 0) == -1)
 	{
-		ft_putstr_fd(arg[i], 1);
-		if (arg[i + 1] != NULL)
-			write(1, " ", 1);
-		i++;
+		perror("dup2: ");
+		close(tmp_pipe[0]);
+		close(tmp_pipe[1]);
+		ft_file_closer_single(command);
+		exit(EXIT_FAILURE);
 	}
-	if (option == 0)
-		write(1, "\n", 1);
-	return (EXIT_SUCCESS);
+	close (tmp_pipe[0]);	
 }

@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 21:07:03 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 21:18:04 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,8 @@ int main(int argc, char **argv, char **envp)
 		/*if (!parsed_list)
 			continue ;*/
 		//exit_code = ((t_parser *)(ft_lstlast(parsed_list)->content))->exit_code;
-		ft_print_parser_list(&parsed_list);
-		exit_code = execution_main(parsed_list, env_copy);
+		//ft_print_parser_list(&parsed_list);
+		exit_code = execution_main(parsed_list, env_copy, exit_code);
 
 		// execution();
 		//close the open fd-s

@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 20:29:57 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 21:20:49 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,7 +241,7 @@ void	ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_list **current_node, t_
 
 	free(new_current->content);
 	free(new_current);
-	ft_print_lexer_list(*lexed_list_head);
+	//ft_print_lexer_list(*lexed_list_head);
 	*i = original_word_len;
 }
 

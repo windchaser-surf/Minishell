@@ -3,216 +3,130 @@
 /*                                                        :::      ::::::::   */
 /*   exec1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 11:17:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/18 12:34:54 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/22 17:42:55 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int exec_builtins(t_parser *command, t_list **env_copy)
+int exec_builtins(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens)
 {
 		if (command->fd_in != -1)
+		{
 			close (command->fd_in);
+			command->fd_in = -1;
+		}
 		if (command->fd_out != -1)
 		{
 			command->fd_in = dup(STDOUT_FILENO);
 			dup2(command->fd_out, 1);
 			close(command->fd_out);
 		}
-		return(run_builtins(command, env_copy));
-		
+		return(run_builtins_parent(command, env_copy, exit_code, tokens));
 }
 
-int	child_process(t_parser *command, t_pipex *data, t_list **env_copy)
+void	ft_file_closer_single(t_parser *command)
+{
+	if (command->fd_in != -1)
+		close (command->fd_in);
+	if (command->fd_out != -1)
+		close (command->fd_out);
+}
+ 
+int	child_process(t_parser *command, t_list **env_copy)
 {
 	if (command->heredoc)
-	{	
-				//PROTECTION everything!!!
-		data->p = (int *)malloc(sizeof(int) * 2);
-		pipe(data->p);				
-		write(data->p[1], command->heredoc, ft_strlen(command->heredoc));
-		close(data->p[1]);
-		dup2(data->p[0], 0);
-		close (data->p[0]);
-		free(data->p);
-	}
+		dup_heredoc(command);
 	else if (command->fd_in != -1)
 	{
-		dup2(command->fd_in, 0);
-		close(command->fd_in);
+		if (dup2(command->fd_in, 0) == -1)
+		{
+			perror("dup2: ");
+			ft_file_closer_single(command);
+			exit(EXIT_FAILURE);
+		}
 	}
 	if (command->fd_out != -1)
 	{
-		dup2(command->fd_out, 1);
-		close(command->fd_out);
+		if (dup2(command->fd_out, 1) == -1)
+		{
+			perror("dup2: ");
+			ft_file_closer_single(command);
+			exit(EXIT_FAILURE);
+		}
 	}
-	execution(command, env_copy);
-		 //EXIT CODE!
+	ft_file_closer_single(command);
+	execution(command, *env_copy);
 	return (EXIT_SUCCESS);
 }
 
+int	cmd_path_NULL(t_parser *command)
+{
+	char *tmp;
+	
+	if (command->cmd_args == NULL)
+	{
+		ft_file_closer_single(command);
+		return (EXIT_SUCCESS);
+	}
+	tmp = ft_strjoin(command->cmd_args[0], ": command not found\n");
+	if (tmp == NULL)
+	{
+		perror("malloc: ");
+		ft_file_closer_single(command);
+		return (MALLOC_ERR);
+	}
+	ft_putstr_fd(tmp, STDERR_FILENO);
+	if (tmp != NULL)
+		free(tmp);
+	ft_file_closer_single(command);
+	return (CMD_NOT_FOUND);
+}
 
-
-int    one_execution(t_parser *command, t_list **env_copy) //file_name later from list
+int exec_path(t_parser *command, t_list **env_copy)
 {
 	t_pipex data;
 	int status;
-	status = 0;
-	if (check_builtin(command->cmd_args[0]))
-		return (exec_builtins(command, env_copy));
-	else if (command->cmd_path == NULL)
-	{
-		//print error msg!! 
-		return (CMD_NOT_FOUND);
-	}
-	else 
-	{
-		data.pid=(int *)malloc(sizeof(int));
-		//PROTECTION
-		data.pid[0] = fork();
-		if (data.pid[0] == -1)
-		{
-			perror(command->cmd_args[0]);
-			return (EXIT_FAILURE);
-		}    
-		if (data.pid[0] == 0)
-			child_process(command, &data, env_copy);
-		else
-			waitpid(data.pid[0], &status, 0);
-		status = WEXITSTATUS(status);
-		return (status);
-	}
-}
-
-void	ft_pipe_closer(t_pipex *data)
-{
-	int	i; 
-
-	i = 0;
-	while (i < (data->nbr_p * 2))
-	{
-		close(data->p[i]);
-		i++;
-	}
-	
-}
-
-int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, int n)
-{
-	int	tmp_pipe[2];
-	data->pid[n] = fork();
-
-	if (data->pid[n] == 0)
-	{
-		if (command->heredoc)
-		{
-					//PROTECTION everything!!!
-			pipe(tmp_pipe);				
-			write(tmp_pipe[1], command->heredoc, ft_strlen(command->heredoc));
-			close(tmp_pipe[1]);
-			dup2(tmp_pipe[0], 0);
-			close (tmp_pipe[0]);
-		}
-		else if (command->fd_in != -1)
-		{
-			dup2(command->fd_in, 0);
-			close(command->fd_in);
-		}
-		else 
-		{
-			if (n != 0)
-				dup2(data->p[(n * 2) - 2], 0);
-
-		}
-		
-		if (command->fd_out != -1)
-		{
-			if (command->cmd_path == NULL)
-				dup2(data->p[(n * 2) - 2], command->fd_out);
-			else
-				dup2(command->fd_out, 1);
-			close(command->fd_out);
-
-		}
-		else 
-		{
-			if (n < data->nbr_p)
-				dup2(data->p[1 + (2 * n)], 1);
-		}
-		ft_pipe_closer(data);
-		if (command->cmd_path == NULL)
-			exit (127);
-		else if (!ft_strncmp(command->cmd_path, "BUILTIN", 8))
-			exit (run_builtins(command, env_copy));
-
-		else 
-			execution(command, env_copy);		
-
-	}
-	return (EXIT_FAILURE);
-}
-
-void    create_pipes(t_pipex *data)
-{
-    int    i;
-
-    i = 0;
-    while (i < data->nbr_p)
-    {
-        pipe(data->p + 2 * i);
-        i++;
-    }
-}
-
-int	n_execution(t_list *tokens, t_list **env_copy)
-{
-	t_pipex data;
-	int		n; 
-	int status;
 	
 	status = 0;
-	n = 0;
-	data.nbr_p = ft_lstsize(tokens) - 1;
-	data.p = (int *)malloc(sizeof(int) * (2*data.nbr_p));
-	//protection
-	create_pipes(&data);
-	//protection
-	data.pid = (int *)malloc(sizeof(int) * ft_lstsize(tokens));
-	while (tokens != NULL)
+	data.pid=(int *)malloc(sizeof(int));
+	if (data.pid == NULL)
 	{
-		n_child_process((t_parser *)(tokens->content), env_copy, &data, n);
-		n++;
-		tokens = tokens->next;
+		perror("malloc: ");
+		return (MALLOC_ERR);
 	}
-	data.n = n;
-	ft_pipe_closer(&data);
-	//waitpid
-	n = 0;
-	while (n < data.n)
+	data.pid[0] = fork();
+	if (data.pid[0] == -1)
 	{
-		waitpid(data.pid[n], &status, 0);
-		
-		n++;
-	}
+		perror(command->cmd_args[0]);
+		return (EXIT_FAILURE);
+	}    
+	if (data.pid[0] == 0)
+		child_process(command, env_copy);
+	else
+		waitpid(data.pid[0], &status, 0);
 	status = WEXITSTATUS(status);
-	//printf("status = %d", status);
+	free(data.pid);
+	ft_file_closer_single(command);
 	return (status);
 }
-//wir müssen noch checken ob wir überhaupt in einen child gehen, ansonsten gehen wir raus!! 
 
-int    execution_main(t_list *tokens, t_list **env_copy)
+int    one_execution(t_parser *command, t_list **env_copy, int exit_code)
 {
-	int p_nbr;
-
-	p_nbr = ft_lstsize(tokens);
-	if (p_nbr == 1 && ((t_parser *)(tokens->content))->exit_code == 0) //lst_size = 1; 
-		return(one_execution((t_parser *)(tokens->content), env_copy)); 
-	else if (p_nbr > 1)
-	 	return (n_execution(tokens, env_copy));
-   /*  else
-		n_execution(arg, env_copy); */
-	return (EXIT_SUCCESS);
+	if (command->exit_code != 0)
+	{
+		ft_file_closer_single(command);
+		return (command->exit_code);
+	}
+	if (command->cmd_path == NULL)
+		return (cmd_path_NULL(command));
+	else if (check_builtin(command->cmd_args[0]))
+		return (exec_builtins(command, env_copy, exit_code, 0));
+	else 
+		return (exec_path(command, env_copy));
 }
+
+

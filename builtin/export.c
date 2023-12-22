@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 12:17:52 by felix             #+#    #+#             */
-/*   Updated: 2023/12/18 12:41:51 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/22 16:09:57 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,18 +110,23 @@ int	print_export(t_list *env_copy)
 	return (EXIT_SUCCESS);
 }
 
+int	err_msg_not_valid(void)
+{
+	ft_putstr_fd("export: Not a valid identifier\n", STDERR_FILENO);
+	return (EXIT_FAILURE);	
+}
+
 int	valid_new_variable(char *cmd)
 {
 	int	i;
 
 	i = 0;
+	if (cmd[0] == '=')
+		return (err_msg_not_valid());
 	while (cmd[i] && cmd[i] != '=')
 	{
-		if (cmd[0] >= '0' && cmd[0] <= '9')
-		{
-			ft_putstr_fd("export: Not a valid identifier\n", STDERR_FILENO);
-			return (EXIT_FAILURE);
-		}
+		if ((cmd[0] >= '0' && cmd[0] <= '9') || cmd[0] == '=')
+			return(err_msg_not_valid());
 		if (cmd[i] >= 'A' && cmd[i] <= 'Z')
 			i++;
 		else if (cmd[i] >= 'a' && cmd[i] <= 'z')
@@ -131,10 +136,7 @@ int	valid_new_variable(char *cmd)
 		else if (cmd[i] == '_')
 			i++;
 		else
-		{
-			ft_putstr_fd("export: Not a valid identifier\n", STDERR_FILENO);
-			return (EXIT_FAILURE);
-		}
+			return(err_msg_not_valid());
 	}
 	return (EXIT_SUCCESS);
 }
@@ -148,7 +150,7 @@ int	check_exist(char *var, t_list *env_copy)
 		i++;
 	while (env_copy)
 	{
-		if (!ft_strncmp(env_copy->content, var, i))
+		if (!ft_strncmp(env_copy->content, var, i + 1))
 			return (1);
 		env_copy = env_copy->next;
 	}
@@ -166,7 +168,7 @@ int	set_value_env(char *cmd, t_list *env_copy)
 		return (EXIT_SUCCESS);
 	while (env_copy)
 	{
-		if (!ft_strncmp(env_copy->content, cmd, i))
+		if (!ft_strncmp(env_copy->content, cmd, i + 1))
 		{
 			free(env_copy->content);
 			env_copy->content = ft_strdup(cmd);
@@ -182,24 +184,35 @@ int	set_value_env(char *cmd, t_list *env_copy)
 }
 //Before adding a new list element, needs to check if there is already this var! 
 //if it exist => change the value! 
-int	export_builtin(char *cmd, t_list **env_copy)
+int	export_builtin(char **cmd, t_list **env_copy)
 {
-	if (cmd == NULL)
+	int i;
+	int check2; 
+
+	check2 = 0;
+	i = 1; 
+	if (cmd[i] == NULL)
 		return(print_export(*env_copy));
-	else if (!valid_new_variable(cmd))
+	while (cmd[i])
 	{
-		if(!check_exist(cmd, *env_copy))
-			ft_lstadd_back(&*env_copy, ft_lstnew((char *)ft_strdup(cmd))); //malloc protection? 
-		else 
-			return(set_value_env(cmd, *env_copy));
-	}
-	else 
+		if (!valid_new_variable(cmd[i]))
+		{
+			if(!check_exist(cmd[i], *env_copy))
+				ft_lstadd_back(&*env_copy, ft_lstnew((char *)ft_strdup(cmd[i]))); //malloc protection? 
+			else 
+				set_value_env(cmd[i], *env_copy);
+		}
+		else
+			check2 = 1;
+		i++;
+	}	
+	if (check2 == 1)
 		return (EXIT_FAILURE);
-	return (EXIT_SUCCESS);
+	else 
+		return (EXIT_SUCCESS);
 }
 
-//next Step => split cmd beim = dann checke ob die Variable schon existiert
-//entscheide dann ob du den Wert überschreibst oder die Variable mit dem Wert anlegst
+//Hier muss noch mehrer auf einmal hinzufügt werden. das bedeutet dann einfach ich werden einen while loop machen
+//muss aber noch *cmd mit **arg ersetzen und dann durch loopen 
+//Sobald eines der namen falsch ist muss error_code 1 returned werden aber es werden trotzdem alle validen ausgeführt
 
-
-//unset removes existing but if there is no existing there is no error

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:23:05 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/18 10:33:31 by fwechsle         ###   ########.fr       */
+/*   Updated: 2023/12/22 16:03:00 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,14 +130,24 @@ int ft_change_to_dir(char *cmd, t_list **env_copy)
 // - cd => change dir to home
 // - cd - => change dir to OLDPWD
 // - cd - => with Path! 
-int    cd_builtin(char *cmd, t_list **env_copy)
+int    cd_builtin(char **cmd, t_list **env_copy)
 {
-	if (cmd == NULL)
+	int	i;
+	
+	i = 0;
+	while (cmd[i])
+		i++;
+	if (i > 2)
+	{
+		ft_putstr_fd("cd: too many arguments\n", STDERR_FILENO);
+		return (EXIT_FAILURE);
+	}
+	else if (cmd == NULL)
 		return (ft_change_to_home(env_copy));
-	else if (!ft_strncmp(cmd, "-", 2))
+	else if (!ft_strncmp(cmd[1], "-", 2))
 		return(ft_change_to_previous(env_copy));
-	else if (cmd)
-		return (ft_change_to_dir(cmd, env_copy));
+	else if (cmd[1])
+		return (ft_change_to_dir(cmd[1], env_copy));
 	return (EXIT_SUCCESS);	
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 12:47:16 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/22 17:59:32 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ typedef struct s_pipex
 	int	n;
 	int	nbr_p;
 	int	*p;
+	int exit_code;
 }			t_pipex;
 
 /*typedef struct s_out
@@ -91,11 +92,11 @@ _Bool	ft_is_empty_command(char *command);
 //BUILTIN
 
 //cd.c 
-int	cd_builtin(char *cmd, t_list **env_copy);
+int    cd_builtin(char **cmd, t_list **env_copy);
 int	ft_pwd_builtin(void);
 
 //echo.c
-void    ft_echo_builtin(char **arg);
+int    ft_echo_builtin(char **arg);
 
 //env.c
 int	 init_env(char **env, t_list **env_copy);
@@ -103,26 +104,45 @@ int	 print_env(t_list *env_copy);
 void	del(void *content);
 
 //export.c
-int	export_builtin(char *cmd, t_list **env_copy);
+int	export_builtin(char **cmd, t_list **env_copy);
 int	print_export(t_list *env_copy);
 int	    check_exist(char *var, t_list *env_copy);
 
 //unset.c
-int    builtin_unset(t_list **env_copy, char *var);
+int    builtin_unset(t_list **env_copy, char **var);
+
+//exec_main.c
+int    execution_main(t_list *tokens, t_list **env_copy, int exit_code);
+char	**convert_lst_to_arr(t_list *env_copy);
+void	execution(t_parser *command, t_list *env_copy);
+void	free_2d(char **str);
+
+//exec_utils.c
+void	dup_heredoc(t_parser *command);
 
 //exec1.c
-int    execution_main(t_list *tokens, t_list **env_copy);
+int exec_builtins(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens);
+void	ft_file_closer_single(t_parser *command);
+int	child_process(t_parser *command, t_list **env_copy);
+int	cmd_path_NULL(t_parser *command);
+int    one_execution(t_parser *command, t_list **env_copy, int exit_code);
 
 //exec2.c
-void	execution(t_parser *command, t_list **env_copy);
-char	**convert_lst_to_arr(t_list *env_copy);
+void	ft_pipe_closer(t_pipex *data);
+int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, int n);
+int    create_pipes(t_pipex *data);
+int	n_execution(t_list *tokens, t_list **env_copy, int exit_code);
+
 
 //check_builtin.c
 int check_builtin(char *str);
-int run_builtins(t_parser *command, t_list **env_copy);
+int run_builtins(t_parser *command, t_list **env_copy, int error_code, int pid_check);
+int run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, t_list *tokens);
+
 
 //exit.c
-int    builtin_exit(char **arg);
+int    builtin_exit(char **arg, int exit_code, int pid_check);
+int    builtin_exit_parent(char **arg, int exit_code, t_list *tokens);
 
 //free. currently in cd file
 void	free_2d(char **str);
