@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 21:01:06 by rluari           ###   ########.fr       */
+/*   Updated: 2023/12/23 09:14:12 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -299,6 +299,8 @@ _Bool	ft_set_exit_error_code_empty_arg(t_parser **parser_node, int exit_code)
 {
 	char	*ec;
 
+	if ((*parser_node)->cmd_args == NULL)
+		return (0);
 	if (ft_strcmp((*parser_node)->cmd_args[0], "exit") != 0 || (*parser_node)->cmd_args[1] != NULL)
 		return (0);
 	ec = ft_itoa(exit_code);
