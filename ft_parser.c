@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 21:13:42 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/03 19:01:24 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,70 +17,67 @@ void	ft_init_parser_helper_struct(t_parser_helper *helper)
 	helper->error = 0;
 	helper->ith_command = -1;
 	helper->list_head = NULL;
-	helper->new = NULL;
-	helper->parser_node = NULL;
+	helper->new_node_head = NULL;
+	helper->parser_n = NULL;
 }
 
-_Bool	ft_create_new_command(t_parser_helper *helper, int exit_code, _Bool last)
+_Bool	ft_create_new_command(t_parser_helper *h, int exit_c, _Bool last)
 {
-	if (helper->error)
-		return (ft_free_parser(helper->list_head), 1);
-	if (helper->ith_command != -1)
+	if (h->error)
+		return (ft_free_parser(h->list_head), 1);
+	if (h->ith_command != -1 || last == 1)	// if we are not at the first command and not at the last command, we add the command to the list
 	{
-		if (ft_set_exit_error_code_empty_arg(&(helper->parser_node), exit_code) == 1)
-			return (ft_free_parser(helper->list_head), 1);
-		helper->new = ft_lstnew(helper->parser_node);
-		if (helper->new == NULL)
-			return (ft_free_parser(helper->list_head), perror("Malloc failed"), 1);
-		ft_lstadd_back(&(helper->list_head), helper->new);
+		if (ft_set_exit_error_code_empty_arg(&(h->parser_n), exit_c) == 1)
+			return (ft_free_parser(h->list_head), 1);
+		h->new_node_head = ft_lstnew(h->parser_n);
+		if (h->new_node_head == NULL)
+			return (ft_free_parser(h->list_head), perror("Malloc failed"), 1);
+		ft_lstadd_back(&(h->list_head), h->new_node_head);
 	}
-	if (last == 0)
+	if (last == 0) // if we are not at the last command, initialize a new command
 	{
-		helper->parser_node = (t_parser *)malloc(sizeof(t_parser));
-		if (helper->parser_node == NULL)
-			return (ft_free_parser(helper->list_head), perror("Malloc failed"), 1);
-		ft_init_parser_node(&(helper->parser_node));
-		helper->ith_command = helper->lexed_item->exec_num;
-		helper->prev_was_word = 0;
+		h->parser_n = (t_parser *)malloc(sizeof(t_parser));
+		if (h->parser_n == NULL)
+			return (ft_free_parser(h->list_head), perror("Malloc failed"), 1);
+		ft_init_parser_node(&(h->parser_n));
+		h->ith_command = h->lexed_i->exec_num;
+		h->prev_was_word = 0;
 	}
 	return (0);
 }
 
-_Bool	ft_is_empty_lexed_lode(char *str, t_list *lexed_list)
+_Bool	ft_is_empty_lexed_lode(char *str, t_list **lexed_list)
 {
 	if (str[0] == '\0')
-		return (lexed_list = lexed_list->next, 1);
+		return (*lexed_list = (*lexed_list)->next, 1);
 	return (0);
 }
 
 t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy)
 {
-	t_parser_helper	helper;
+	t_parser_helper	h;
 
-	ft_init_parser_helper_struct(&helper);
+	ft_init_parser_helper_struct(&h);
 	if (lexed_list == NULL)
 		return (NULL);
 	while (lexed_list)
 	{
-		helper.lexed_item = lexed_list->content;
-		if (ft_is_empty_lexed_lode(helper.lexed_item->word, lexed_list))
+		h.lexed_i = lexed_list->content;
+		if (ft_is_empty_lexed_lode(h.lexed_i->word, &lexed_list)) // if the lexed item is empty, we skip it, and make lexed_list = lexed_list->next
 			continue ;
-		if (helper.lexed_item->exec_num > helper.ith_command)
-		{
-			if (ft_create_new_command(&helper, *exit_code, 0) == 1)
+		if (h.lexed_i->exec_num > h.ith_command && ft_create_new_command(&h, *exit_code, 0) == 1)
 				return (NULL);
-		}
-		if (helper.lexed_item->type == REDIRECTION || helper.lexed_item->type == DOUBLE_REDIRECTION)
-			ft_handle_redirs(&(helper.parser_node), helper.lexed_item, helper.lexed_item->type);
-		else if (helper.lexed_item->type == INPUT)
-			ft_handle_input(&(helper.parser_node), helper.lexed_item, &(helper.error));
-		else if (helper.lexed_item->type == HEREDOC)
-			ft_handle_heredoc(&(helper.parser_node), helper.lexed_item, &(helper.error));
-		else if (helper.lexed_item->type == WORD)
-			helper.error = ft_handle_word(&helper, env_copy);
+		if (h.lexed_i->type == REDIR || h.lexed_i->type == D_REDIR)
+			ft_handle_redirs(&(h.parser_n), h.lexed_i, h.lexed_i->type);
+		else if (h.lexed_i->type == INPUT)
+			ft_handle_input(&(h.parser_n), h.lexed_i, &(h.error));
+		else if (h.lexed_i->type == HEREDOC)
+			ft_handle_heredoc(&(h.parser_n), h.lexed_i, &(h.error));
+		else if (h.lexed_i->type == WORD)
+			h.error = ft_handle_word(&h, env_copy);
 		lexed_list = lexed_list->next;
 	}
-	if (ft_create_new_command(&helper, *exit_code, 0) == 1)
+	if (ft_create_new_command(&h, *exit_code, 1) == 1)
 		return (NULL);
-	return (helper.list_head);
+	return (h.list_head);
 }

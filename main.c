@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 21:18:04 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/03 18:37:54 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,36 +58,46 @@ void	ft_print_env(t_list *env_copy)
 	}
 }
 
+void ft_print_orig_env(char **envp)
+{
+	int i;
+
+	i = 0;
+	while (envp[i])
+	{
+		printf("%s\n", envp[i]);
+		i++;
+	}
+}
+
 int main(int argc, char **argv, char **envp)
 {
 	char	*command;
 	t_list	*lexed_list;
-	t_list	**env_copy;
+	t_list	*env_copy;
 	t_list	*parsed_list;
 	int		exit_code;
 	
 	if (argc > 1)
 		return (ft_putstr_fd("Minishell: arguments are not accepted.\n", 2), 1);
-	env_copy = (t_list **)malloc(sizeof(t_list *));
-	if (init_env(envp, env_copy) == EXIT_FAILURE)
+	if (init_env(envp, &env_copy) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
-	//ft_print_env(*env_copy);
 	(void)argv;
+	//ft_print_env(env_copy);
 	exit_code = 0;
 	while (1)
 	{
 		command = readline("Minishell> ");
-		
 		if (ft_basic_error_checker(&command, &exit_code) == 1)	// 1 if error, 0 if correct.
 			continue;
 		add_history(command); 
 		
 		lexed_list = ft_lexer(command);	// This function will tokenize the command and store it in a linked list called t_lexer.
 		//free(command);
-		ft_expander(&lexed_list, env_copy, exit_code);
+		ft_expander(&lexed_list, &env_copy, exit_code);
 		ft_print_lexer_list(lexed_list);
 		//continue ;
-		parsed_list = ft_parser(lexed_list, &exit_code, env_copy);
+		parsed_list = ft_parser(lexed_list, &exit_code, &env_copy);
 		ft_free_lexer(lexed_list);
 		if (!parsed_list)
 			continue ;
@@ -95,18 +105,9 @@ int main(int argc, char **argv, char **envp)
 			continue ;*/
 		//exit_code = ((t_parser *)(ft_lstlast(parsed_list)->content))->exit_code;
 		//ft_print_parser_list(&parsed_list);
-		exit_code = execution_main(parsed_list, env_copy, exit_code);
-
-		// execution();
-		//close the open fd-s
+		exit_code = execution_main(parsed_list, &env_copy, exit_code);
 		ft_free_parser(parsed_list);
-		
 	}
-	
-	//ft_free_env(env_copy);
-	printf("Exiting MyShell...\n");
-
-	return (0);
 }
 
 /*

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/23 09:14:12 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/03 18:43:13 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,16 +116,16 @@ void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp	type)
 		if ((*error = 1), perror("Malloc failed"), 1) return;*/
 	if (access(lexed_item->word, F_OK) != -1)	//file exists
 	{
-		if (type == REDIRECTION)
+		if (type == REDIR)
 			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_TRUNC);	//truncate the file
-		else if (type == DOUBLE_REDIRECTION)
+		else if (type == D_REDIR)
 			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_APPEND);	//append to the file
 	}
 	else
 	{
-		if (type == REDIRECTION)
+		if (type == REDIR)
 			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (type == DOUBLE_REDIRECTION)
+		else if (type == D_REDIR)
 			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	}
 	if ((*parser_node)->fd_out == -1)
@@ -311,29 +311,29 @@ _Bool	ft_set_exit_error_code_empty_arg(t_parser **parser_node, int exit_code)
 	return (0);
 }
 
-_Bool	ft_handle_word(t_parser_helper *helper, t_list **env_copy)
+_Bool	ft_handle_word(t_parser_helper *h, t_list **env_copy)
 {
-	if (helper->prev_was_word == 0)
+	if (h->prev_was_word == 0)
 	{
-		helper->parser_node->cmd_args = (char **)malloc(sizeof(char *) * 2);
-		if (helper->parser_node->cmd_args == NULL)
+		h->parser_n->cmd_args = (char **)malloc(sizeof(char *) * 2);
+		if (h->parser_n->cmd_args == NULL)
 			return (perror("Malloc failed"), 1);
-		if (ft_strchr(helper->lexed_item->word, '/') != NULL)	// "/usr/bin/grep"
-			ft_handle_absolute_command(&(helper->parser_node), helper->lexed_item);
+		if (ft_strchr(h->lexed_i->word, '/') != NULL)	// "/usr/bin/grep"
+			ft_handle_absolute_command(&(h->parser_n), h->lexed_i);
 		else	// "grep"
 		{
-			helper->parser_node->cmd_path = ft_get_path(env_copy, helper->lexed_item->word);
-			helper->parser_node->cmd_args[0] = ft_strdup(helper->lexed_item->word);
+			h->parser_n->cmd_path = ft_get_path(env_copy, h->lexed_i->word);
+			h->parser_n->cmd_args[0] = ft_strdup(h->lexed_i->word);
 		}
-		if (helper->parser_node->cmd_args[0] == NULL)
+		if (h->parser_n->cmd_args[0] == NULL)
 			return (perror("Malloc failed"), 1);
-		helper->parser_node->cmd_args[1] = NULL;
-		helper->prev_was_word = 1;
+		h->parser_n->cmd_args[1] = NULL;
+		h->prev_was_word = 1;
 	}
 	else
 	{
-		helper->parser_node->cmd_args = ft_realloc_array(helper->parser_node->cmd_args, helper->lexed_item->word);
-		if (helper->parser_node->cmd_args == NULL)
+		h->parser_n->cmd_args = ft_realloc_array(h->parser_n->cmd_args, h->lexed_i->word);
+		if (h->parser_n->cmd_args == NULL)
 			return (perror("Malloc failed"), 1);
 	}
 	return (0);

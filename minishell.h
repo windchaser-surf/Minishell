@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 17:59:32 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/03 18:42:27 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "libft/libft.h"
 # include <stdlib.h>
 # include <unistd.h>
+# include <signal.h>
 
 //for readline
 # include <stdio.h>
@@ -43,9 +44,9 @@ typedef struct t_variable
 typedef enum WordTyp
 {
 	WORD,
-	REDIRECTION,	//>
+	REDIR,	//>
 	INPUT,			//<
-	DOUBLE_REDIRECTION, //>>
+	D_REDIR, //>>
 	HEREDOC		//<<
 }	WordTyp;
 
@@ -185,9 +186,9 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy);
 
 typedef struct s_parser_helper {
 	t_list		*list_head;
-	t_list		*new;
-	t_parser	*parser_node;
-	t_lexer		*lexed_item;
+	t_list		*new_node_head;
+	t_parser	*parser_n;
+	t_lexer		*lexed_i;
 	int			ith_command;
 	_Bool		error;
 	_Bool		prev_was_word;

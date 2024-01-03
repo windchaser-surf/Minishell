@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 10:39:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/15 13:13:54 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/03 16:31:34 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,23 +48,17 @@ int init_env(char **env, t_list **env_copy)
 	char	*new_content;
 	t_list	*new_element;
 	
-	*env_copy = NULL; 
 	if (env == NULL)
 		return (EXIT_FAILURE); //Exit MINISHELL?
+	*env_copy = NULL;
 	while (*env != NULL)
 	{
 		new_content = ft_strdup(*env);
 		if (new_content == NULL)
-		{
-			ft_lstclear(env_copy, del);
-			return (EXIT_FAILURE);	//MALLOC ERROR
-		}
+			return (ft_lstclear(env_copy, del), EXIT_FAILURE);	//MALLOC ERROR
 		new_element = ft_lstnew((void *)new_content);
 		if (new_element == NULL)
-		{
-			ft_lstclear(env_copy, del);
-			return (EXIT_FAILURE);
-		}
+			return (ft_lstclear(env_copy, del), EXIT_FAILURE);	//MALLOC ERROR
 		ft_lstadd_back(env_copy, new_element);
 		env++;
 	}
