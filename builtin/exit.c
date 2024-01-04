@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:40:12 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/04 13:03:23 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/04 14:39:23 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,6 @@ void exit_with_number(int pid_check, char *numb, t_list *tokens, t_list **env_co
 		if (env_copy)
 			ft_lstclear(env_copy, free);
 		rl_clear_history();
-		printf("HERE");
 	}
 	c = ft_atoi_long(numb);
 	if (tokens)
