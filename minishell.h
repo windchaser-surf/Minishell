@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/04 12:39:13 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/04 15:49:17 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 # define MINISHELL_H
 
 # include "libft/libft.h"
+# include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <signal.h>
 
 //for readline
-# include <stdio.h>
 # include <errno.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -58,6 +58,8 @@ typedef struct s_pipex
 	int	*p;
 	int exit_code;
 }			t_pipex;
+
+extern t_pipex g_running_process;
 
 typedef struct s_lexer
 {
@@ -125,9 +127,9 @@ int    one_execution(t_parser *command, t_list **env_copy, int exit_code, t_list
 
 //exec2.c
 void	ft_pipe_closer(t_pipex *data);
-int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, int n);
-int    create_pipes(t_pipex *data);
-int	n_execution(t_list *tokens, t_list **env_copy, int exit_code);
+int		n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, int n);
+int		create_pipes(t_pipex *data);
+int		n_execution(t_list *tokens, t_list **env_copy, int exit_code);
 
 
 //check_builtin.c
@@ -209,5 +211,6 @@ void	ft_perror_and_free(char *str);
 //exec_utils
 
 void    close_fds(int *fds);
+
 
 #endif

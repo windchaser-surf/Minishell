@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/04 11:31:17 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/04 15:59:35 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,10 @@ t_list	*ft_lexer(char *command)
 			return (NULL);
 	}
 	if (helper.start != helper.i)
-		ft_make_lnode(&helper, command);
+	{
+		if (ft_make_lnode(&helper, command))
+			return (NULL);
+	}
 	if (ft_check_for_empty_command(helper.list_head) == 1)
 		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'", 2), ft_free_lexer(helper.list_head), NULL);
 	return (helper.list_head);

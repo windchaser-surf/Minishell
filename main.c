@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/04 14:54:58 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/04 15:55:04 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/libft.h"
 #include "minishell.h"
-#include <readline/readline.h>
+#include <termios.h>
+
+t_pipex g_running_process = (t_pipex){NULL, 0, 0, NULL, 0};
 
 void	ft_print_parser_list(t_list **parser_head)
 {
@@ -70,6 +71,45 @@ void ft_print_orig_env(char **envp)
 	}
 }
 
+void generic_sig_handler(int sig)
+{
+	if (g_running_process.pid[g_running_process.n] > 0) // TODO: don't use a global variable? (would need to establish signal disposition in run_command())
+    {
+        kill(g_running_process.pid[g_running_process.n], sig);
+        return ;
+    }
+
+	if (sig == SIGINT)
+	{
+		ft_putstr_fd("\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+	else if (sig == SIGQUIT)
+	{
+		ft_putstr_fd("\b\b  \b\b", 1);
+	}
+	
+}
+
+inline static void init_sig(void)
+{
+	struct sigaction	sa;
+	struct termios		current;
+	int					tty_fd;
+
+	sa.sa_handler = generic_sig_handler;
+	sa.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sa, NULL);
+	tcgetattr(0, &current);
+	tty_fd = open(ttyname(0), O_RDONLY);
+	current.c_lflag |= ISIG;
+	tcsetattr(tty_fd, TCSANOW, &current);
+	sigaction(SIGQUIT, &sa, NULL);
+	close(tty_fd);
+}
+
 int main(int argc, char **argv, char **envp)
 {
 	char	*command;
@@ -83,6 +123,7 @@ int main(int argc, char **argv, char **envp)
 	if (init_env(envp, &env_copy) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	(void)argv;
+	init_sig();
 	//ft_print_env(env_copy);
 	exit_code = 0;
 	while (1)
