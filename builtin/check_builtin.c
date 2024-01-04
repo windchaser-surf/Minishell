@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_builtin.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:07:31 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/22 17:43:54 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/04 12:09:20 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, t_
 	if (!ft_strncmp(command->cmd_args[0], "cd",3))
 		exit_code = cd_builtin(command->cmd_args, env_copy);
 	else if (!ft_strncmp(command->cmd_args[0], "exit", 5))
-		exit_code = builtin_exit_parent(command->cmd_args, error_code, tokens);
+		exit_code = builtin_exit_parent(command->cmd_args, error_code, tokens, env_copy);
 	else if (!ft_strncmp(command->cmd_args[0], "pwd", 4))
 		exit_code = ft_pwd_builtin();
 	else if (!ft_strncmp(command->cmd_args[0], "echo", 5))

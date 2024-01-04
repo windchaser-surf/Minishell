@@ -6,7 +6,7 @@
 /*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 11:17:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/22 17:42:55 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/03 17:49:30 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ int exec_path(t_parser *command, t_list **env_copy)
 	return (status);
 }
 
-int    one_execution(t_parser *command, t_list **env_copy, int exit_code)
+int    one_execution(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens)
 {
 	if (command->exit_code != 0)
 	{
@@ -124,7 +124,7 @@ int    one_execution(t_parser *command, t_list **env_copy, int exit_code)
 	if (command->cmd_path == NULL)
 		return (cmd_path_NULL(command));
 	else if (check_builtin(command->cmd_args[0]))
-		return (exec_builtins(command, env_copy, exit_code, 0));
+		return (exec_builtins(command, env_copy, exit_code, tokens));
 	else 
 		return (exec_path(command, env_copy));
 }

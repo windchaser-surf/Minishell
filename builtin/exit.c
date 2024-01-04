@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:40:12 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/22 17:49:33 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/04 13:03:23 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,26 +67,39 @@ int exit_too_many(int pid_check)
 	return (1);
 }
 
-void exit_not_numeric(int pid_check, t_list *tokens)
+void exit_not_numeric(int pid_check, t_list *tokens, t_list **env_copy)
 {
 	if (pid_check == 1)
 		ft_putstr_fd("exit: needs a numeric parameter\n", STDERR_FILENO);
 	else
+	{
 		ft_putstr_fd("exit\nexit: needs a numeric parameter\n", STDERR_FILENO);
+		if (env_copy)
+			ft_lstclear(env_copy, free);
+		rl_clear_history();
+	}
 	if (tokens)
 		ft_free_parser(tokens);
 	exit (2);
 }
 
-void exit_with_number(int pid_check, char *numb, t_list *tokens) //hier kommt noch die nummer hin
+void exit_with_number(int pid_check, char *numb, t_list *tokens, t_list **env_copy) //hier kommt noch die nummer hin
 {
 	unsigned char c;
 	
 	if (pid_check == 0)
+	{
 		printf("exit\n");
+		if (env_copy)
+			ft_lstclear(env_copy, free);
+		rl_clear_history();
+		printf("HERE");
+	}
 	c = ft_atoi_long(numb);
 	if (tokens)
+	{	
 		ft_free_parser(tokens);
+	}
 	exit (c); //Zahl muss noch richtig umgerechnet werden
 }
 
@@ -109,13 +122,13 @@ int    builtin_exit(char **arg, int exit_code, int pid_check)
 	if (check == 0 && i > 2)
 		return(exit_too_many(pid_check));
 	else if (check == 1)
-		exit_not_numeric(pid_check, NULL);
+		exit_not_numeric(pid_check, NULL, NULL);
 	else if (check == 0 && i == 2)
-		exit_with_number(pid_check, arg[1], NULL);
+		exit_with_number(pid_check, arg[1], NULL, NULL);
 	return (EXIT_SUCCESS);
 }
 
-int    builtin_exit_parent(char **arg, int exit_code, t_list *tokens)
+int    builtin_exit_parent(char **arg, int exit_code, t_list *tokens, t_list **env_copy)
 {
 	int i;
 	int check;
@@ -124,7 +137,7 @@ int    builtin_exit_parent(char **arg, int exit_code, t_list *tokens)
 	i = 0; 
 	while (arg[i])
 		i++;
-	if ( i == 1)
+	if ( i == 1) // kann gelöscht werden muss aber auch noch exit_code für unused variable entfernt werden
 	{
 		printf("exit\n");
 		ft_free_parser(tokens);
@@ -134,8 +147,8 @@ int    builtin_exit_parent(char **arg, int exit_code, t_list *tokens)
 	if (check == 0 && i > 2)
 		return(exit_too_many(0));
 	else if (check == 1)
-		exit_not_numeric(0, tokens);
+		exit_not_numeric(0, tokens, env_copy);
 	else if (check == 0 && i == 2)
-		exit_with_number(0, arg[1], tokens);
+		exit_with_number(0, arg[1], tokens, env_copy);
 	return (EXIT_SUCCESS);
 }

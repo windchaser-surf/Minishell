@@ -6,7 +6,7 @@
 /*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 13:19:01 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/22 16:25:06 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/03 17:50:29 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int    execution_main(t_list *tokens, t_list **env_copy, int exit_code)
 	
 	p_nbr = ft_lstsize(tokens);
 	if (p_nbr == 1) //lst_size = 1; 
-		return(one_execution((t_parser *)(tokens->content), env_copy, exit_code)); 
+		return(one_execution((t_parser *)(tokens->content), env_copy, exit_code, tokens)); 
 	else if (p_nbr > 1)
 	 	return (n_execution(tokens, env_copy, exit_code));
    /*  else

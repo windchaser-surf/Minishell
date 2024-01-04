@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 10:39:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/03 16:31:34 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/04 12:26:49 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int print_env(t_list *env_copy)
 	return (EXIT_SUCCESS);
 }
 
-void	free_env_ll(t_list *env_copy)
+/* void	free_env_ll(t_list *env_copy)
 {
 	t_list *tmp;
 	
@@ -39,9 +39,10 @@ void	free_env_ll(t_list *env_copy)
 	while (tmp != NULL)
 	{
 		free(tmp->content);
+		free()
 		tmp = tmp -> next;
 	}
-}
+} */
 
 int init_env(char **env, t_list **env_copy)
 {

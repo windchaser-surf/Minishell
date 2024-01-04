@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/03 20:36:41 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/04 12:39:13 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ int    ft_echo_builtin(char **arg);
 //env.c
 int	 init_env(char **env, t_list **env_copy);
 int	 print_env(t_list *env_copy);
+//void	free_env_ll(t_list *env_copy);
 void	del(void *content);
 
 //export.c
@@ -120,7 +121,7 @@ int exec_builtins(t_parser *command, t_list **env_copy, int exit_code, t_list *t
 void	ft_file_closer_single(t_parser *command);
 int	child_process(t_parser *command, t_list **env_copy);
 int	cmd_path_NULL(t_parser *command);
-int    one_execution(t_parser *command, t_list **env_copy, int exit_code);
+int    one_execution(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens);
 
 //exec2.c
 void	ft_pipe_closer(t_pipex *data);
@@ -137,7 +138,10 @@ int run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, t_
 
 //exit.c
 int    builtin_exit(char **arg, int exit_code, int pid_check);
-int    builtin_exit_parent(char **arg, int exit_code, t_list *tokens);
+int    builtin_exit_parent(char **arg, int exit_code, t_list *tokens, t_list **env_copy);
+void exit_not_numeric(int pid_check, t_list *tokens, t_list **env_copy);
+void exit_with_number(int pid_check, char *numb, t_list *tokens, t_list **env_copy); //hier kommt noch die nummer hin
+
 
 //free. currently in cd file
 void	free_2d(char **str);
