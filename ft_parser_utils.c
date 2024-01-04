@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/03 18:43:13 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/04 11:55:16 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,13 +295,14 @@ void	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
 	}
 }
 
-_Bool	ft_set_exit_error_code_empty_arg(t_parser **parser_node, int exit_code)
+_Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code)
 {
 	char	*ec;
 
 	if ((*parser_node)->cmd_args == NULL)
 		return (0);
-	if (ft_strcmp((*parser_node)->cmd_args[0], "exit") != 0 || (*parser_node)->cmd_args[1] != NULL)
+	if (ft_strcmp((*parser_node)->cmd_args[0], "exit") != 0
+		|| (*parser_node)->cmd_args[1] != NULL)
 		return (0);
 	ec = ft_itoa(exit_code);
 	if (!ec)
@@ -339,21 +340,82 @@ _Bool	ft_handle_word(t_parser_helper *h, t_list **env_copy)
 	return (0);
 }
 
+_Bool	ft_str_has_quote(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '\"')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+int		ft_count_amount_of_quotes(char *str)
+{
+	int	i;
+	int	quotes;
+
+	i = 0;
+	quotes = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '\"')
+			quotes++;
+		i++;
+	}
+	return (quotes);
+}
+
+char	*ft_just_remove_quotes(char *str)
+{
+	int		i;
+	int		j;
+	char	*new_str;
+
+	i = 0;
+	j = ft_count_amount_of_quotes(str);
+	new_str = (char *)malloc(sizeof(char) * (ft_strlen(str) - j + 1));
+	if (new_str == NULL)
+		return (NULL);
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] != '\'' && str[i] != '\"')
+		{
+			new_str[j] = str[i];
+			j++;
+		}
+		i++;
+	}
+	new_str[j] = '\0';
+	return (new_str);
+}
+
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error)
 {
 	//remove quotes around heredoc	
 	char	*delim;
 	char	*tmp;
-	
+
 	//we dont expand variables in heredoc, so "<< $test" the delimiter is "$test" and not what's in the test variable
-	if (lexed_item->word[0] == '\'' || lexed_item->word[0] == '\"')
+	if (ft_str_has_quote(lexed_item->word))
 	{
-		delim = ft_substr(lexed_item->word, 1, ft_strlen(lexed_item->word) - 2);
+		delim = ft_just_remove_quotes(lexed_item->word);
 		if (delim == NULL)
-			if ((*error = 1), perror("Malloc failed"), 1) return;
+			*error = 1;
 	}
 	else
+	{
 		delim = ft_strdup(lexed_item->word);
+		if (delim == NULL)
+			*error = 1;
+	}
+	if (*error == 1)
+		return ;
 	while (1)
 	{
 		tmp = readline("> ");

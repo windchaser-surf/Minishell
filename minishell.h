@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/03 18:42:27 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/03 20:36:41 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ typedef enum WordTyp
 {
 	WORD,
 	REDIR,	//>
-	INPUT,			//<
+	INPUT,	//<
 	D_REDIR, //>>
-	HEREDOC		//<<
+	HEREDOC	//<<
 }	WordTyp;
 
 typedef struct s_pipex
@@ -58,12 +58,6 @@ typedef struct s_pipex
 	int	*p;
 	int exit_code;
 }			t_pipex;
-
-/*typedef struct s_out
-{
-	char			*outfile_str;
-	WordTyp			type;
-}	t_out;*/
 
 typedef struct s_lexer
 {
@@ -197,12 +191,12 @@ typedef struct s_parser_helper {
 void	ft_free_parser(t_list *parser_head);
 char	**ft_realloc_array(char **array, char *new_item);
 void	ft_init_parser_node(t_parser **parser_node);
-void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp	type);
+void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp type);
 void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 _Bool	ft_handle_word(t_parser_helper *helper, t_list **env_copy);
 
-_Bool	ft_set_exit_error_code_empty_arg(t_parser **parser_node, int exit_code);
+_Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code);
 int		ft_is_redirsign(char c);
 char	*ft_get_env_value(t_list *env, char *var_name);
 char	*ft_cut_until_equal(char *str);

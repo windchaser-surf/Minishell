@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 09:45:51 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/18 11:18:26 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/04 11:30:02 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	ft_is_redirsign(char c)
 
 int	ft_check_word_first_letter(char c, t_list *lexer_head)
 {
-	if (ft_isalnum(c) == 0 && c != ' ' && c != '\"' && c != '\'' && c != '$' && c != '>' && c != '<'&& c != '/')
+	if (ft_isalnum(c) == 0 && c != ' ' && c != '\"' && c != '\'' && c != '$' && c != '>' && c != '<' && c != '/' && c != '.')
 	{
 		ft_putstr_fd("Error: syntax error here:", 2);
 		ft_putchar_fd(c, 2);

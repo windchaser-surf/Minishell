@@ -87,6 +87,8 @@ _Bool	ft_basic_error_checker(char **command, int *error_code)	//handle if "'''''
 		free(attach_to_end);
 		free(*command);
 		*command = malloc(ft_strlen(new_command) + 1);
+		if (*command == NULL)
+			return (perror("Malloc failed"), 1);
 		ft_strcpy(*command, new_command);
 		printf("command: %s\n", *command);
 	}

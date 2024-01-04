@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/03 18:37:54 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/03 19:10:00 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,7 @@ int main(int argc, char **argv, char **envp)
 		lexed_list = ft_lexer(command);	// This function will tokenize the command and store it in a linked list called t_lexer.
 		//free(command);
 		ft_expander(&lexed_list, &env_copy, exit_code);
-		ft_print_lexer_list(lexed_list);
-		//continue ;
+		//ft_print_lexer_list(lexed_list);
 		parsed_list = ft_parser(lexed_list, &exit_code, &env_copy);
 		ft_free_lexer(lexed_list);
 		if (!parsed_list)
@@ -109,14 +108,3 @@ int main(int argc, char **argv, char **envp)
 		ft_free_parser(parsed_list);
 	}
 }
-
-/*
-Richi:
-1. exit codes, first check for non existent file, set exit code to 1, if it exists, but the command is invalid, set exit code to 127
-Felix gives me the copied ENV, 
-2. handle $ (variables)
-3. '$test' you will not replace it
-	"$test" || $test you will replace it
-
-execve("user/bin/grep", "grep, $test")
-*/

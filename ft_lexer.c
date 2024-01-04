@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lexer.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/22 13:28:18 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/04 11:31:17 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ _Bool	ft_make_lnode(t_lexer_helper *helper, char *command)
 	if (lexer_node == NULL)
 		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
 	lexer_node->word = ft_substr(command, helper->start, helper->i - helper->start);
+	if (lexer_node->word == NULL)
+		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
 	lexer_node->type = helper->prev_wt;
 	lexer_node->exec_num = helper->exec_num;
 	new = ft_lstnew(lexer_node);
@@ -113,10 +115,10 @@ _Bool	ft_handle_lexer_redir(t_lexer_helper *helper, char *command)
 	if (ft_make_lnode(helper, command) == 1)
 		return (1);
 			
-	helper->prev_wt = REDIRECTION;
+	helper->prev_wt = REDIR;
 	if (command[helper->i + 1] == '>')
 	{
-		helper->prev_wt = DOUBLE_REDIRECTION;
+		helper->prev_wt = D_REDIR;
 		helper->i++;
 	}
 	helper->i++;
@@ -157,22 +159,22 @@ _Bool	ft_lexer_while(t_lexer_helper *helper, char *command)
 	if (command[helper->i] == ' ')	//a word ends with a space or a redirection sign
 	{
 		if (ft_handle_lexer_word(helper, command) == 1)
-			return (NULL);
+			return (1);
 	}
 	else if (command[helper->i] == '|')
 	{
 		if (ft_handle_lexer_new_command(helper, command) == 1)
-			return (NULL);
+			return (1);
 	}
 	else if (command[helper->i] == '>' )	//we alreaady know that it doesnt end with a redir char
 	{
 		if (ft_handle_lexer_redir(helper, command) == 1)
-			return (NULL);
+			return (1);
 	}
 	else if (command[helper->i] == '<')
 	{
 		if (ft_handle_lexer_input(helper, command) == 1)
-			return (NULL);
+			return (1);
 	}
 	else if (command[helper->i] == '\'' || command[helper->i] == '\"')
 	{
