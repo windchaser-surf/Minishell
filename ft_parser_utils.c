@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/04 12:59:55 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/04 16:06:13 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,8 @@ char	*ft_get_env_value(t_list *env, char *var_name)
 	while (env)
 	{
 		env_var = ft_cut_until_equal((env)->content);
+		if (env_var == NULL)
+			return (NULL);
 		//printf("env_name: %s\n", env_name);
 		if (ft_strcmp(env_name, env_var) == 0)
 			return (free(env_name), free(env_var), ft_substr((env)->content, i + 1, ft_strlen((env)->content) - i - 1));
