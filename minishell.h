@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/05 11:30:59 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/05 12:17:06 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,10 @@
 # include <fcntl.h>
 # include <stdbool.h>
 
+//for checking paths
 #include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #define MALLOC_ERR 1 
 #define CMD_NOT_FOUND 127

@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/05 11:32:34 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/05 13:32:57 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,29 +88,50 @@ _Bool	ft_ends_with_slash(char *str)
 	return (0);
 }
 
-_Bool	ft_is_path_invalid(char *cmd, t_parser **parser_node)
+int	ft_dir_accession(char *cmd, t_parser **parser_n)
 {
-	int		i;
-	//char	*path;
+	char	*tmp;
 
-	i = ft_strlen(cmd) - 1;
-	while (cmd[i] != '/')
-		i--;
-	/*path = ft_substr(cmd, 0, i + 1);
-	if (!path)
-		return (perror("Malloc failed"), 1);*/
-	
-	if (access(cmd, F_OK) == 0 && !ft_ends_with_slash(cmd))
-		return (0);
+	tmp = NULL;
+	if (is_directory(cmd) == 1)
+	{
+		(*parser_n)->exit_code = 126;
+		ft_putstr_fd("Minishell: ", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": Is a directory\n", 2);
+	}
+	else if (is_directory(cmd) == 0)
+	{
+		(*parser_n)->exit_code = 126;
+		ft_perror_and_free(cmd);
+	}
 	else
 	{
-		ft_perror_and_free(cmd);
-		if (ft_ends_with_slash(cmd) && is_directory(cmd))
-			(*parser_node)->exit_code = 126;
+		tmp = ft_substr(cmd, 0, ft_strlen(cmd) - 1);
+		if (tmp == NULL)
+			return (-1);
+		if (access(tmp, F_OK) == 0)
+			(*parser_n)->exit_code = 126;
 		else
-			(*parser_node)->exit_code = 127;
-		return (1);
+			(*parser_n)->exit_code = 127;
+		ft_perror_and_free(cmd);
+		free(tmp);
 	}
+	return (1);
+}
+
+int	ft_is_path_invalid(char *cmd, t_parser **parser_n)	//it an return 1 (invalid), 0 (valid), -1 (malloc error)
+{
+	if (!ft_ends_with_slash(cmd))
+	{
+		if (access(cmd, F_OK) == 0)
+			return (0);
+		else
+			return ((*parser_n)->exit_code = 127, ft_perror_and_free(cmd), 1);
+	}
+	else	//error
+		return (ft_dir_accession(cmd, parser_n));	//if it's 1 we make cmd_path to be NULL, but set just exit code to not 0, if it's -1, we free the whole parsed list
+
 }
 
 void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp type)
@@ -283,29 +304,45 @@ char	*ft_get_path(t_list **env, char *cmd)
 //if the command (first WORD) doesnt exist or wrong path if given by /, then set exit_error to 1
 
 
-int is_directory(const char *path) {
-    DIR *dir = opendir(path);
+int is_directory(const char *path)
+{
+    struct stat path_stat;
 
-    if (dir != NULL) {
-        closedir(dir);
-        return 1; // Directory exists
-    } else {
-        return 0; // Not a directory or doesn't exist
-    }
+	// Get information about the file or directory
+	if (stat(path, &path_stat) == 0)
+	{
+		// Check if it's a directory
+		if (S_ISDIR(path_stat.st_mode))
+			return 1;  // It's a directory
+		else
+			return 0;  // It's not a directory (could be a file)
+	}
+	else
+	{
+		return(-1);
+	}
 }
 
-void	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
+int	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
 {
-	if (ft_is_path_invalid(lexed_item->word, parser_node) == 1)
+	int validity;
+
+	validity = ft_is_path_invalid(lexed_item->word, parser_node); //1 (invalid), 0 (valid), -1 (malloc error)
+	if (validity == 1)	//INvalid path
 		(*parser_node)->cmd_path = NULL;
 	else
+	{
 		(*parser_node)->cmd_path = ft_strdup(lexed_item->word);
+		if ((*parser_node)->cmd_path == NULL || validity == -1) //substr OR strdup malloc failed, so we free the whole parsed list
+			return (1);
+	}
 	(*parser_node)->cmd_args[0] = ft_get_cmd_name(lexed_item->word);
 	if (ft_is_builtin((*parser_node)->cmd_args[0]))
 	{
 		free ((*parser_node)->cmd_path);
 		(*parser_node)->cmd_path = "BUILTIN";
 	}
+	return (0);
 }
 
 _Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code)
@@ -335,7 +372,10 @@ _Bool	ft_handle_word(t_parser_helper *h, t_list **env_copy)
 		if (h->parser_n->cmd_args == NULL)
 			return (perror("Malloc failed"), 1);
 		if (ft_strchr(h->lexed_i->word, '/') || h->lexed_i->word[0] == '.')// "/usr/bin/grep"
-			ft_handle_absolute_command(&(h->parser_n), h->lexed_i);
+		{
+			if (ft_handle_absolute_command(&(h->parser_n), h->lexed_i) == 1)	//malloc failed
+				return (perror("Malloc failed"), 1);
+		}
 		else// "grep"
 		{
 			h->parser_n->cmd_path = ft_get_path(env_copy, h->lexed_i->word);
