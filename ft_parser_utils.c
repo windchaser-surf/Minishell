@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/05 13:32:57 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/05 13:38:39 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -371,7 +371,7 @@ _Bool	ft_handle_word(t_parser_helper *h, t_list **env_copy)
 		h->parser_n->cmd_args = (char **)malloc(sizeof(char *) * 2);
 		if (h->parser_n->cmd_args == NULL)
 			return (perror("Malloc failed"), 1);
-		if (ft_strchr(h->lexed_i->word, '/') || h->lexed_i->word[0] == '.')// "/usr/bin/grep"
+		if (ft_strchr(h->lexed_i->word, '/') || (h->lexed_i->word[0] == '.' && ft_strchr(h->lexed_i->word, '/')))// "/usr/bin/grep" or "./user/bin/grep"
 		{
 			if (ft_handle_absolute_command(&(h->parser_n), h->lexed_i) == 1)	//malloc failed
 				return (perror("Malloc failed"), 1);

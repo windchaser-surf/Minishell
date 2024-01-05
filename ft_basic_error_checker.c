@@ -65,7 +65,9 @@ _Bool	ft_emptyness_in_cmd(char *cmd)
 		ft_skip_spaces(cmd, &i);
 		/*if (i > prev_i)
 			i++;*/
-		if (cmd[i] == '|' && prev_was_pipe == 1)
+		if (cmd[i] == '"' || cmd[i] == '\'')
+			ft_skip_to_closing_quote(cmd, &i, cmd[i]);
+		else if (cmd[i] == '|' && prev_was_pipe == 1)
 			return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), 1);
 		else if (cmd[i] == '|' && prev_was_pipe == 0)
 			prev_was_pipe = 1;
