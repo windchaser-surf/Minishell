@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 09:45:51 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/04 11:30:02 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/05 11:18:33 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,11 @@ int	ft_check_word_first_letter(char c, t_list *lexer_head)
 
 void	ft_skip_spaces(char *str, int *i)
 {
-	int	j;
 
-	j = 0;
-	if (str[j] == '\0')
+	if (str[*i] == '\0')
 		return ;
-	while (str + j && *(str + j) == ' ')
-		j++;
-	(*i) += j;
+	while (str + *i && *(str + *i) == ' ')
+		(*i)++;
 }
 
 void	ft_skip_to_closing_quote(char *command, int *i, char close_char)

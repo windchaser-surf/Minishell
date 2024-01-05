@@ -6,14 +6,14 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/04 15:55:04 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/05 11:32:52 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <termios.h>
 
-t_pipex g_running_process = (t_pipex){NULL, 0, 0, NULL, 0};
+//t_pipex g_running_process = (t_pipex){NULL, 0, 0, NULL, 0, 1};
 
 void	ft_print_parser_list(t_list **parser_head)
 {
@@ -71,9 +71,9 @@ void ft_print_orig_env(char **envp)
 	}
 }
 
-void generic_sig_handler(int sig)
+/*void generic_sig_handler(int sig)
 {
-	if (g_running_process.pid[g_running_process.n] > 0) // TODO: don't use a global variable? (would need to establish signal disposition in run_command())
+	if (g_running_process.pid && g_running_process.pid[g_running_process.n] > 0) // TODO: don't use a global variable? (would need to establish signal disposition in run_command())
     {
         kill(g_running_process.pid[g_running_process.n], sig);
         return ;
@@ -91,16 +91,16 @@ void generic_sig_handler(int sig)
 		ft_putstr_fd("\b\b  \b\b", 1);
 	}
 	
-}
+}*/
 
-inline static void init_sig(void)
+void init_sig(void)
 {
 	struct sigaction	sa;
 	struct termios		current;
 	int					tty_fd;
 
 	sa.sa_handler = generic_sig_handler;
-	sa.sa_flags = SA_RESTART;
+	//sa.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa, NULL);
 	tcgetattr(0, &current);
 	tty_fd = open(ttyname(0), O_RDONLY);
@@ -129,23 +129,21 @@ int main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		command = readline("Minishell> ");
+		add_history(command); 
 		if (ft_basic_error_checker(&command, &exit_code) == 1)	// 1 if error, 0 if correct.
 			continue;
-		add_history(command); 
 		
 		lexed_list = ft_lexer(command);	// This function will tokenize the command and store it in a linked list called t_lexer.
-		//free(command);
+		free(command);
 		ft_expander(&lexed_list, &env_copy, exit_code);
 		//ft_print_lexer_list(lexed_list);
 		parsed_list = ft_parser(lexed_list, &exit_code, &env_copy);
 		ft_free_lexer(lexed_list);
 		if (!parsed_list)
 			continue ;
-		/*if (!parsed_list)
-			continue ;*/
-		//exit_code = ((t_parser *)(ft_lstlast(parsed_list)->content))->exit_code;
-		//ft_print_parser_list(&parsed_list);
+		ft_print_parser_list(&parsed_list);
 		exit_code = execution_main(parsed_list, &env_copy, exit_code);
+		
 		ft_free_parser(parsed_list);
 	}
 }

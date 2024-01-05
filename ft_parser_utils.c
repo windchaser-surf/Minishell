@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/04 16:06:13 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/05 11:32:34 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,26 +78,37 @@ void	ft_perror_and_free(char *str)
 	free(asd);
 }
 
+_Bool	ft_ends_with_slash(char *str)
+{
+	int	i;
+
+	i = ft_strlen(str) - 1;
+	if (str[i] == '/')
+		return (1);
+	return (0);
+}
+
 _Bool	ft_is_path_invalid(char *cmd, t_parser **parser_node)
 {
 	int		i;
-	char	*path;
+	//char	*path;
 
 	i = ft_strlen(cmd) - 1;
 	while (cmd[i] != '/')
 		i--;
-	path = ft_substr(cmd, 0, i);
+	/*path = ft_substr(cmd, 0, i + 1);
 	if (!path)
-		return (perror("Malloc failed"), 1);
-	if (access(path, F_OK) == 0)
-		return (free(path), 0);
+		return (perror("Malloc failed"), 1);*/
+	
+	if (access(cmd, F_OK) == 0 && !ft_ends_with_slash(cmd))
+		return (0);
 	else
 	{
-		ft_putstr_fd("Minishell: ", 2);
-		ft_putstr_fd(cmd, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		free(path);
-		(*parser_node)->exit_code = 127;
+		ft_perror_and_free(cmd);
+		if (ft_ends_with_slash(cmd) && is_directory(cmd))
+			(*parser_node)->exit_code = 126;
+		else
+			(*parser_node)->exit_code = 127;
 		return (1);
 	}
 }
@@ -124,7 +135,8 @@ void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp type)
 	{
 		(*parser_node)->exit_code = 1;
 		ft_perror_and_free(lexed_item->word);
-	}}
+	}
+}
 
 void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error)
 {
@@ -270,6 +282,18 @@ char	*ft_get_path(t_list **env, char *cmd)
 //the first WORD is the program name, every other word in order vecomes a parameter
 //if the command (first WORD) doesnt exist or wrong path if given by /, then set exit_error to 1
 
+
+int is_directory(const char *path) {
+    DIR *dir = opendir(path);
+
+    if (dir != NULL) {
+        closedir(dir);
+        return 1; // Directory exists
+    } else {
+        return 0; // Not a directory or doesn't exist
+    }
+}
+
 void	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
 {
 	if (ft_is_path_invalid(lexed_item->word, parser_node) == 1)
@@ -288,8 +312,10 @@ _Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code)
 {
 	char	*ec;
 
+	if ((*parser_node) == NULL)
+		return (1);
 	if ((*parser_node)->cmd_args == NULL)
-		return (0);
+		return (1);
 	if (ft_strcmp((*parser_node)->cmd_args[0], "exit") != 0
 		|| (*parser_node)->cmd_args[1] != NULL)
 		return (0);
@@ -308,7 +334,7 @@ _Bool	ft_handle_word(t_parser_helper *h, t_list **env_copy)
 		h->parser_n->cmd_args = (char **)malloc(sizeof(char *) * 2);
 		if (h->parser_n->cmd_args == NULL)
 			return (perror("Malloc failed"), 1);
-		if (ft_strchr(h->lexed_i->word, '/') != NULL)// "/usr/bin/grep"
+		if (ft_strchr(h->lexed_i->word, '/') || h->lexed_i->word[0] == '.')// "/usr/bin/grep"
 			ft_handle_absolute_command(&(h->parser_n), h->lexed_i);
 		else// "grep"
 		{
@@ -384,11 +410,26 @@ char	*ft_just_remove_quotes(char *str)
 	return (new_str);
 }
 
+/*void	heredoc_sig_handler(int sig)
+{
+	if(sig == SIGINT)
+	{
+		g_running_process.while_true = 0;
+		ft_putstr_fd("\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+
+	}
+}*/
+
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error)
 {
 	char	*delim;
 	char	*tmp;
+	//struct sigaction	sa;
 
+	//sa.sa_handler = heredoc_sig_handler;
 	//we dont expand variables in heredoc, so "<< $test" the delimiter is "$test" and not what's in the test variable
 	if (ft_str_has_quote(lexed_item->word))
 		delim = ft_just_remove_quotes(lexed_item->word);
@@ -399,15 +440,24 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error)
 		*error = 1;
 		return ;
 	}
+	//sigaction(SIGINT, &sa, NULL);
 	while (1)
 	{
 		tmp = readline("> ");
-		if (ft_strcmp(delim, tmp) == 0)
+		if (ft_strcmp(delim, tmp) == 0 /*|| g_running_process.while_true == 0*/)
 			break ;
 		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, tmp);
 		(*parser_node)->heredoc = ft_strjoin((*parser_node)->heredoc, "\n");
 		free(tmp);
 	}
+	//sigaction(SIGINT, &sa, NULL);
+
+	/*init_sig();
+	if (g_running_process.while_true == 0)
+	{
+		free((*parser_node)->heredoc);
+	}
+	g_running_process.while_true = 1;*/
 	free(delim);
 	free(tmp);
 }

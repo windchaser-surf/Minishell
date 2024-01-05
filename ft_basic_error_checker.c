@@ -48,33 +48,48 @@ int	ft_ends_with_spec(char *command)
 	return (0);
 }
 
-_Bool	ft_is_empty_command(char *command)
+_Bool	ft_emptyness_in_cmd(char *cmd)
 {
-	int	i;
+	int		i;
+	int		prev_i;
+	_Bool	prev_was_pipe;
 
 	i = 0;
-	while (command[i])
+	prev_was_pipe = 1;
+	ft_skip_spaces(cmd, &i);
+	if (cmd[i] == '\0')
+		return (1);
+	while (cmd[i])
 	{
-		if (command[i] != ' ')
-			return (0);
+		prev_i = i;
+		ft_skip_spaces(cmd, &i);
+		/*if (i > prev_i)
+			i++;*/
+		if (cmd[i] == '|' && prev_was_pipe == 1)
+			return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), 1);
+		else if (cmd[i] == '|' && prev_was_pipe == 0)
+			prev_was_pipe = 1;
+		else
+			prev_was_pipe = 0;
 		i++;
 	}
-	return (1);
+	return (0);
 }
 
 _Bool	ft_basic_error_checker(char **command, int *error_code)	//handle if "'''''" stb
 {
-	int		i;
-	int		len;
+/*	int		i;
+	int		len;*/
 	char	*attach_to_end;
 	char	*new_command;
 
 	new_command = NULL;
-	len = ft_strlen(*command);
+	/*len = ft_strlen(*command);
 	i = len - 1;
 	(void)i;
-	(void)len;
-	if (ft_is_empty_command(*command))
+	(void)len;*/
+	//check for emptyness between pipes, incl beginning
+	if (ft_emptyness_in_cmd(*command) == 1)
 		return (free(*command), 1);
 	if (ft_unmatched_quotes(*command))
 		return (ft_putstr_fd("Minishell: syntax error: Unmatched quotes\n", 2), *error_code = 2, free(*command), 1);
@@ -90,11 +105,11 @@ _Bool	ft_basic_error_checker(char **command, int *error_code)	//handle if "'''''
 		if (*command == NULL)
 			return (perror("Malloc failed"), 1);
 		ft_strcpy(*command, new_command);
-		printf("command: %s\n", *command);
+		//printf("command: %s\n", *command);
 	}
 	free(new_command);
 	if (ft_ends_with_spec(*command) == 2)	//ends with redirection character
 		return (ft_putstr_fd("Minishell: syntax error near unexpected token `newline'\n", 2), *error_code = 2, free(*command), 1);
-	
+
 	return (0);
 }

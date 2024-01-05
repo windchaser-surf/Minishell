@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/04 15:59:35 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/05 11:28:46 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	ft_print_lexer_list(t_list *list)
 	}
 }
 
-int	ft_check_for_empty_command(t_list *list_head)
+/*int	ft_check_for_empty_command(t_list *list_head)
 {
 	t_lexer	*lexer_node;
 
@@ -49,7 +49,7 @@ int	ft_check_for_empty_command(t_list *list_head)
 
 	
 	return (0);
-}
+}*/
 
 _Bool	ft_make_lnode(t_lexer_helper *helper, char *command)
 {
@@ -88,7 +88,7 @@ _Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command)
 	if (ft_make_lnode(helper, command) == 1)
 		return (1);
 	helper->prev_wt = WORD;
-	ft_skip_spaces(command + helper->i, &(helper->i));
+	ft_skip_spaces(command, &(helper->i));
 	if (helper->prev_wt != WORD)
 		if (ft_check_word_first_letter(command[helper->i], helper->list_head) == 1)
 			return (1);
@@ -102,7 +102,7 @@ _Bool	ft_handle_lexer_new_command(t_lexer_helper *helper, char *command)
 		return (1);
 	helper->exec_num++;
 	helper->i++;
-	ft_skip_spaces(command + helper->i, &(helper->i));
+	ft_skip_spaces(command, &(helper->i));
 	if (!(isalnum(command[helper->i]) || ft_is_redirsign(command[helper->i]))) //for this case: cat asd | | >of1
 		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), ft_free_lexer(helper->list_head), 1);
 	helper->start = helper->i;
@@ -122,7 +122,7 @@ _Bool	ft_handle_lexer_redir(t_lexer_helper *helper, char *command)
 		helper->i++;
 	}
 	helper->i++;
-	ft_skip_spaces(command + helper->i, &(helper->i));
+	ft_skip_spaces(command, &(helper->i));
 	
 	if (helper->prev_wt != WORD)
 	{
@@ -144,7 +144,7 @@ _Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command)
 		helper->i++;
 	}
 	helper->i++;
-	ft_skip_spaces(command + helper->i, &(helper->i));
+	ft_skip_spaces(command, &(helper->i));
 	if (helper->prev_wt != WORD && helper->prev_wt != HEREDOC)
 	{
 		if (ft_check_word_first_letter(command[helper->i], helper->list_head) == 1)
@@ -191,8 +191,6 @@ t_list	*ft_lexer(char *command)
 	t_lexer_helper	helper;
 
 	ft_init_lexer_helper(&helper, command);
-	if (command[helper.i] == '|')
-		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), NULL);
 	while (command[helper.i])
 	{
 		if (ft_lexer_while(&helper, command) == 1)
@@ -203,7 +201,5 @@ t_list	*ft_lexer(char *command)
 		if (ft_make_lnode(&helper, command))
 			return (NULL);
 	}
-	if (ft_check_for_empty_command(helper.list_head) == 1)
-		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'", 2), ft_free_lexer(helper.list_head), NULL);
 	return (helper.list_head);
 }

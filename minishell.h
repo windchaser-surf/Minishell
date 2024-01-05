@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/04 15:49:17 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/05 11:30:59 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@
 
 # include <fcntl.h>
 # include <stdbool.h>
+
+#include <dirent.h>
 
 #define MALLOC_ERR 1 
 #define CMD_NOT_FOUND 127
@@ -59,7 +61,7 @@ typedef struct s_pipex
 	int exit_code;
 }			t_pipex;
 
-extern t_pipex g_running_process;
+extern int g_running_process;
 
 typedef struct s_lexer
 {
@@ -84,8 +86,7 @@ _Bool	ft_basic_error_checker(char **command, int *error_code);
 int		ft_ends_with_spec(char *command);
 _Bool	ft_unmatched_quotes(char *command);
 int		ft_ends_with_spec(char *command);
-_Bool	ft_is_empty_command(char *command);
-
+_Bool	ft_emptyness_in_cmd(char *cmd);
 //BUILTIN
 
 //cd.c 
@@ -165,7 +166,7 @@ void	ft_skip_spaces(char *str, int *i);
 void	ft_skip_to_closing_quote(char *command, int *i, char close_char);
 void	ft_free_lexer(t_list *lexer_head);
 void	ft_print_lexer_list(t_list *list);
-int		ft_check_for_empty_command(t_list *list_head);
+//int		ft_check_for_empty_command(t_list *list_head);
 void	ft_free_array(char **arr);
 
 
@@ -202,6 +203,7 @@ void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 _Bool	ft_handle_word(t_parser_helper *helper, t_list **env_copy);
 
+int is_directory(const char *path);
 _Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code);
 int		ft_is_redirsign(char c);
 char	*ft_get_env_value(t_list *env, char *var_name);
@@ -212,5 +214,8 @@ void	ft_perror_and_free(char *str);
 
 void    close_fds(int *fds);
 
+//signals
+void generic_sig_handler(int sig);
+void init_sig(void);
 
 #endif
