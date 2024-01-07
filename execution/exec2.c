@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:29:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/07 13:40:39 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/07 16:06:49 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,9 @@ void dup_output(t_parser *command, t_pipex *data, int n)
 {
 	if (command->fd_out != -1)
 	{
-		if (dup2(command->fd_out, 1))
+		if (dup2(command->fd_out, 1) == -1)
 		{
-			perror("dup2 ");
+			perror("dup21 ");
 			error_closing(command, data);
 		}
 		close(command->fd_out);
@@ -80,7 +80,7 @@ void dup_output(t_parser *command, t_pipex *data, int n)
 			
 			if (dup2(data->p[1 + (2 * n)], 1) == -1)
 			{
-				perror("dup ");
+				perror("dup2 ");
 				error_closing(command, data);
 			}
 		}
@@ -104,6 +104,7 @@ void	cmd_not_found(t_parser *command)
 	}
 	ft_putstr_fd(tmp, STDERR_FILENO);
 	free(tmp);
+	ft_file_closer_single(command);
 	exit (CMD_NOT_FOUND);
 }
 
@@ -127,6 +128,8 @@ int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, int n)
 		else 
 			execution(command, *env_copy); //HIER MUSS NOCH WAS HIN		
 	}
+	else 
+		ft_file_closer_single(command);
 	return (EXIT_SUCCESS);
 }
 
