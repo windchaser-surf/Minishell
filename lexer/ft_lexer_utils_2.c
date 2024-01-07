@@ -1,36 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lexer_utils.c                                   :+:      :+:    :+:   */
+/*   ft_lexer_utils_2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/11 09:45:51 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/05 11:18:33 by rluari           ###   ########.fr       */
+/*   Created: 2024/01/06 13:14:16 by rluari            #+#    #+#             */
+/*   Updated: 2024/01/06 23:35:04 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-
-int	ft_is_redirsign(char c)
-{
-	if (c == '>' || c == '<')
-		return (1);
-	return (0);
-}
-
-int	ft_check_word_first_letter(char c, t_list *lexer_head)
-{
-	if (ft_isalnum(c) == 0 && c != ' ' && c != '\"' && c != '\'' && c != '$' && c != '>' && c != '<' && c != '/' && c != '.')
-	{
-		ft_putstr_fd("Error: syntax error here:", 2);
-		ft_putchar_fd(c, 2);
-		ft_putstr_fd("'\n", 2);
-		ft_free_lexer(lexer_head);
-		return (1);
-	}
-	return (0);	//no error
-}
+#include "../minishell.h"
 
 void	ft_skip_spaces(char *str, int *i)
 {
@@ -48,6 +28,7 @@ void	ft_skip_to_closing_quote(char *command, int *i, char close_char)
 	(*i)++;
 	while (command[*i] != close_char)
 		(*i)++;
+	*i += 1;
 }
 
 void	ft_free_array(char **arr)
@@ -65,6 +46,12 @@ void	ft_free_array(char **arr)
 	free(arr);
 }
 
+void	ft_free_lexer_node(t_list *lexer_head)
+{
+	free(((t_lexer *)lexer_head->content)->word);
+	ft_lstdelone(lexer_head, free);
+}
+
 void	ft_free_lexer(t_list *lexer_head)
 {
 	t_list	*tmp;
@@ -73,8 +60,7 @@ void	ft_free_lexer(t_list *lexer_head)
 	{
 		tmp = lexer_head->next;
 		free(((t_lexer *)lexer_head->content)->word);
-		free(lexer_head->content);
-		free(lexer_head);
+		ft_lstdelone(lexer_head, free);
 		lexer_head = tmp;
 		if (lexer_head == NULL)
 			break ;

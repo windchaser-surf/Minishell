@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/05 11:28:46 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/06 18:13:26 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,37 +51,6 @@ void	ft_print_lexer_list(t_list *list)
 	return (0);
 }*/
 
-_Bool	ft_make_lnode(t_lexer_helper *helper, char *command)
-{
-	t_lexer	*lexer_node;
-	t_list	*new;
-
-	if (helper->start == helper->i)
-		return (0);
-	lexer_node = (t_lexer *)malloc(sizeof(t_lexer));
-	if (lexer_node == NULL)
-		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
-	lexer_node->word = ft_substr(command, helper->start, helper->i - helper->start);
-	if (lexer_node->word == NULL)
-		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
-	lexer_node->type = helper->prev_wt;
-	lexer_node->exec_num = helper->exec_num;
-	new = ft_lstnew(lexer_node);
-	if (new == NULL)
-		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
-	ft_lstadd_back(&(helper->list_head), new);
-	return (0);
-}
-
-void	ft_init_lexer_helper(t_lexer_helper *helper, char *command)
-{
-	helper->i = 0;
-	helper->exec_num = 0;
-	helper->prev_wt = WORD;
-	helper->list_head = NULL;
-	ft_skip_spaces(command + helper->i, &(helper->i));
-	helper->start = helper->i;
-}
 
 _Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command)
 {
@@ -93,20 +62,6 @@ _Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command)
 		if (ft_check_word_first_letter(command[helper->i], helper->list_head) == 1)
 			return (1);
 	helper->start = helper->i;
-	return (0);
-}
-
-_Bool	ft_handle_lexer_new_command(t_lexer_helper *helper, char *command)
-{
-	if (ft_make_lnode(helper, command) == 1)
-		return (1);
-	helper->exec_num++;
-	helper->i++;
-	ft_skip_spaces(command, &(helper->i));
-	if (!(isalnum(command[helper->i]) || ft_is_redirsign(command[helper->i]))) //for this case: cat asd | | >of1
-		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), ft_free_lexer(helper->list_head), 1);
-	helper->start = helper->i;
-	helper->prev_wt = WORD;
 	return (0);
 }
 
@@ -177,10 +132,7 @@ _Bool	ft_lexer_while(t_lexer_helper *helper, char *command)
 			return (1);
 	}
 	else if (command[helper->i] == '\'' || command[helper->i] == '\"')
-	{
 		ft_skip_to_closing_quote(command, &(helper->i), command[helper->i]);
-		helper->i++;
-	}
 	else
 		helper->i++;
 	return (0);

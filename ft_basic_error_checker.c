@@ -1,16 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_basic_error_checker.c                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
+/*   Updated: 2024/01/06 21:18:47 by rluari           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-/*
-	Checks for basic errors in the command line.
-	1. Checks for unmatched single quotes.
-	2. Checks for unmatched double quotes.
-*/
-
-#include "libft/libft.h"
 #include "minishell.h"
-#include <readline/history.h>
-#include <stdbool.h>
 
-_Bool	ft_unmatched_quotes(char *command)	// 1 if error, 0 if correct
+_Bool	ft_unmatched_quotes(char *command, int *error_code)	// 1 if error, 0 if correct
 {
 	int		i;
 	char	quote;
@@ -25,14 +27,17 @@ _Bool	ft_unmatched_quotes(char *command)	// 1 if error, 0 if correct
 			while (command[i] && command[i] != quote)
 				i++;
 			if (command[i] == '\0')
-				return (1);
+			{
+				ft_putstr_fd("Minishell: syntax error: Unmatched quotes\n", 2);
+				return (*error_code = 2, 1);
+			}
 		}
 		i++;
 	}
-	return (0);	
+	return (0);
 }
 
-int	ft_ends_with_spec(char *command)
+int	ft_ends_with_spec(char *command, int *error_code)
 {
 	int	i;
 
@@ -43,7 +48,8 @@ int	ft_ends_with_spec(char *command)
 		return (1);
 	else if (command[i] == '<' || command[i] == '>')
 	{
-		return (2);
+		ft_putstr_fd("Minishell: syntax error near unexpected token `newline'\n", 2);
+		return (free(command), *error_code = 2, 2);
 	}
 	return (0);
 }
@@ -63,10 +69,11 @@ _Bool	ft_emptyness_in_cmd(char *cmd)
 	{
 		prev_i = i;
 		ft_skip_spaces(cmd, &i);
-		/*if (i > prev_i)
-			i++;*/
 		if (cmd[i] == '"' || cmd[i] == '\'')
+		{
 			ft_skip_to_closing_quote(cmd, &i, cmd[i]);
+			continue ;
+		}
 		else if (cmd[i] == '|' && prev_was_pipe == 1)
 			return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), 1);
 		else if (cmd[i] == '|' && prev_was_pipe == 0)
@@ -78,24 +85,17 @@ _Bool	ft_emptyness_in_cmd(char *cmd)
 	return (0);
 }
 
-_Bool	ft_basic_error_checker(char **command, int *error_code)	//handle if "'''''" stb
+_Bool	ft_basic_error_checker(char **command, int *error_code)
 {
-/*	int		i;
-	int		len;*/
 	char	*attach_to_end;
 	char	*new_command;
 
 	new_command = NULL;
-	/*len = ft_strlen(*command);
-	i = len - 1;
-	(void)i;
-	(void)len;*/
-	//check for emptyness between pipes, incl beginning
-	if (ft_emptyness_in_cmd(*command) == 1)
+	if (ft_emptyness_in_cmd(*command) == 1)	//check for emptyness between pipes, incl beginning
 		return (free(*command), 1);
-	if (ft_unmatched_quotes(*command))
-		return (ft_putstr_fd("Minishell: syntax error: Unmatched quotes\n", 2), *error_code = 2, free(*command), 1);
-	while(ft_ends_with_spec(*command) == 1)	//ends with pipe
+	if (ft_unmatched_quotes(*command, error_code))
+		return (1);
+	while(ft_ends_with_spec(*command, error_code) == 1)	//ends with pipe
 	{
 		free(new_command);
 		attach_to_end = readline("> ");
@@ -105,13 +105,11 @@ _Bool	ft_basic_error_checker(char **command, int *error_code)	//handle if "'''''
 		free(*command);
 		*command = malloc(ft_strlen(new_command) + 1);
 		if (*command == NULL)
-			return (perror("Malloc failed"), 1);
+			return (perror("Malloc failed"), free(new_command), 1);
 		ft_strcpy(*command, new_command);
-		//printf("command: %s\n", *command);
 	}
 	free(new_command);
-	if (ft_ends_with_spec(*command) == 2)	//ends with redirection character
-		return (ft_putstr_fd("Minishell: syntax error near unexpected token `newline'\n", 2), *error_code = 2, free(*command), 1);
-
+	if (ft_ends_with_spec(*command, error_code) == 2)	//ends with redirection character
+		return (1);
 	return (0);
 }

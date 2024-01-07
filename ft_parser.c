@@ -6,10 +6,11 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/03 19:14:47 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/07 11:49:18 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "minishell.h"
 
 void	ft_init_parser_helper_struct(t_parser_helper *helper)
@@ -25,9 +26,9 @@ _Bool	ft_create_new_command(t_parser_helper *h, int exit_code, _Bool last)
 {
 	if (h->error)
 		return (ft_free_parser(h->list_head), 1);
-	if (h->ith_command != -1 || last == 1)	// if we are not at the first command and not at the last command, we add the command to the list
+	if (h->ith_command != -1 || last == 1)	// if we are not at the first command or at the last command, we add the command to the list
 	{
-		if (ft_set_exit_err_empty_arg(&(h->parser_n), exit_code) == 1)
+		if (ft_set_exit_err_empty_arg(&(h->parser_n), exit_code) == 1)	//only in case of "exit" command
 			return (ft_free_parser(h->list_head), 1);
 		h->new_node_head = ft_lstnew(h->parser_n);
 		if (h->new_node_head == NULL)
@@ -48,36 +49,53 @@ _Bool	ft_create_new_command(t_parser_helper *h, int exit_code, _Bool last)
 
 _Bool	ft_is_empty_lexed_lode(char *str, t_list **lexed_list)
 {
+	//TODO: only true if there is nothing before or after, otherwise return 0
 	if (str[0] == '\0')
 		return (*lexed_list = (*lexed_list)->next, 1);
 	return (0);
 }
 
+void	ft_parser_while(t_parser_helper *h, t_list **env_copy)
+{
+	if (h->lexed_i->type == REDIR || h->lexed_i->type == D_REDIR)
+		ft_handle_redirs(&(h->parser_n), h->lexed_i, h->lexed_i->type);
+	else if (h->lexed_i->type == INPUT)
+		ft_handle_input(&(h->parser_n), h->lexed_i, &(h->error));
+	else if (h->lexed_i->type == HEREDOC)
+		ft_handle_heredoc(&(h->parser_n), h->lexed_i, &(h->error));
+	else if (h->lexed_i->type == WORD)
+		h->error = ft_handle_word(h, env_copy);
+}
+
 t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 {
 	t_parser_helper	h;
+	t_list			*tmp;
 
-	ft_init_parser_helper_struct(&h);
+	tmp = lexed_list;
 	if (lexed_list == NULL)
 		return (NULL);
+	ft_init_parser_helper_struct(&h);
 	while (lexed_list)
 	{
+		if (h.parser_n && h.parser_n->exit_code != 0)
+		{	
+			while (lexed_list && ((t_lexer *)lexed_list->content)->exec_num == h.ith_command)
+				lexed_list = lexed_list->next;
+		}
+		if (lexed_list == NULL)
+			break ;
 		h.lexed_i = lexed_list->content;
-		if (ft_is_empty_lexed_lode(h.lexed_i->word, &lexed_list)) // if the lexed item is empty, we skip it, and make lexed_list = lexed_list->next
+		if (ft_is_empty_lexed_lode(h.lexed_i->word, &lexed_list)) // if the lexed item is empty, we skip it ONLY IF something before or after
 			continue ;
-		if (h.lexed_i->exec_num > h.ith_command && ft_create_new_command(&h, *exit_c, 0))
+		if ((h.lexed_i->exec_num > h.ith_command) && ft_create_new_command(&h, *exit_c, 0))
 			return (NULL);
-		if (h.lexed_i->type == REDIR || h.lexed_i->type == D_REDIR)
-			ft_handle_redirs(&(h.parser_n), h.lexed_i, h.lexed_i->type);
-		else if (h.lexed_i->type == INPUT)
-			ft_handle_input(&(h.parser_n), h.lexed_i, &(h.error));
-		else if (h.lexed_i->type == HEREDOC)
-			ft_handle_heredoc(&(h.parser_n), h.lexed_i, &(h.error));
-		else if (h.lexed_i->type == WORD)
-			h.error = ft_handle_word(&h, env_copy);
+		ft_parser_while(&h, env_copy);
 		lexed_list = lexed_list->next;
 	}
+	lexed_list = tmp;
 	if (ft_create_new_command(&h, *exit_c, 1) == 1)
 		return (NULL);
+	
 	return (h.list_head);
 }
