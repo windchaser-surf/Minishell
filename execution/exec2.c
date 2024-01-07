@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:29:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/22 14:32:36 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/07 13:35:58 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,11 @@ void	cmd_not_found(t_parser *command)
 {
 	char *tmp;
 	
+	if (command->cmd_args == NULL)
+	{
+		ft_file_closer_single(command);
+		exit (EXIT_SUCCESS);
+	}
 	tmp = ft_strjoin(command->cmd_args[0], ": command not found\n");
 	if (tmp == NULL)
 	{

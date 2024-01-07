@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 11:49:18 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/07 13:08:21 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,21 @@ _Bool	ft_create_new_command(t_parser_helper *h, int exit_code, _Bool last)
 
 _Bool	ft_is_empty_lexed_lode(char *str, t_list **lexed_list)
 {
-	//TODO: only true if there is nothing before or after, otherwise return 0
-	if (str[0] == '\0')
+	//TODO: only true if there is nothing after, otherwise return 0
+	_Bool	nothing_after;
+	t_lexer	*lexed_i;
+	t_lexer	*lexed_i_next;
+	
+	nothing_after = 0;
+	//there is a next AND the next's exec_num is greater than the current's
+	if (!(*lexed_list)->next)
+		return (0);
+	lexed_i = (t_lexer *)(*lexed_list)->content;
+	lexed_i_next = (t_lexer *)(*lexed_list)->next->content;
+	if (lexed_i->exec_num < lexed_i_next->exec_num)
+			nothing_after = 1;
+	
+	if (str[0] == '\0' && !nothing_after)
 		return (*lexed_list = (*lexed_list)->next, 1);
 	return (0);
 }
