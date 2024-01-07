@@ -6,10 +6,11 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 12:15:11 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/07 19:10:47 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "minishell.h"
 
 char	*ft_remove_quote(char *str, int *i, char c)	//from ab"cde"fg"hi" to abcdefg"hi", and setting i to the position of f
@@ -40,19 +41,39 @@ char	*ft_remove_quote(char *str, int *i, char c)	//from ab"cde"fg"hi" to abcdefg
 	return (tmp);
 }
 
+char	*ft_make_new_str_for_expanstion(int *i, char *str, int *j)
+{
+	char	*new_str;
+
+	new_str = malloc(sizeof(char) * ft_strlen(str) - 2 + 1);
+	if(!(new_str))
+		return (perror("Malloc failed"), NULL);
+	ft_strncpy(new_str, str, (size_t)*i);	//copy everything before the quote
+	new_str[*i] = '\0';
+	(*i)++;	//skip the quote
+	*j = *i - 1;
+	return (new_str);
+}
+
+void	ft_copy_whats_after_the_quote(int *i, int *j, char *str, char *new_str)
+{
+	(*i)++;	//skip the closing quote
+	int tmp_i = *i;
+	*i = *j;
+	while (str[tmp_i])	//copy everything after the quote
+		new_str[(*j)++] = str[tmp_i++];
+	new_str[*j] = '\0';
+	free(str);
+}
 
 char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code)	//from ab"cde"fg"hi" to abcdefghi, and setting i to the position of f
 {
 	char	*new_str;
 	int		j;
-	
-	new_str = malloc(sizeof(char) * ft_strlen(str) - 2 + 1);
-	if(!new_str)
-		return (perror("Malloc failed"), NULL);
-	ft_strncpy(new_str, str, (size_t)*i);	//copy everything before the quote
-	new_str[*i] = '\0';
-	(*i)++;	//skip the quote
-	j = *i - 1;
+
+	new_str = ft_make_new_str_for_expanstion(i, str, &j);
+	if (!new_str)
+		return (NULL);
 	while (str[*i] && str[*i] != '\"')	//copy everything between the quotes
 	{
 		if (str[*i] == '$' && (ft_isalpha(str[(*i) + 1])
@@ -70,21 +91,15 @@ char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code)	//fr
 			new_str[j] = '\0';
 		}
 	}
-	(*i)++;	//skip the closing quote
-	int tmp_i = *i;
-	*i = j;
-	while (str[tmp_i])	//copy everything after the quote
-		new_str[j++] = str[tmp_i++];
-	new_str[j] = '\0';
-	free(str);
+	ft_copy_whats_after_the_quote(i, &j, str, new_str);
 	return (new_str);
 }
 
-t_list	*ft_lexer_but_with_words_and_one_cmd(char *command)
+t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num)
 {
 	t_lexer_helper	helper;
 
-	ft_init_lexer_helper(&helper, command);
+	ft_init_lexer_helper(&helper, command, cmd_num);
 	ft_skip_spaces(command, &helper.i);
 	while (command[helper.i])
 	{
@@ -128,19 +143,14 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 		return (ft_print_ambig_redir(ft_get_var_name(orig_lex_node->word)), *exit_code = 1, NULL);
 	//create the new lexed list's nodes based on the actual new_str (without the rest after the $)
 	//new_nodes_head = ft_lexer(new_str);	//including the original, so we need to free that
-	new_nodes_head = ft_lexer_but_with_words_and_one_cmd(new_str);
-	
+	new_nodes_head = ft_lexer_but_with_words_and_one_cmd(new_str, orig_lex_node->exec_num);
 	free(new_str);
 	//get the the last node of the new lexed list
 
-	return (ft_insert_new_lexed_nodes(new_nodes_head, &h->current_node, &h->list_head, &h->i));
+	return (ft_insert_new_lexed_nodes(new_nodes_head, h)); //&h->current_node, &h->list_head, &h->i)
 }
 
-void	ft_put_node_to_end_of_cmd(t_list *lexed_l, int number_of_nodes_in_cmd)
-{
-	(void)number_of_nodes_in_cmd;
-	(void)lexed_l;
-}
+
 
 int	ft_get_number_of_nodes_in_cmd(t_list *lexed_l, int i)
 {
@@ -158,6 +168,55 @@ int	ft_get_number_of_nodes_in_cmd(t_list *lexed_l, int i)
 	return (number_of_nodes_in_cmd);
 }
 
+void	ft_put_node_to_end_of_cmd(t_list **orig, t_list **first_in_cmd, t_list *to_be_moved)
+{
+	/*(void)first_in_cmd;
+	(void)to_be_moved;*/
+	t_lexer	*lexed_l_cont;
+	t_list	*prev;
+	t_list	*tmp;
+	t_list	*last_node_before_insert;
+
+	if (!(*first_in_cmd)->next)
+		return ;
+	ft_print_lexer_list(*orig);
+	ft_print_lexer_list(*first_in_cmd);
+	lexed_l_cont = (t_lexer *)((to_be_moved)->content);
+	prev = *first_in_cmd;
+
+	if (to_be_moved == *first_in_cmd)
+		*first_in_cmd = to_be_moved->next;
+	else
+	{
+		while (prev->next != to_be_moved)
+			prev = prev->next;
+		prev->next = (to_be_moved)->next;
+		*orig = to_be_moved->next;
+	}
+	prev = *first_in_cmd;
+	
+	last_node_before_insert = prev;
+	while ((last_node_before_insert)->next && ((t_lexer *)(last_node_before_insert)->next->content)->exec_num == lexed_l_cont->exec_num)
+		(last_node_before_insert) = (last_node_before_insert)->next;
+	
+	tmp = last_node_before_insert->next;
+	//last_node_before_insert->next = to_be_moved;
+	if (!(last_node_before_insert->next))
+	{
+		last_node_before_insert->next = to_be_moved;
+		(to_be_moved)->next = NULL;
+	}
+	else
+	{
+		last_node_before_insert->next = to_be_moved;
+		(to_be_moved)->next = tmp;
+	}
+	
+	//
+	ft_print_lexer_list(*orig);
+	ft_print_lexer_list(*first_in_cmd);
+}
+
 void	ft_rearrange_lexed_list(t_list **lexed_l, int i) //put every WORD type node to the end
 {
 	int		max_cmds;
@@ -172,58 +231,54 @@ void	ft_rearrange_lexed_list(t_list **lexed_l, int i) //put every WORD type node
 		j = 0;
 		while (lexed_l && j < number_of_nodes_in_cmd)
 		{
-			//if (ft_add_back_to_new_ll(&new_lexed_list, lexed_l, 1))
-			ft_put_node_to_end_of_cmd(*lexed_l, number_of_nodes_in_cmd);
-			*lexed_l = (*lexed_l)->next;
+			if (((t_lexer *)(*lexed_l)->content)->type == WORD)
+				ft_put_node_to_end_of_cmd(lexed_l, &beg, *lexed_l);
+			else
+				*lexed_l = (*lexed_l)->next;
 			j++;
 		}
 		*lexed_l = beg;
 	}
-	
 }
 
-void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **env_copy, int i)
+void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **env_copy)
 {
 	(void)lexed_list;
 	h->list_head = NULL;
 	h->current_node = NULL;
+	h->curr_cont = NULL;
 	h->env_copy = env_copy;
-	h->i = i;
+	h->i = 0;
 }
 
-t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code, int i)
+t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 {
 	t_expander_helper	h;
-	t_lexer	*lexer_node;
 
-	init_expander_helper(&h, lexed_list, env_copy, i);
-	printf("---------------------BEFORE rearrange:\n");
-	ft_print_lexer_list(*lexed_list);
+	init_expander_helper(&h, lexed_list, env_copy);
+	/*printf("---------------------BEFORE rearrange:\n");
+	ft_print_lexer_list(*lexed_list);*/
 	ft_rearrange_lexed_list(lexed_list, -1);
 	h.list_head = *lexed_list;
-
 	h.current_node = h.list_head;
 	while (h.current_node)
 	{
-		lexer_node = (t_lexer *)h.current_node->content;
+		h.curr_cont = (t_lexer *)h.current_node->content;
 		h.i = 0;
-		while (lexer_node->word[h.i] && lexer_node->type != HEREDOC)
+		while (h.curr_cont->word[h.i] && h.curr_cont->type != HEREDOC)
 		{
-			if (lexer_node->word[h.i] == '\'')
-				lexer_node->word = ft_remove_quote(lexer_node->word, &h.i, '\'');	//no expand, no split | abc'a$b'c --> abcabc, i was 3, now 5
-			else if (lexer_node->word[h.i] == '\"')
-				lexer_node->word = ft_expand_dquote(lexer_node->word, &h.i, h.env_copy, exit_code);	//expand, no split | abc"a$b"c --> abcabc, i was 3, now 3
-			else if (lexer_node->word[h.i] == '$')	//expand, split | insert another lexer_node if needed | abc$a
-				lexer_node->word = ft_expand_with_split(&h, &exit_code);
+			if (h.curr_cont->word[h.i] == '\'')
+				h.curr_cont->word = ft_remove_quote(h.curr_cont->word, &h.i, '\'');	//no expand, no split | abc'a$b'c --> abcabc, i was 3, now 5
+			else if (h.curr_cont->word[h.i] == '\"')
+				h.curr_cont->word = ft_expand_dquote(h.curr_cont->word, &h.i, h.env_copy, exit_code);	//expand, no split | abc"a$b"c --> abcabc, i was 3, now 3
+			else if (h.curr_cont->word[h.i] == '$')	//expand, split | insert another lexer_node if needed | abc$a
+				h.curr_cont->word = ft_expand_with_split(&h, &exit_code);
 			else
 				h.i++;
-			if (!lexer_node->word)	//malloc failed
+			if (!h.curr_cont->word)	//malloc failed
 				return (ft_free_lexer(h.list_head), h.list_head = NULL, NULL);
 		}
 		h.current_node = h.current_node->next;
 	}
-	/*printf("---------------------AFTER rearrange:\n");
-	ft_print_lexer_list(h.list_head);*/
-	//free(*lexed_list);
 	return (h.list_head);
 }

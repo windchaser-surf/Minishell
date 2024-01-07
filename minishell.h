@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 12:13:50 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/07 16:30:30 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,7 @@ _Bool	ft_lexer_while(t_lexer_helper *helper, char *command);
 _Bool	ft_handle_lexer_new_command(t_lexer_helper *h, char *cmd);
 
 _Bool	ft_make_lnode(t_lexer_helper *helper, char *command);
-void	ft_init_lexer_helper(t_lexer_helper *helper, char *command);
+void	ft_init_lexer_helper(t_lexer_helper *helper, char *command, int exec_num);
 //int		ft_check_for_empty_command(t_list *list_head);
 
 void	ft_free_lexer(t_list *lexer_head);
@@ -190,15 +190,17 @@ void	ft_free_array(char **arr);
 typedef struct s_expander_helper {
 	t_list	*list_head;
 	t_list	*current_node;
+	t_lexer	*curr_cont;
 	t_list	**env_copy;
 	int		i;
 }	t_expander_helper;
 
-t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code, int i);
+t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code);
 
 char	*ft_remove_quote(char *str, int *i, char c);
 char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code);
 char	*ft_expand_with_split(t_expander_helper *h, int *exit_code);
+t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num);
 
 char	*ft_get_var_value(char *var_name, t_list **env_copy);
 char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy);
@@ -208,10 +210,7 @@ char	*ft_handle_dollar_question_q(char *new_str, int *exit_code, int *i, char *s
 
 void	ft_print_ambig_redir(char *var_name);
 
-void	ft_do_the_swapping(t_list *new_nodes_head, t_list *current_node, t_list **lexed_list_head, t_list *new_current);
-	//ft_insert_new_lexed_nodes(new_nodes_head, &h->current_node, &h->list_head, orig_lex_node, &h->i);
-
-char	*ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_list **current_node, t_list **lexed_list_head, int *i);
+char	*ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h);
 void	ft_rearrange_lexed_list(t_list **lexed_l, int i);
 _Bool	ft_add_back_to_new_ll(t_list **new_lexed_list, t_list *lexed_list, _Bool num);
 

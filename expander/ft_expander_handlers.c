@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 10:55:21 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/07 16:29:14 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy)
 	char	*tmp;
 	int		vns;
 	char 	*var_value;
-	int		new_str_original_size;
+	int		ns_size;
 	char	*var_name;
 	
 	*i += 1;	//skip the $
@@ -61,91 +61,44 @@ char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy)
 	while (str[*i + vns] && (ft_isalnum(str[*i + vns]) || str[*i + vns] == '_'))	//example: ab"cd$ef"gh -->var name is "ef"
 		(vns)++;
 	var_name = ft_substr(str, (unsigned int)(*i), (size_t)(vns));
-	
 	//2. getting the variable value
 	var_value = ft_get_var_value(var_name, env_copy);	//0, str that has the whole command with the var, str index where we encountered the $
-	
 	//3. concatenating it to the end of the string and removing the $var_name
-	new_str_original_size = ft_strlen(new_str);
-	tmp = malloc(new_str_original_size + ft_strlen(&str[*i]) - (vns + 1) + ft_strlen(var_value) + 2);	//update len with the variable value
+	ns_size = ft_strlen(new_str);
+	tmp = malloc(ns_size + ft_strlen(&str[*i]) - (++vns) + ft_strlen(var_value) + 2);	//update len with the variable value
 	if (!tmp)
 		return (perror("Malloc failed"), NULL);
 	ft_strcpy(tmp, new_str);	//copy everything before the $
 	free(new_str);
 	new_str = tmp;
-	
-	ft_strlcat(new_str, var_value, new_str_original_size + ft_strlen(var_value) + 1);	//append the variable value to the end of the string
+	ft_strlcat(new_str, var_value, ns_size + ft_strlen(var_value) + 1);	//append the variable value to the end of the string
 	free(var_value);
-	
 	*i = *i + vns;	//we set i to the position of the last char of the variable name (not value !)
 	return (new_str);
 }
 
-void	ft_do_the_swapping(t_list *new_nodes_head, t_list *current_node, t_list **lexed_list_head, t_list *new_current)
+char *ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h)
 {
+	t_list *new_current;
 	t_list *tmp;
-	
-	tmp = *lexed_list_head;
-	if (tmp == current_node)
-		*lexed_list_head = new_nodes_head;
+
+	new_current = ft_lstlast(new_nodes_head);
+	tmp = h->list_head;
+	if (tmp == (h->current_node))
+		h->list_head = new_nodes_head;
 	else
 	{
-		while (tmp->next != current_node && tmp->next)
+		while (tmp->next != (h->current_node) && tmp->next)
 			tmp = tmp->next;
 		tmp->next = new_nodes_head;
 	}	
-	if (current_node->next != NULL)
-		new_current->next = current_node->next;
-	//ft_free_lexer_node(current_node);
-	
-	printf("AFTER SWAPPING, the new nodes are:\n");
-	ft_print_lexer_list(*lexed_list_head);
-	/*tmp2 = new_nodes_head;
-	while (tmp2->next != new_current && tmp2->next)	//stop one before the last node of the newly created lexed list
-		tmp2 = tmp2->next;
-	if (tmp2->next == NULL && *lexed_list_head == new_nodes_head)
-		*lexed_list_head = *current_node;
-	else if (tmp2->next == NULL)
-		tmp->next = *current_node;
-	else
-		tmp2->next = *current_node;	//make the one before the last node of the newly created lexed list point to the original's next node
-	printf("AFTER SWAPPING, the new nodes are:\n");
-	ft_print_lexer_list(*lexed_list_head);*/
-}
-
-char *ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_list **current_node, t_list **lexed_list_head, int *i)
-{
-	t_list *new_current;
-	//t_lexer *original_lexer_node = (t_lexer *)current_node->content;
-	//int j;
-	
-	//make new_nodes_head's last node to point at the original's next node
-	new_current = ft_lstlast(new_nodes_head);
-	
-	//int original_word_len = ft_strlen(((t_lexer *)new_current->content)->word);	//the length of the last node's word before realloc
-	/*char *tmp_word = malloc(sizeof(char) * (ft_strlen(new_current_lexer->word) + ft_strlen(&original_lexer_node->word[*i]) + 1));
-	if (!tmp_word)
-		return ;
-	ft_strcpy(tmp_word, new_current_lexer->word);	//copy the last new lexed node's word into the temp
-	free(new_current_lexer->word);
-	new_current_lexer->word = tmp_word;
-	
-	j = original_word_len;
-	int tmp_i = *i;
-	while (original_lexer_node->word[tmp_i])
-		new_current_lexer->word[j++] = original_lexer_node->word[tmp_i++];
-
-	new_current_lexer->word[j] = '\0';*/
-
-	ft_do_the_swapping(new_nodes_head, *current_node, lexed_list_head, new_current);
-	//make the current_node point to the new_nodes_head
-	*current_node = new_current;
-	
-	//make the node before the current_node point to the new_nodes_head
-	//original_lexer_node->word = new_current_lexer->word;
-	
-	*i = ft_strlen(((t_lexer *)new_current->content)->word);
-	return (((t_lexer *)new_current->content)->word);
+	if ((h->current_node)->next != NULL)
+		new_current->next = (h->current_node)->next;
+	h->curr_cont = (t_lexer *)(new_current)->content;
+	ft_free_lexer_node(h->current_node);
+	h->current_node = new_current;
+	h->i = ft_strlen(((t_lexer *)new_current->content)->word);
+	return (h->curr_cont->word);
 }
 
 void	ft_print_ambig_redir(char *var_name)
@@ -196,17 +149,18 @@ char	*ft_handle_dollar_question_q(char *new_str, int *exit_code, int *i, char *s
 	return (new_str);
 }
 
-_Bool	ft_add_back_to_new_ll(t_list **new_lexed_list, t_list *lexed_list, _Bool num)
+//delete later
+/*_Bool	ft_add_back_to_new_ll(t_list **new_lexed_list, t_list *lexed_list, _Bool num)
 {
 	t_list *new_tmp;
 	//t_lexer	*new_content;
 
 	//new_content = (t_lexer *)malloc(sizeof(t_lexer));
-	/*new_content->word = ft_strdup(((t_lexer *)lexed_list->content)->word);
+	new_content->word = ft_strdup(((t_lexer *)lexed_list->content)->word);
 	if (new_content->word == NULL)
 		return (1);	//free ll?
 	new_content->type = ((t_lexer *)lexed_list->content)->type;
-	new_content->exec_num = ((t_lexer *)lexed_list->content)->exec_num;*/
+	new_content->exec_num = ((t_lexer *)lexed_list->content)->exec_num;
 	new_tmp = ft_lstnew(lexed_list->content);
 	if ((((t_lexer *)lexed_list->content)->type != WORD) == num)
 		ft_lstadd_back(new_lexed_list, new_tmp);
@@ -218,4 +172,4 @@ _Bool	ft_add_back_to_new_ll(t_list **new_lexed_list, t_list *lexed_list, _Bool n
 	}
 	return (0);
 }
-
+*/

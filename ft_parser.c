@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 13:08:21 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/07 14:23:20 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,23 +47,32 @@ _Bool	ft_create_new_command(t_parser_helper *h, int exit_code, _Bool last)
 	return (0);
 }
 
-_Bool	ft_is_empty_lexed_lode(char *str, t_list **lexed_list)
+_Bool	ft_is_empty_lexed_lode(char *str, t_list **lexed_list, t_list *beg_of_cmd)
 {
 	//TODO: only true if there is nothing after, otherwise return 0
 	_Bool	nothing_after;
+	_Bool	nothing_before;
 	t_lexer	*lexed_i;
 	t_lexer	*lexed_i_next;
 	
 	nothing_after = 0;
+	nothing_before = 0;
 	//there is a next AND the next's exec_num is greater than the current's
-	if (!(*lexed_list)->next)
-		return (0);
 	lexed_i = (t_lexer *)(*lexed_list)->content;
-	lexed_i_next = (t_lexer *)(*lexed_list)->next->content;
-	if (lexed_i->exec_num < lexed_i_next->exec_num)
+	if (!(*lexed_list)->next && beg_of_cmd != *lexed_list && str[0] == '\0')
+		return (*lexed_list = (*lexed_list)->next, 1);
+	else if ((*lexed_list)->next)
+	{
+		lexed_i_next = (t_lexer *)(*lexed_list)->next->content;
+		if (lexed_i->exec_num < lexed_i_next->exec_num)
 			nothing_after = 1;
+	}
+	else if (!(*lexed_list)->next)
+		nothing_after = 1;
+	if (beg_of_cmd == *lexed_list)
+		nothing_before = 1;
 	
-	if (str[0] == '\0' && !nothing_after)
+	if (str[0] == '\0' && !nothing_after && !nothing_before)
 		return (*lexed_list = (*lexed_list)->next, 1);
 	return (0);
 }
@@ -84,6 +93,7 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 {
 	t_parser_helper	h;
 	t_list			*tmp;
+	t_list			*first_cmd_lexed;
 
 	tmp = lexed_list;
 	if (lexed_list == NULL)
@@ -91,6 +101,9 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 	ft_init_parser_helper_struct(&h);
 	while (lexed_list)
 	{
+		
+		if (((t_lexer *)lexed_list->content)->exec_num > h.ith_command)
+			first_cmd_lexed = lexed_list;
 		if (h.parser_n && h.parser_n->exit_code != 0)
 		{	
 			while (lexed_list && ((t_lexer *)lexed_list->content)->exec_num == h.ith_command)
@@ -99,7 +112,7 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 		if (lexed_list == NULL)
 			break ;
 		h.lexed_i = lexed_list->content;
-		if (ft_is_empty_lexed_lode(h.lexed_i->word, &lexed_list)) // if the lexed item is empty, we skip it ONLY IF something before or after
+		if (ft_is_empty_lexed_lode(h.lexed_i->word, &lexed_list, first_cmd_lexed)) // if the lexed item is empty, we skip it ONLY IF something before or after
 			continue ;
 		if ((h.lexed_i->exec_num > h.ith_command) && ft_create_new_command(&h, *exit_c, 0))
 			return (NULL);

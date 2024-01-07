@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 09:45:51 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/06 21:28:22 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/07 14:50:16 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,10 @@ _Bool	ft_make_lnode(t_lexer_helper *helper, char *command)
 	return (0);
 }
 
-void	ft_init_lexer_helper(t_lexer_helper *helper, char *command)
+void	ft_init_lexer_helper(t_lexer_helper *helper, char *command, int exec_num)
 {
 	helper->i = 0;
-	helper->exec_num = 0;
+	helper->exec_num = exec_num;
 	helper->prev_wt = WORD;
 	helper->list_head = NULL;
 	ft_skip_spaces(command + helper->i, &(helper->i));

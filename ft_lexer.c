@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/06 18:13:26 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/07 14:50:44 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,7 @@ t_list	*ft_lexer(char *command)
 {
 	t_lexer_helper	helper;
 
-	ft_init_lexer_helper(&helper, command);
+	ft_init_lexer_helper(&helper, command, 0);
 	while (command[helper.i])
 	{
 		if (ft_lexer_while(&helper, command) == 1)
