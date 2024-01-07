@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 12:17:52 by felix             #+#    #+#             */
-/*   Updated: 2023/12/22 16:09:57 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/05 15:39:05 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ int	print_export(t_list *env_copy)
 
 int	err_msg_not_valid(void)
 {
-	ft_putstr_fd("export: Not a valid identifier\n", STDERR_FILENO);
+	ft_putstr_fd("export: not a valid identifier\n", STDERR_FILENO);
 	return (EXIT_FAILURE);	
 }
 

@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:40:12 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/04 14:39:23 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/05 15:42:02 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,10 +70,10 @@ int exit_too_many(int pid_check)
 void exit_not_numeric(int pid_check, t_list *tokens, t_list **env_copy)
 {
 	if (pid_check == 1)
-		ft_putstr_fd("exit: needs a numeric parameter\n", STDERR_FILENO);
+		ft_putstr_fd("exit: numeric argumend required\n", STDERR_FILENO);
 	else
 	{
-		ft_putstr_fd("exit\nexit: needs a numeric parameter\n", STDERR_FILENO);
+		ft_putstr_fd("exit: numeric argument required\n", STDERR_FILENO);
 		if (env_copy)
 			ft_lstclear(env_copy, free);
 		rl_clear_history();
