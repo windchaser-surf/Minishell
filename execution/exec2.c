@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:29:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/07 13:35:58 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/07 13:40:39 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void dup_output(t_parser *command, t_pipex *data, int n)
 			
 			if (dup2(data->p[1 + (2 * n)], 1) == -1)
 			{
-				perror("dup212 ");
+				perror("dup ");
 				error_closing(command, data);
 			}
 		}
