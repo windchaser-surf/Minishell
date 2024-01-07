@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 19:10:47 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/07 22:11:26 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,50 +170,39 @@ int	ft_get_number_of_nodes_in_cmd(t_list *lexed_l, int i)
 
 void	ft_put_node_to_end_of_cmd(t_list **orig, t_list **first_in_cmd, t_list *to_be_moved)
 {
-	/*(void)first_in_cmd;
-	(void)to_be_moved;*/
 	t_lexer	*lexed_l_cont;
 	t_list	*prev;
 	t_list	*tmp;
-	t_list	*last_node_before_insert;
 
-	if (!(*first_in_cmd)->next)
-		return ;
-	ft_print_lexer_list(*orig);
-	ft_print_lexer_list(*first_in_cmd);
 	lexed_l_cont = (t_lexer *)((to_be_moved)->content);
+	if (!(to_be_moved)->next || ((t_lexer *)(to_be_moved)->next->content)->exec_num != lexed_l_cont->exec_num)
+		return ;
+	
 	prev = *first_in_cmd;
-
 	if (to_be_moved == *first_in_cmd)
+	{
 		*first_in_cmd = to_be_moved->next;
+		*orig = *first_in_cmd;
+	}
 	else
 	{
 		while (prev->next != to_be_moved)
 			prev = prev->next;
 		prev->next = (to_be_moved)->next;
-		*orig = to_be_moved->next;
+		*orig = prev->next;
 	}
 	prev = *first_in_cmd;
-	
-	last_node_before_insert = prev;
-	while ((last_node_before_insert)->next && ((t_lexer *)(last_node_before_insert)->next->content)->exec_num == lexed_l_cont->exec_num)
-		(last_node_before_insert) = (last_node_before_insert)->next;
-	
-	tmp = last_node_before_insert->next;
-	//last_node_before_insert->next = to_be_moved;
-	if (!(last_node_before_insert->next))
-	{
-		last_node_before_insert->next = to_be_moved;
+	while ((prev)->next && ((t_lexer *)(prev)->next->content)->exec_num == lexed_l_cont->exec_num)
+		(prev) = (prev)->next;
+	tmp = prev->next;
+	if (!(prev->next))
 		(to_be_moved)->next = NULL;
-	}
 	else
-	{
-		last_node_before_insert->next = to_be_moved;
 		(to_be_moved)->next = tmp;
-	}
+	prev->next = to_be_moved;
 	
-	//
-	ft_print_lexer_list(*orig);
+	//ft_print_lexer_list(*orig);
+	printf("---------------------\n");
 	ft_print_lexer_list(*first_in_cmd);
 }
 
@@ -231,6 +220,7 @@ void	ft_rearrange_lexed_list(t_list **lexed_l, int i) //put every WORD type node
 		j = 0;
 		while (lexed_l && j < number_of_nodes_in_cmd)
 		{
+			printf("word: %s\n", ((t_lexer *)(*lexed_l)->content)->word);
 			if (((t_lexer *)(*lexed_l)->content)->type == WORD)
 				ft_put_node_to_end_of_cmd(lexed_l, &beg, *lexed_l);
 			else
@@ -258,7 +248,6 @@ t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 	init_expander_helper(&h, lexed_list, env_copy);
 	/*printf("---------------------BEFORE rearrange:\n");
 	ft_print_lexer_list(*lexed_list);*/
-	ft_rearrange_lexed_list(lexed_list, -1);
 	h.list_head = *lexed_list;
 	h.current_node = h.list_head;
 	while (h.current_node)
@@ -280,5 +269,6 @@ t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 		}
 		h.current_node = h.current_node->next;
 	}
+	ft_rearrange_lexed_list(&(h.list_head), -1);
 	return (h.list_head);
 }
