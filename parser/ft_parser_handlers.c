@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_handlers.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/06 13:01:25 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/08 18:16:22 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,7 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error)
 {
 	char	*delim;
 	char	*tmp;
-	//struct sigaction	sa;
-
-	//sa.sa_handler = heredoc_sig_handler;
+;
 	//we dont expand variables in heredoc, so "<< $test" the delimiter is "$test" and not what's in the test variable
 	if (ft_str_has_quote(lexed_item->word))
 		delim = ft_just_remove_quotes(lexed_item->word);
@@ -49,17 +47,9 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error)
 		if (ft_strcmp(delim, tmp) == 0 /*|| g_running_process.while_true == 0*/)
 			break ;
 		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, tmp);
-		(*parser_node)->heredoc = ft_strjoin((*parser_node)->heredoc, "\n");
+		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, "\n");
 		free(tmp);
 	}
-	//sigaction(SIGINT, &sa, NULL);
-
-	/*init_sig();
-	if (g_running_process.while_true == 0)
-	{
-		free((*parser_node)->heredoc);
-	}
-	g_running_process.while_true = 1;*/
 	free(delim);
 	free(tmp);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 21:42:23 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/08 17:36:57 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,13 +127,15 @@ int main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		command = readline("Minishell> ");
+		if (!command)
+			continue ;
 		add_history(command); 
 		if (ft_basic_error_checker(&command, &exit_code) == 1)	// 1 if error, 0 if correct.
 			continue;
 		lexed_list = ft_lexer(command);	// This function will tokenize the command and store it in a linked list called t_lexer.
 		free(command);
 		lexed_list = ft_expander(&lexed_list, &env_copy, exit_code);
-		//ft_print_lexer_list(lexed_list);
+		ft_print_lexer_list(lexed_list);
 		parsed_list = ft_parser(lexed_list, &exit_code, &env_copy);
 		
 		ft_free_lexer(lexed_list);

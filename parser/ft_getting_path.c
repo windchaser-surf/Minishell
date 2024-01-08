@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_getting_path.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:39:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 22:19:19 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/08 17:40:49 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ char	*ft_get_path(t_list **env, char *cmd, t_parser **parser_node)
 	path = ft_get_env_value(*env, "PATH");
 	path_dirs = ft_split(path, ':');
 	free(path);
-	if (path_dirs == NULL || ft_cmd_is_dot(cmd, parser_node))
+	if (path_dirs == NULL || ft_cmd_is_dot(cmd, parser_node) || cmd[0] == '\0')
 		return (ft_free_array(path_dirs), NULL);
 	i = -1;
 	while (path_dirs[++i])

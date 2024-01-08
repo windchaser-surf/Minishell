@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/08 15:19:48 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/08 17:34:42 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,6 +250,8 @@ t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 	init_expander_helper(&h, lexed_list, env_copy);
 	/*printf("---------------------BEFORE rearrange:\n");
 	ft_print_lexer_list(*lexed_list);*/
+	if (!(lexed_list))
+		return (NULL);
 	h.list_head = *lexed_list;
 	h.current_node = h.list_head;
 	while (h.current_node)
