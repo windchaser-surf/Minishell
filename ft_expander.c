@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 22:11:26 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/08 15:19:48 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,8 +202,8 @@ void	ft_put_node_to_end_of_cmd(t_list **orig, t_list **first_in_cmd, t_list *to_
 	prev->next = to_be_moved;
 	
 	//ft_print_lexer_list(*orig);
-	printf("---------------------\n");
-	ft_print_lexer_list(*first_in_cmd);
+	//printf("---------------------\n");
+	//ft_print_lexer_list(*first_in_cmd);
 }
 
 void	ft_rearrange_lexed_list(t_list **lexed_l, int i) //put every WORD type node to the end
@@ -212,6 +212,8 @@ void	ft_rearrange_lexed_list(t_list **lexed_l, int i) //put every WORD type node
 	int		j;
 	t_list *beg;
 
+	if (!lexed_l || !*lexed_l)
+		return ;
 	max_cmds = ((t_lexer *)ft_lstlast(*lexed_l)->content)->exec_num;
 	while (++i <= max_cmds)
 	{
@@ -220,7 +222,7 @@ void	ft_rearrange_lexed_list(t_list **lexed_l, int i) //put every WORD type node
 		j = 0;
 		while (lexed_l && j < number_of_nodes_in_cmd)
 		{
-			printf("word: %s\n", ((t_lexer *)(*lexed_l)->content)->word);
+			//printf("word: %s\n", ((t_lexer *)(*lexed_l)->content)->word);
 			if (((t_lexer *)(*lexed_l)->content)->type == WORD)
 				ft_put_node_to_end_of_cmd(lexed_l, &beg, *lexed_l);
 			else

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_basic_error_checker.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/06 21:18:47 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/08 11:23:18 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	ft_ends_with_spec(char *command, int *error_code)
 _Bool	ft_emptyness_in_cmd(char *cmd)
 {
 	int		i;
-	int		prev_i;
+	//int		prev_i;
 	_Bool	prev_was_pipe;
 
 	i = 0;
@@ -67,7 +67,7 @@ _Bool	ft_emptyness_in_cmd(char *cmd)
 		return (1);
 	while (cmd[i])
 	{
-		prev_i = i;
+		//prev_i = i;
 		ft_skip_spaces(cmd, &i);
 		if (cmd[i] == '"' || cmd[i] == '\'')
 		{

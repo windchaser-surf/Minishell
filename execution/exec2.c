@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:29:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/07 16:06:49 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/08 16:32:52 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ int    create_pipes(t_pipex *data)
 			while (del > 0)
 			{
 				del--;
-				close (data->p[i]);
+				close (data->p[del]);
 			}
 			return (EXIT_FAILURE);
 		}	
