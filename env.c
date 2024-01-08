@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 10:39:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/04 12:26:49 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/08 17:47:02 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,10 @@ int init_env(char **env, t_list **env_copy)
 			return (ft_lstclear(env_copy, del), EXIT_FAILURE);	//MALLOC ERROR
 		new_element = ft_lstnew((void *)new_content);
 		if (new_element == NULL)
+		{
+			free(new_content);
 			return (ft_lstclear(env_copy, del), EXIT_FAILURE);	//MALLOC ERROR
+		}
 		ft_lstadd_back(env_copy, new_element);
 		env++;
 	}
