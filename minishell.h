@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 16:30:30 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/08 20:57:25 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ typedef struct s_parser		//a node is piece of element that you need to pass to t
 _Bool	ft_basic_error_checker(char **command, int *error_code);
 int		ft_ends_with_spec(char *command, int *error_code);
 _Bool	ft_unmatched_quotes(char *command, int *error_code);
-_Bool	ft_emptyness_in_cmd(char *cmd);
+_Bool	ft_emptyness_in_cmd(char *cmd, int i);
 
 //BUILTIN
 //cd.c 

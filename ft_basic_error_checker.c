@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_basic_error_checker.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/08 11:23:18 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/08 20:59:23 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,20 +54,16 @@ int	ft_ends_with_spec(char *command, int *error_code)
 	return (0);
 }
 
-_Bool	ft_emptyness_in_cmd(char *cmd)
+_Bool	ft_emptyness_in_cmd(char *cmd, int i)
 {
-	int		i;
-	//int		prev_i;
 	_Bool	prev_was_pipe;
 
-	i = 0;
 	prev_was_pipe = 1;
 	ft_skip_spaces(cmd, &i);
 	if (cmd[i] == '\0')
 		return (1);
 	while (cmd[i])
 	{
-		//prev_i = i;
 		ft_skip_spaces(cmd, &i);
 		if (cmd[i] == '"' || cmd[i] == '\'')
 		{
@@ -80,7 +76,8 @@ _Bool	ft_emptyness_in_cmd(char *cmd)
 			prev_was_pipe = 1;
 		else
 			prev_was_pipe = 0;
-		i++;
+		if (cmd[i] != '\0')		
+			i++;
 	}
 	return (0);
 }
@@ -90,11 +87,13 @@ _Bool	ft_basic_error_checker(char **command, int *error_code)
 	char	*attach_to_end;
 	char	*new_command;
 
-	new_command = NULL;
-	if (ft_emptyness_in_cmd(*command) == 1)	//check for emptyness between pipes, incl beginning
-		return (free(*command), 1);
 	if (ft_unmatched_quotes(*command, error_code))
 		return (1);
+	if (ft_emptyness_in_cmd(*command, 0) == 1)	//check for emptyness between pipes, incl beginning
+		return (free(*command), 1);
+	if (ft_ends_with_spec(*command, error_code) == 2)	//ends with redirection character
+		return (1);
+	new_command = NULL;
 	while(ft_ends_with_spec(*command, error_code) == 1)	//ends with pipe
 	{
 		free(new_command);
@@ -109,7 +108,5 @@ _Bool	ft_basic_error_checker(char **command, int *error_code)
 		ft_strcpy(*command, new_command);
 	}
 	free(new_command);
-	if (ft_ends_with_spec(*command, error_code) == 2)	//ends with redirection character
-		return (1);
 	return (0);
 }

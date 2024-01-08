@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lexer_utils_2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:14:16 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/06 23:35:04 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/08 20:52:18 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	ft_skip_spaces(char *str, int *i)
 
 	if (str[*i] == '\0')
 		return ;
-	while (str + *i && *(str + *i) == ' ')
+	while (*(str + *i) != '\0' && *(str + *i) == ' ')
 		(*i)++;
 }
 

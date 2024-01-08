@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 14:23:20 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/08 20:03:33 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,7 @@ _Bool	ft_is_empty_lexed_lode(char *str, t_list **lexed_list, t_list *beg_of_cmd)
 		nothing_after = 1;
 	if (beg_of_cmd == *lexed_list)
 		nothing_before = 1;
-	
-	if (str[0] == '\0' && !nothing_after && !nothing_before)
+	if (str[0] == '\0' && !nothing_after && !nothing_before)	//!nothing_before && 
 		return (*lexed_list = (*lexed_list)->next, 1);
 	return (0);
 }
