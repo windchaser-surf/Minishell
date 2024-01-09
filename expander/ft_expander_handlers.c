@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_handlers.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 16:29:14 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/09 11:52:58 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,11 +94,12 @@ char *ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h)
 	}	
 	if ((h->current_node)->next != NULL)
 		new_current->next = (h->current_node)->next;
-	h->curr_cont = (t_lexer *)(new_current)->content;
 	ft_free_lexer_node(h->current_node);
 	h->current_node = new_current;
+	//h->curr_cont = (t_lexer *)(h->current_node)->content;
 	h->i = ft_strlen(((t_lexer *)new_current->content)->word);
-	return (h->curr_cont->word);
+	
+	return (((t_lexer *)h->current_node->content)->word);
 }
 
 void	ft_print_ambig_redir(char *var_name)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/08 20:57:25 by codespace        ###   ########.fr       */
+/*   Updated: 2024/01/09 11:36:55 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,7 +190,7 @@ void	ft_free_array(char **arr);
 typedef struct s_expander_helper {
 	t_list	*list_head;
 	t_list	*current_node;
-	t_lexer	*curr_cont;
+	//t_lexer	*curr_cont;
 	t_list	**env_copy;
 	int		i;
 }	t_expander_helper;

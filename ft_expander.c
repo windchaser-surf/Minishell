@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/08 17:34:42 by codespace        ###   ########.fr       */
+/*   Updated: 2024/01/09 11:59:22 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,6 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 	new_nodes_head = ft_lexer_but_with_words_and_one_cmd(new_str, orig_lex_node->exec_num);
 	free(new_str);
 	//get the the last node of the new lexed list
-
 	return (ft_insert_new_lexed_nodes(new_nodes_head, h)); //&h->current_node, &h->list_head, &h->i)
 }
 
@@ -238,7 +237,7 @@ void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **en
 	(void)lexed_list;
 	h->list_head = NULL;
 	h->current_node = NULL;
-	h->curr_cont = NULL;
+	//h->curr_cont = NULL;
 	h->env_copy = env_copy;
 	h->i = 0;
 }
@@ -246,6 +245,7 @@ void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **en
 t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 {
 	t_expander_helper	h;
+	char *tmp;
 
 	init_expander_helper(&h, lexed_list, env_copy);
 	/*printf("---------------------BEFORE rearrange:\n");
@@ -256,19 +256,23 @@ t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 	h.current_node = h.list_head;
 	while (h.current_node)
 	{
-		h.curr_cont = (t_lexer *)h.current_node->content;
+		//h.curr_cont = (t_lexer *)h.current_node->content;
 		h.i = 0;
-		while (h.curr_cont->word[h.i] && h.curr_cont->type != HEREDOC)
+		while (((t_lexer *)h.current_node->content)->word[h.i] && ((t_lexer *)h.current_node->content)->type != HEREDOC)
 		{
-			if (h.curr_cont->word[h.i] == '\'')
-				h.curr_cont->word = ft_remove_quote(h.curr_cont->word, &h.i, '\'');	//no expand, no split | abc'a$b'c --> abcabc, i was 3, now 5
-			else if (h.curr_cont->word[h.i] == '\"')
-				h.curr_cont->word = ft_expand_dquote(h.curr_cont->word, &h.i, h.env_copy, exit_code);	//expand, no split | abc"a$b"c --> abcabc, i was 3, now 3
-			else if (h.curr_cont->word[h.i] == '$')	//expand, split | insert another lexer_node if needed | abc$a
-				h.curr_cont->word = ft_expand_with_split(&h, &exit_code);
+			if (((t_lexer *)h.current_node->content)->word[h.i] == '\'')
+				((t_lexer *)h.current_node->content)->word = ft_remove_quote(((t_lexer *)h.current_node->content)->word, &h.i, '\'');	//no expand, no split | abc'a$b'c --> abcabc, i was 3, now 5
+			else if (((t_lexer *)h.current_node->content)->word[h.i] == '\"')
+				((t_lexer *)h.current_node->content)->word = ft_expand_dquote(((t_lexer *)h.current_node->content)->word, &h.i, h.env_copy, exit_code);	//expand, no split | abc"a$b"c --> abcabc, i was 3, now 3
+			else if (((t_lexer *)h.current_node->content)->word[h.i] == '$')	//expand, split | insert another lexer_node if needed | abc$a
+			{
+				tmp = ft_expand_with_split(&h, &exit_code);
+				((t_lexer *)h.current_node->content)->word = tmp;
+			}
+				
 			else
 				h.i++;
-			if (!h.curr_cont->word)	//malloc failed
+			if (!((t_lexer *)h.current_node->content)->word)	//malloc failed
 				return (ft_free_lexer(h.list_head), h.list_head = NULL, NULL);
 		}
 		h.current_node = h.current_node->next;
