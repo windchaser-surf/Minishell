@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/08 20:59:23 by codespace        ###   ########.fr       */
+/*   Updated: 2024/01/09 08:57:08 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ _Bool	ft_emptyness_in_cmd(char *cmd, int i)
 		if (cmd[i] == '"' || cmd[i] == '\'')
 		{
 			ft_skip_to_closing_quote(cmd, &i, cmd[i]);
+			prev_was_pipe = 0;
 			continue ;
 		}
 		else if (cmd[i] == '|' && prev_was_pipe == 1)
