@@ -6,7 +6,7 @@
 /*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 11:59:22 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/09 14:00:00 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 	if (orig_lex_node->word[(h->i) + 1] == '?')
 		return (ft_handle_dollar_question(new_str, exit_code, &h->i, orig_lex_node->word));
 	new_str = ft_expand_variable(new_str, &h->i, orig_lex_node->word, h->env_copy);
-	if (!new_str[0])
+	if (!new_str || !new_str[0])
 		return (free(orig_lex_node->word), h->i = 0, new_str);
 	if (ft_strchr(new_str, ' ') != NULL && orig_lex_node->type != WORD && orig_lex_node->type != HEREDOC)
 		return (ft_print_ambig_redir(ft_get_var_name(orig_lex_node->word)), *exit_code = 1, NULL);

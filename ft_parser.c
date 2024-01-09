@@ -6,7 +6,7 @@
 /*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 12:16:19 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/09 13:46:50 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ _Bool	ft_create_new_command(t_parser_helper *h, int exit_code, _Bool last)
 			return (ft_free_parser(h->list_head), 1);
 		h->new_node_head = ft_lstnew(h->parser_n);
 		if (h->new_node_head == NULL)
-			return (ft_free_parser(h->list_head), perror("Malloc failed"), 1);
+			return (ft_free_parser(h->list_head), ft_free_parser_node(h->parser_n), perror("Malloc failed"), 1);
 		ft_lstadd_back(&(h->list_head), h->new_node_head);
 	}
 	if (last == 0) // if we are not at the last command, initialize a new command
@@ -118,6 +118,8 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 		if ((h.lexed_i->exec_num > h.ith_command) && ft_create_new_command(&h, *exit_c, 0))
 			return (NULL);
 		ft_parser_while(&h, env_copy);
+		if (h.error)
+			return (ft_free_parser(h.list_head), NULL);
 		lexed_list = lexed_list->next;
 	}
 	lexed_list = tmp;

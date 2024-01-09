@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_utils_2.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:56:15 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/06 12:58:21 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/09 13:45:16 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,16 @@ void	ft_free_parser(t_list *parser_head)
 		free(parser_head);
 		parser_head = tmp;
 	}
+}
+
+void	ft_free_parser_node(t_parser *parser_node)
+{
+	if (parser_node->cmd_path && ft_strcmp( parser_node->cmd_path , "BUILTIN") != 0)
+		free(parser_node->cmd_path);
+	ft_free_array(parser_node->cmd_args);
+	free(parser_node->heredoc);
+	free(parser_node);
+	
 }
 
 void	ft_perror_and_free(char *str)

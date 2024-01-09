@@ -6,7 +6,7 @@
 /*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 11:52:58 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/09 13:58:24 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ char	*ft_get_var_value(char *var_name, t_list **env_copy)	//0, str that has the 
 	char 	*var_value;
 
 	//2. getting the variable value
+	if (!var_name)
+		return (NULL);
 	var_value = ft_get_env_value(*env_copy, var_name);
 	free(var_name);
 	if (!var_value)
@@ -63,11 +65,13 @@ char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy)
 	var_name = ft_substr(str, (unsigned int)(*i), (size_t)(vns));
 	//2. getting the variable value
 	var_value = ft_get_var_value(var_name, env_copy);	//0, str that has the whole command with the var, str index where we encountered the $
+	if (!var_value)
+		return (perror("Malloc failed"), /*free(var_name),*/ NULL);
 	//3. concatenating it to the end of the string and removing the $var_name
 	ns_size = ft_strlen(new_str);
 	tmp = malloc(ns_size + ft_strlen(&str[*i]) - (++vns) + ft_strlen(var_value) + 2);	//update len with the variable value
 	if (!tmp)
-		return (perror("Malloc failed"), NULL);
+		return (perror("Malloc failed"), /*free(var_name),*/ NULL);
 	ft_strcpy(tmp, new_str);	//copy everything before the $
 	free(new_str);
 	new_str = tmp;

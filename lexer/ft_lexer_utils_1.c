@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lexer_utils_1.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 09:45:51 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 14:50:16 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/09 13:29:43 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,15 @@ _Bool	ft_make_lnode(t_lexer_helper *helper, char *command)
 		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
 	lexer_node->word = ft_substr(command, helper->start, helper->i - helper->start);
 	if (lexer_node->word == NULL)
-		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
+		return (ft_free_lexer(helper->list_head), free(lexer_node), perror("Malloc failed"), 1);
 	lexer_node->type = helper->prev_wt;
 	lexer_node->exec_num = helper->exec_num;
 	new = ft_lstnew(lexer_node);
 	if (new == NULL)
-		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
+		return (ft_free_lexer(helper->list_head), free(lexer_node->word), free(lexer_node), perror("Malloc failed"), 1);
 	ft_lstadd_back(&(helper->list_head), new);
+	if (ft_lstsize(helper->list_head) == 1)
+		helper->list_head = new;
 	return (0);
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_basic_error_checker.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 08:57:08 by codespace        ###   ########.fr       */
+/*   Updated: 2024/01/09 12:47:09 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,8 @@ _Bool	ft_basic_error_checker(char **command, int *error_code)
 	{
 		free(new_command);
 		attach_to_end = readline("> ");
+		if (!attach_to_end)
+			return (free(*command), 1);
 		add_history(attach_to_end);
 		new_command = ft_strjoin(*command, attach_to_end);
 		free(attach_to_end);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin_free.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 16:49:09 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/14 16:49:43 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/09 13:00:48 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ char	*ft_strjoin_free(char *s1, char *s2)
 	full_len = ft_strlen(s1) + ft_strlen(s2);
 	res = (char *)malloc(full_len + 1);
 	if (!res)
-		return (NULL);
+		return (free(s1), NULL);
 	while (i < (int)ft_strlen(s1))
 	{
 		res[i] = s1[i];

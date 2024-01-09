@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_getting_path.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:39:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/08 17:40:49 by codespace        ###   ########.fr       */
+/*   Updated: 2024/01/09 13:35:26 by felix            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,18 +73,18 @@ char	**ft_realloc_array(char **outfiles, char *new_item)
 		i++;
 	new_array = (char **)malloc(sizeof(char *) * (i + 2));
 	if (new_array == NULL)
-		return (NULL);
+		return (ft_free_array(outfiles), NULL);
 	i = 0;
 	while (outfiles[i])
 	{
 		new_array[i] = ft_strdup(outfiles[i]);
 		if (new_array[i] == NULL)
-			return (NULL);
+			return (ft_free_array(new_array), ft_free_array(outfiles),NULL);
 		i++;
 	}
 	new_array[i] = ft_strdup(new_item);
 	if (new_array[i] == NULL)
-		return (NULL);
+		return (ft_free_array(new_array), ft_free_array(outfiles), NULL);
 	new_array[i + 1] = NULL;
 	ft_free_array(outfiles);
 	return (new_array);
@@ -120,8 +120,7 @@ char	*ft_get_env_value(t_list *env, char *var_name)
 	{
 		env_var = ft_cut_until_equal((env)->content);
 		if (env_var == NULL)
-			return (NULL);
-		//printf("env_name: %s\n", env_name);
+			return (free(env_name), NULL);
 		if (ft_strcmp(env_name, env_var) == 0)
 			return (free(env_name), free(env_var), ft_substr((env)->content, i + 1, ft_strlen((env)->content) - i - 1));
 		free(env_var);
