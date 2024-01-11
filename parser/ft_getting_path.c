@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:39:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/10 15:38:24 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/11 14:24:35 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
 {
 	int validity;
 
+	//here it cannot happen "cmd not found"
 	validity = ft_is_path_invalid(lexed_item->word, parser_node); //1 (invalid), 0 (valid), -1 (malloc error)
 	if (validity == 1)	//INvalid path
 		(*parser_node)->cmd_path = NULL;
@@ -94,11 +95,11 @@ int	ft_is_path_invalid(char *cmd, t_parser **parser_n)	//it an return 1 (invalid
 {
 	if (!is_directory(cmd))
 	{
-		/*if (access(cmd, F_OK) == 0)
+		if (access(cmd, F_OK) == 0)
 			return (0);
 		else
-			return ((*parser_n)->exit_code = 127, ft_perror_and_free(cmd), 1);*/
-			return (0);
+			return ((*parser_n)->exit_code = 127, ft_perror_and_free(cmd), 1);
+
 	}
 	else
 		return (ft_dir_accession(cmd, parser_n));	//if it's 1 we make cmd_path to be NULL, but set just exit code to not 0, if it's -1, we free the whole parsed list

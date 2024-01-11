@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/10 14:50:06 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/11 14:36:38 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 	new_nodes_head = NULL;
 	ft_strncpy(new_str, orig_lex_node->word, (size_t)h->i);	//copy everything before the $ sign
 	new_str[h->i] = '\0';
-	if (orig_lex_node->word[(h->i) + 1] == '?')
+	if (orig_lex_node->word[(h->i) + 1] == '?')	//for $? we need to handle it differently
 		return (ft_handle_dollar_question(new_str, exit_code, &h->i, orig_lex_node->word));
 	new_str = ft_expand_variable(new_str, &h->i, orig_lex_node->word, h->env_copy);
 	if (!new_str)

@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/10 14:46:24 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/11 14:41:49 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,7 +248,7 @@ void	ft_free_parser_node(t_parser *parser_node);
 char	**ft_realloc_array(char **array, char *new_item);
 void	ft_perror_and_free(char *str);
 
-_Bool	ft_ends_with_slash(char *str);
+//_Bool	ft_ends_with_slash(char *str);
 int	ft_dir_accession(char *cmd, t_parser **parser_n);
 int	ft_is_path_invalid(char *cmd, t_parser **parser_n);
 int	get_pos_of_char(char *str, char c);

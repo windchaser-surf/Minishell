@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_handlers.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 13:58:24 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/11 14:37:41 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ char	*ft_handle_dollar_question(char *new_str, int *exit_code, int *i, char *str
 	ft_strlcat(tmp, exit_code_str, ft_strlen(new_str) + ft_strlen(exit_code_str) + 1);
 	ft_strlcat(tmp, str + *i + 2, ft_strlen(tmp) + ft_strlen(&str[*i + 2]) + 1);
 	*i += ft_strlen(exit_code_str);
-	//*exit_code = 0;
+	free(str);
 	free(new_str);
 	free(exit_code_str);
 	new_str = tmp;

@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:42:09 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/10 15:26:03 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/11 14:42:28 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ char	*ft_just_remove_quotes(char *str)
 	return (new_str);
 }
 
-_Bool	ft_ends_with_slash(char *str)
+/*_Bool	ft_ends_with_slash(char *str)
 {
 	int	i;
 
@@ -75,14 +75,10 @@ _Bool	ft_ends_with_slash(char *str)
 	if (str[i] == '/')
 		return (1);
 	return (0);
-}
+}*/
 
 int	ft_dir_accession(char *cmd, t_parser **parser_n)
 {
-	char	*tmp;
-
-	tmp = NULL;
-	(void)tmp;
 	if (is_directory(cmd) == 1)
 	{
 		(*parser_n)->exit_code = 126;
@@ -90,26 +86,13 @@ int	ft_dir_accession(char *cmd, t_parser **parser_n)
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": Is a directory\n", 2);
 	}
-	else if (is_directory(cmd) == 0)
+	else //is_directory(cmd) == 0
 	{
 		if (access(cmd, F_OK) == 0)
 			return (0);
 		else
 			return ((*parser_n)->exit_code = 127, ft_perror_and_free(cmd), 1);
-		//(*parser_n)->exit_code = 126;
-		//ft_perror_and_free(cmd);
 	}
-	/*else
-	{
-		tmp = ft_substr(cmd, 0, ft_strlen(cmd) - 1);
-		if (tmp == NULL)
-			return (-1);
-		if (access(tmp, F_OK) == 0)
-			(*parser_n)->exit_code = 126;
-		else
-			(*parser_n)->exit_code = 127;
-		ft_perror_and_free(cmd);
-		free(tmp);
-	}*/
+	
 	return (1);
 }
