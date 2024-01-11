@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/08 17:36:57 by codespace        ###   ########.fr       */
+/*   Updated: 2024/01/10 14:44:15 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,41 +110,45 @@ void ft_print_orig_env(char **envp)
 	close(tty_fd);
 }*/
 
+static void	init_main_helper(t_main_helper *h, char **argv)
+{
+	h->lexed_list = NULL;
+	h->parsed_list = NULL;
+	h->command = NULL;
+	h->exit_code = 0;
+	h->env_copy = NULL;
+	(void)argv;
+}
+
 int main(int argc, char **argv, char **envp)
 {
-	char	*command;
-	t_list	*lexed_list;
-	t_list	*env_copy;
-	t_list	*parsed_list;
-	int		exit_code;
+	t_main_helper	h;
 	
 	if (argc > 1)
 		return (ft_putstr_fd("Minishell: arguments are not accepted.\n", 2), 1);
-	if (init_env(envp, &env_copy) == EXIT_FAILURE)
+	init_main_helper(&h, argv);
+	if (init_env(envp, &h.env_copy) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
-	(void)argv;
-	exit_code = 0;
 	while (1)
 	{
-		command = readline("Minishell> ");
-		if (!command)
+		h.command = readline("Minishell> ");
+		if (!h.command)
 			continue ;
-		add_history(command); 
-		if (ft_basic_error_checker(&command, &exit_code) == 1)	// 1 if error, 0 if correct.
+		add_history(h.command); 
+		if (ft_basic_error_checker(&h.command, &h.exit_code) == 1)	// 1 if error, 0 if correct.
 			continue;
-		lexed_list = ft_lexer(command);	// This function will tokenize the command and store it in a linked list called t_lexer.
-		free(command);
-		lexed_list = ft_expander(&lexed_list, &env_copy, exit_code);
-		ft_print_lexer_list(lexed_list);
-		parsed_list = ft_parser(lexed_list, &exit_code, &env_copy);
+		h.lexed_list = ft_lexer(h.command);	// This function will tokenize the command and store it in a linked list called t_lexer.
+		h.lexed_list = ft_expander(&h.lexed_list, &h.env_copy, h.exit_code);
+		ft_print_lexer_list(h.lexed_list);
+		h.parsed_list = ft_parser(h.lexed_list, &h.exit_code, &h.env_copy);
 		
-		ft_free_lexer(lexed_list);
+		ft_free_lexer(h.lexed_list);
 
-		if (!parsed_list)
+		if (!h.parsed_list)
 			continue ;
-		ft_print_parser_list(&parsed_list);
-		exit_code = execution_main(parsed_list, &env_copy, exit_code);
+		ft_print_parser_list(&h.parsed_list);
+		h.exit_code = execution_main(h.parsed_list, &h.env_copy, h.exit_code);
 		
-		ft_free_parser(parsed_list);
+		ft_free_parser(h.parsed_list);
 	}
 }

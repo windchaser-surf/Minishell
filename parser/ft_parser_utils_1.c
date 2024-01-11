@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_utils_1.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:42:09 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/06 12:58:50 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/10 15:26:03 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ int	ft_dir_accession(char *cmd, t_parser **parser_n)
 	char	*tmp;
 
 	tmp = NULL;
+	(void)tmp;
 	if (is_directory(cmd) == 1)
 	{
 		(*parser_n)->exit_code = 126;
@@ -91,10 +92,14 @@ int	ft_dir_accession(char *cmd, t_parser **parser_n)
 	}
 	else if (is_directory(cmd) == 0)
 	{
-		(*parser_n)->exit_code = 126;
-		ft_perror_and_free(cmd);
+		if (access(cmd, F_OK) == 0)
+			return (0);
+		else
+			return ((*parser_n)->exit_code = 127, ft_perror_and_free(cmd), 1);
+		//(*parser_n)->exit_code = 126;
+		//ft_perror_and_free(cmd);
 	}
-	else
+	/*else
 	{
 		tmp = ft_substr(cmd, 0, ft_strlen(cmd) - 1);
 		if (tmp == NULL)
@@ -105,6 +110,6 @@ int	ft_dir_accession(char *cmd, t_parser **parser_n)
 			(*parser_n)->exit_code = 127;
 		ft_perror_and_free(cmd);
 		free(tmp);
-	}
+	}*/
 	return (1);
 }

@@ -3,15 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 14:00:00 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/10 14:50:06 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
 #include "minishell.h"
+
+void remove_node(t_list **head, t_list *node_to_remove) {
+    // Check if the list is empty
+    if (*head == NULL || node_to_remove == NULL) {
+        return;
+    }
+
+    // Check if the node to be removed is at the head of the list
+    if (*head == node_to_remove) {
+        *head = (*head)->next;
+        free(node_to_remove);
+        return;
+    }
+
+    // Traverse the list to find the node before the one to be removed
+    t_list *current = *head;
+    while (current != NULL && current->next != node_to_remove) {
+        current = current->next;
+    }
+
+    // Check if the node before the one to be removed is found
+    if (current != NULL) {
+        current->next = node_to_remove->next;
+        free(node_to_remove);
+    }
+}
 
 char	*ft_remove_quote(char *str, int *i, char c)	//from ab"cde"fg"hi" to abcdefg"hi", and setting i to the position of f
 {
@@ -137,8 +163,10 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 	if (orig_lex_node->word[(h->i) + 1] == '?')
 		return (ft_handle_dollar_question(new_str, exit_code, &h->i, orig_lex_node->word));
 	new_str = ft_expand_variable(new_str, &h->i, orig_lex_node->word, h->env_copy);
-	if (!new_str || !new_str[0])
-		return (free(orig_lex_node->word), h->i = 0, new_str);
+	if (!new_str)
+		return (NULL);
+	else if (new_str[0] == '\0')
+		return (free(orig_lex_node->word), h->i = 0, orig_lex_node->empty = 1 , new_str);
 	if (ft_strchr(new_str, ' ') != NULL && orig_lex_node->type != WORD && orig_lex_node->type != HEREDOC)
 		return (ft_print_ambig_redir(ft_get_var_name(orig_lex_node->word)), *exit_code = 1, NULL);
 	//create the new lexed list's nodes based on the actual new_str (without the rest after the $)
@@ -248,15 +276,12 @@ t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 	char *tmp;
 
 	init_expander_helper(&h, lexed_list, env_copy);
-	/*printf("---------------------BEFORE rearrange:\n");
-	ft_print_lexer_list(*lexed_list);*/
 	if (!(lexed_list))
 		return (NULL);
 	h.list_head = *lexed_list;
 	h.current_node = h.list_head;
 	while (h.current_node)
 	{
-		//h.curr_cont = (t_lexer *)h.current_node->content;
 		h.i = 0;
 		while (((t_lexer *)h.current_node->content)->word[h.i] && ((t_lexer *)h.current_node->content)->type != HEREDOC)
 		{
@@ -269,7 +294,6 @@ t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 				tmp = ft_expand_with_split(&h, &exit_code);
 				((t_lexer *)h.current_node->content)->word = tmp;
 			}
-				
 			else
 				h.i++;
 			if (!((t_lexer *)h.current_node->content)->word)	//malloc failed

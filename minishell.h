@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 11:36:55 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/10 14:46:24 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ typedef struct s_lexer
 	char	*word;
 	WordTyp	type;			//1: word, 2: redirection, 3: input, 4: double redirection, 5: heredoc, 6: pipe
 	int		exec_num;		//the number of the command in the pipe, for example, "ls | cat | wc" -> 1 for ls, 2 for cat, 3 for wc
+	_Bool	empty;
 } t_lexer;
 
 typedef struct s_parser		//a node is piece of element that you need to pass to the execve function
@@ -91,6 +92,15 @@ _Bool	ft_basic_error_checker(char **command, int *error_code);
 int		ft_ends_with_spec(char *command, int *error_code);
 _Bool	ft_unmatched_quotes(char *command, int *error_code);
 _Bool	ft_emptyness_in_cmd(char *cmd, int i);
+
+typedef struct	s_main_helper {
+	char	*command;
+	t_list	*lexed_list;
+	t_list	*env_copy;
+	t_list	*parsed_list;
+	int		exit_code;
+	_Bool	was_empty_var;
+}			t_main_helper;
 
 //BUILTIN
 //cd.c 
@@ -234,6 +244,7 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error
 _Bool	ft_handle_word(t_parser_helper *helper, t_list **env_copy);
 
 void	ft_free_parser(t_list *parser_head);
+void	ft_free_parser_node(t_parser *parser_node);
 char	**ft_realloc_array(char **array, char *new_item);
 void	ft_perror_and_free(char *str);
 

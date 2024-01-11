@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 13:46:50 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/10 14:52:48 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,9 @@ _Bool	ft_is_empty_lexed_lode(char *str, t_list **lexed_list, t_list *beg_of_cmd)
 		nothing_before = 1;
 	(void)nothing_after;
 	(void)nothing_before;
-	if (str[0] == '\0')	// nothing_before == true && 
-		return (*lexed_list = (*lexed_list)->next, 1);
-	return (0);
+	if (lexed_i->empty || (str[0] == '\0' && !nothing_before))	// nothing_before == true && 
+		return (*lexed_list = (*lexed_list)->next, 1);	//we skip inspecting this lexed node
+	return (0);	//we don't skip it
 }
 
 void	ft_parser_while(t_parser_helper *h, t_list **env_copy)
