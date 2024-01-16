@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 11:36:56 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/16 13:00:01 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,7 @@ char	*ft_concat_rest(char *str, t_expander_helper *h, char *new_str, _Bool needs
 	if (!rest)
 		return (perror("Malloc failed"), NULL);
 	new_str = ft_strjoin_free(new_str, rest);
+	free(rest);
 	//h->i = h->i - h->vns + ft_strlen(h->var_value) - 1;
 	free(h->var_value);
 	return (new_str);
@@ -201,8 +202,11 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 	new_str = ft_expand_variable(new_str, h, &needs_expansion);
 	if (!new_str)
 		return (NULL);
+	if (new_str[h->orig_i] == '\0' && h->orig_i == 0 && orig_lex_node->word[h->vns] == '\0')	//if it was an empty variable
+		orig_lex_node->wasnt_empty_var = 0;
+	
 	/*else if (new_str[0] == '\0')	
-		return (free(orig_lex_node->word), h->i = 0, orig_lex_node->empty = 1 , new_str);*/
+		return (free(orig_lex_node->word), h->i = 0, orig_lex_node->keep_empty = 1 , new_str);*/
 	if (ft_strchr(new_str, ' ') != NULL && orig_lex_node->type != WORD && orig_lex_node->type != HEREDOC)
 		return (ft_print_ambig_redir(ft_get_var_name(orig_lex_node->word)), *exit_code = 1, NULL);
 	if (needs_expansion == 1)	//if it has a space, so we have to make new nodes
@@ -216,7 +220,7 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 		return (ft_insert_new_lexed_nodes(new_nodes_head, h));
 	}
 	else
-		return (new_str = ft_concat_rest(orig_lex_node->word, h, new_str, 0), new_str);
+		return (new_str = ft_concat_rest(orig_lex_node->word, h, new_str, 0), free(orig_lex_node->word), new_str);
 }
 
 

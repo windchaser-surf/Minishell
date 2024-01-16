@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/15 20:44:13 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/16 12:05:52 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,8 @@ char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expan
 	free(new_str);
 	new_str = tmp;
 	ft_strlcat(new_str, h->var_value, ns_size + ft_strlen(h->var_value) + 1);	//append the variable value to the end of the string
-	h->i = h->i + h->vns;	//we set i to the position of the last char of the variable name (not value !)
+	h->i = h->orig_i + ft_strlen(h->var_value);	
+	//we set i to the position of the last char of the variable name (not value !)
 	if (needs_expansion && ft_strchr(h->var_value, ' '))
 		*needs_expansion = 1;
 	//copy everything after the var name ends

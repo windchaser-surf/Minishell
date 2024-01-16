@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/15 19:08:14 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/16 12:51:54 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ typedef struct s_lexer
 	char	*word;
 	WordTyp	type;			//1: word, 2: redirection, 3: input, 4: double redirection, 5: heredoc, 6: pipe
 	int		exec_num;		//the number of the command in the pipe, for example, "ls | cat | wc" -> 1 for ls, 2 for cat, 3 for wc
-	_Bool	empty;
+	_Bool	wasnt_empty_var;
 } t_lexer;
 
 typedef struct s_parser		//a node is piece of element that you need to pass to the execve function

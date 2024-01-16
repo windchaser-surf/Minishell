@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lexer_utils_1.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 09:45:51 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/10 14:47:05 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/16 12:51:54 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ _Bool	ft_make_lnode(t_lexer_helper *helper, char *command)
 		return (ft_free_lexer(helper->list_head), free(lexer_node), perror("Malloc failed"), 1);
 	lexer_node->type = helper->prev_wt;
 	lexer_node->exec_num = helper->exec_num;
-	lexer_node->empty = 0;
+	lexer_node->wasnt_empty_var = 1;
 	new = ft_lstnew(lexer_node);
 	if (new == NULL)
 		return (ft_free_lexer(helper->list_head), free(lexer_node->word), free(lexer_node), perror("Malloc failed"), 1);

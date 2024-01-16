@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/07 14:50:44 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/16 12:58:41 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	ft_print_lexer_list(t_list *list)
 		printf("word: %s\n", ((t_lexer *)list->content)->word);
 		printf("type: %d\n", lexer_node->type);
 		printf("exec_num: %d\n", lexer_node->exec_num);
+		printf("wasnt_empty_var: %d\n", lexer_node->wasnt_empty_var);
 		printf("\n");
 		list = list->next;
 	}

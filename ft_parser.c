@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/10 14:52:48 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/16 12:51:54 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,10 @@ _Bool	ft_is_empty_lexed_lode(char *str, t_list **lexed_list, t_list *beg_of_cmd)
 	
 	nothing_after = 0;
 	nothing_before = 0;
+	(void)str;
 	//there is a next AND the next's exec_num is greater than the current's
 	lexed_i = (t_lexer *)(*lexed_list)->content;
-	if (!(*lexed_list)->next && beg_of_cmd != *lexed_list && str[0] == '\0')
+	if (!(*lexed_list)->next && beg_of_cmd != *lexed_list /*&& str[0] == '\0'*/ && lexed_i->wasnt_empty_var == 0)
 		return (*lexed_list = (*lexed_list)->next, 1);
 	else if ((*lexed_list)->next)
 	{
@@ -73,7 +74,7 @@ _Bool	ft_is_empty_lexed_lode(char *str, t_list **lexed_list, t_list *beg_of_cmd)
 		nothing_before = 1;
 	(void)nothing_after;
 	(void)nothing_before;
-	if (lexed_i->empty || (str[0] == '\0' && !nothing_before))	// nothing_before == true && 
+	if (lexed_i->wasnt_empty_var == 0 && (nothing_before))	// ''abc
 		return (*lexed_list = (*lexed_list)->next, 1);	//we skip inspecting this lexed node
 	return (0);	//we don't skip it
 }
