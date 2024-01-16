@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/11 14:36:38 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/16 11:36:56 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,32 +92,33 @@ void	ft_copy_whats_after_the_quote(int *i, int *j, char *str, char *new_str)
 	free(str);
 }
 
-char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code)	//from ab"cde"fg"hi" to abcdefghi, and setting i to the position of f
+char	*ft_expand_dquote(t_expander_helper *h, int exit_code)	//from ab"cde"fg"hi" to abcdefghi, and setting i to the position of f
 {
 	char	*new_str;
 	int		j;
-
-	new_str = ft_make_new_str_for_expanstion(i, str, &j);
+	char	*str;
+	str = ((t_lexer *)h->current_node->content)->word;
+	new_str = ft_make_new_str_for_expanstion(&h->i, str, &j);
 	if (!new_str)
 		return (NULL);
-	while (str[*i] && str[*i] != '\"')	//copy everything between the quotes
+	while (str[h->i] && str[h->i] != '\"')	//copy everything between the quotes
 	{
-		if (str[*i] == '$' && (ft_isalpha(str[(*i) + 1])
-			|| str[(*i) + 1] == '?' || str[(*i) + 1] == '_'))	//expand variable if it is not the last char or another $
+		if (str[h->i] == '$' && (ft_isalpha(str[(h->i) + 1])
+			|| str[(h->i) + 1] == '?' || str[(h->i) + 1] == '_'))	//expand variable if it is not the last char or another $
 		{
-			if (str[(*i) + 1] == '?')
-				new_str = ft_handle_dollar_question_q(new_str, &exit_code, i, str);
+			if (str[(h->i) + 1] == '?')
+				new_str = ft_handle_dollar_question_q(new_str, &exit_code, &h->i, str);
 			else
-				new_str = ft_expand_variable(new_str, i, str, env_copy);	//it expands and attaches to the end of the string
+				new_str = ft_expand_variable(new_str, h, NULL);	//it expands and attaches to the end of the string
 			j = ft_strlen(new_str);
 		}
 		else
 		{
-			new_str[j++] = str[(*i)++];
+			new_str[j++] = str[(h->i)++];
 			new_str[j] = '\0';
 		}
 	}
-	ft_copy_whats_after_the_quote(i, &j, str, new_str);
+	ft_copy_whats_after_the_quote(&h->i, &j, str, new_str);
 	return (new_str);
 }
 
@@ -126,7 +127,7 @@ t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num)
 	t_lexer_helper	helper;
 
 	ft_init_lexer_helper(&helper, command, cmd_num);
-	ft_skip_spaces(command, &helper.i);
+	//ft_skip_spaces(command, &helper.i);
 	while (command[helper.i])
 	{
 		if (command[helper.i] == ' ')	//a word ends with a space or a redirection sign
@@ -142,7 +143,38 @@ t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num)
 		if (ft_make_lnode(&helper, command))
 			return (NULL);
 	}
+	
 	return (helper.list_head);
+}
+
+char	*ft_concat_rest(char *str, t_expander_helper *h, char *new_str, _Bool needs_expansion)
+{
+	char	*rest;
+
+	if (needs_expansion)
+		h->i = ft_strlen(new_str);
+	rest = ft_substr(str, h->orig_i + h->vns, ft_strlen(str) - (h->orig_i + h->vns));
+	if (!rest)
+		return (perror("Malloc failed"), NULL);
+	new_str = ft_strjoin_free(new_str, rest);
+	//h->i = h->i - h->vns + ft_strlen(h->var_value) - 1;
+	free(h->var_value);
+	return (new_str);
+}
+
+char	*ft_attach_beginning(char *head_node_str, char *str, t_expander_helper *h)
+{
+	char	*tmp;
+
+	tmp = malloc(sizeof(char) * ft_strlen(head_node_str) + h->orig_i - 1 + 1);
+	if (!tmp)
+		return (perror("Malloc failed"), NULL);
+	ft_strlcpy(tmp, str, (size_t)h->orig_i);
+	//ft_strncpy(tmp, str, (size_t)h->orig_i - 1);
+	ft_strlcat(tmp, head_node_str, ft_strlen(head_node_str) + h->orig_i - 1 + 1);
+	free(head_node_str);
+	return (tmp);
+	
 }
 
 char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
@@ -150,7 +182,9 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 	char	*new_str;
 	t_lexer *orig_lex_node;
 	t_list	*new_nodes_head;
+	_Bool	needs_expansion;
 
+	needs_expansion = 0;
 	orig_lex_node  = (t_lexer *)(h->current_node)->content;	//we are in this one, only in this
 	if (orig_lex_node->word[h->i + 1] == '\0' || orig_lex_node->word[h->i + 1] == '$')	//if it is the last char or another $, then it is not a variable, so we return
 		return ((h->i)++, orig_lex_node->word);
@@ -158,23 +192,31 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 	if (!new_str)
 		return (perror("Malloc failed"), NULL);
 	new_nodes_head = NULL;
-	ft_strncpy(new_str, orig_lex_node->word, (size_t)h->i);	//copy everything before the $ sign
+	//copy everything before the $ sign
+	ft_strncpy(new_str, orig_lex_node->word, (size_t)h->i);
 	new_str[h->i] = '\0';
 	if (orig_lex_node->word[(h->i) + 1] == '?')	//for $? we need to handle it differently
 		return (ft_handle_dollar_question(new_str, exit_code, &h->i, orig_lex_node->word));
-	new_str = ft_expand_variable(new_str, &h->i, orig_lex_node->word, h->env_copy);
+	//new_str = ft_expand_variable(new_str, &h->i, orig_lex_node->word, h->env_copy);
+	new_str = ft_expand_variable(new_str, h, &needs_expansion);
 	if (!new_str)
 		return (NULL);
-	else if (new_str[0] == '\0')
-		return (free(orig_lex_node->word), h->i = 0, orig_lex_node->empty = 1 , new_str);
+	/*else if (new_str[0] == '\0')	
+		return (free(orig_lex_node->word), h->i = 0, orig_lex_node->empty = 1 , new_str);*/
 	if (ft_strchr(new_str, ' ') != NULL && orig_lex_node->type != WORD && orig_lex_node->type != HEREDOC)
 		return (ft_print_ambig_redir(ft_get_var_name(orig_lex_node->word)), *exit_code = 1, NULL);
-	//create the new lexed list's nodes based on the actual new_str (without the rest after the $)
-	//new_nodes_head = ft_lexer(new_str);	//including the original, so we need to free that
-	new_nodes_head = ft_lexer_but_with_words_and_one_cmd(new_str, orig_lex_node->exec_num);
-	free(new_str);
-	//get the the last node of the new lexed list
-	return (ft_insert_new_lexed_nodes(new_nodes_head, h)); //&h->current_node, &h->list_head, &h->i)
+	if (needs_expansion == 1)	//if it has a space, so we have to make new nodes
+	{
+		new_nodes_head = ft_lexer_but_with_words_and_one_cmd(new_str + h->orig_i, orig_lex_node->exec_num);
+		if (h->orig_i - 1 > 0)
+			((t_lexer *)(new_nodes_head)->content)->word = ft_attach_beginning(((t_lexer *)(new_nodes_head)->content)->word, orig_lex_node->word, h);
+		free(new_str);
+		((t_lexer *)(ft_lstlast(new_nodes_head))->content)->word = ft_concat_rest(orig_lex_node->word, h, ((t_lexer *)(ft_lstlast(new_nodes_head))->content)->word, needs_expansion);
+		//ft_print_lexer_list(new_nodes_head);
+		return (ft_insert_new_lexed_nodes(new_nodes_head, h));
+	}
+	else
+		return (new_str = ft_concat_rest(orig_lex_node->word, h, new_str, 0), new_str);
 }
 
 
@@ -268,6 +310,9 @@ void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **en
 	//h->curr_cont = NULL;
 	h->env_copy = env_copy;
 	h->i = 0;
+	h->orig_i = 0;
+	h->vns = 0;
+	h->var_value = NULL;
 }
 
 t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
@@ -288,7 +333,7 @@ t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 			if (((t_lexer *)h.current_node->content)->word[h.i] == '\'')
 				((t_lexer *)h.current_node->content)->word = ft_remove_quote(((t_lexer *)h.current_node->content)->word, &h.i, '\'');	//no expand, no split | abc'a$b'c --> abcabc, i was 3, now 5
 			else if (((t_lexer *)h.current_node->content)->word[h.i] == '\"')
-				((t_lexer *)h.current_node->content)->word = ft_expand_dquote(((t_lexer *)h.current_node->content)->word, &h.i, h.env_copy, exit_code);	//expand, no split | abc"a$b"c --> abcabc, i was 3, now 3
+				((t_lexer *)h.current_node->content)->word = ft_expand_dquote(&h, exit_code);	//expand, no split | abc"a$b"c --> abcabc, i was 3, now 3
 			else if (((t_lexer *)h.current_node->content)->word[h.i] == '$')	//expand, split | insert another lexer_node if needed | abc$a
 			{
 				tmp = ft_expand_with_split(&h, &exit_code);

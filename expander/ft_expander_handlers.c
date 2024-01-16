@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_handlers.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/11 14:37:41 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/15 20:44:13 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,35 +49,48 @@ char	*ft_get_var_name(char *str)
 	return (res);
 }
 
-char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy)
+int	ft_get_var_name_size(char *str, int *i)
 {
-	char	*tmp;
-	int		vns;
-	char 	*var_value;
-	int		ns_size;
-	char	*var_name;
-	
+	int	vns;
+
 	*i += 1;	//skip the $
 	vns = 0;
 	//1. cutting the variable name
 	while (str[*i + vns] && (ft_isalnum(str[*i + vns]) || str[*i + vns] == '_'))	//example: ab"cd$ef"gh -->var name is "ef"
 		(vns)++;
-	var_name = ft_substr(str, (unsigned int)(*i), (size_t)(vns));
+	return (vns);
+}
+
+char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expansion)
+{
+	char	*tmp;
+	int		ns_size;
+	char	*var_name;
+	char	*str;
+	
+	str = ((t_lexer *)(h->current_node)->content)->word;
+	h->orig_i = h->i;
+	h->vns = ft_get_var_name_size(str, &h->i);
+	var_name = ft_substr(str, (unsigned int)(h->i), (size_t)(h->vns));
 	//2. getting the variable value
-	var_value = ft_get_var_value(var_name, env_copy);	//0, str that has the whole command with the var, str index where we encountered the $
-	if (!var_value)
-		return (perror("Malloc failed"), /*free(var_name),*/ NULL);
+	h->var_value = ft_get_var_value(var_name, h->env_copy);	//0, str that has the whole command with the var, str index where we encountered the $
+	if (!h->var_value)
+		return (perror("Malloc failed"), NULL);
 	//3. concatenating it to the end of the string and removing the $var_name
 	ns_size = ft_strlen(new_str);
-	tmp = malloc(ns_size + ft_strlen(&str[*i]) - (++vns) + ft_strlen(var_value) + 2);	//update len with the variable value
+	tmp = malloc(ns_size + ft_strlen(&str[h->i]) - (++h->vns) + ft_strlen(h->var_value) + 2);	//update len with the variable value
 	if (!tmp)
-		return (perror("Malloc failed"), /*free(var_name),*/ NULL);
+		return (perror("Malloc failed"), free(var_name),NULL);
 	ft_strcpy(tmp, new_str);	//copy everything before the $
 	free(new_str);
 	new_str = tmp;
-	ft_strlcat(new_str, var_value, ns_size + ft_strlen(var_value) + 1);	//append the variable value to the end of the string
-	free(var_value);
-	*i = *i + vns;	//we set i to the position of the last char of the variable name (not value !)
+	ft_strlcat(new_str, h->var_value, ns_size + ft_strlen(h->var_value) + 1);	//append the variable value to the end of the string
+	h->i = h->i + h->vns;	//we set i to the position of the last char of the variable name (not value !)
+	if (needs_expansion && ft_strchr(h->var_value, ' '))
+		*needs_expansion = 1;
+	//copy everything after the var name ends
+	//ft_strlcat(new_str, &str[h->i], ns_size + ft_strlen(&str[h->i]) + ft_strlen(h->var_value) + 1);
+	//new_str = ft_strjoin_free(new_str, ft_substr(str, h->i - 1, ft_strlen(str) - (h->i - 1)));
 	return (new_str);
 }
 
@@ -87,6 +100,7 @@ char *ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h)
 	t_list *tmp;
 
 	new_current = ft_lstlast(new_nodes_head);
+	
 	tmp = h->list_head;
 	if (tmp == (h->current_node))
 		h->list_head = new_nodes_head;
@@ -101,8 +115,7 @@ char *ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h)
 	ft_free_lexer_node(h->current_node);
 	h->current_node = new_current;
 	//h->curr_cont = (t_lexer *)(h->current_node)->content;
-	h->i = ft_strlen(((t_lexer *)new_current->content)->word);
-	
+	//h->i = ft_strlen(((t_lexer *)new_current->content)->word);
 	return (((t_lexer *)h->current_node->content)->word);
 }
 

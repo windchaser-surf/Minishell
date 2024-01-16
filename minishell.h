@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/11 14:41:49 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/15 19:08:14 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,17 +203,21 @@ typedef struct s_expander_helper {
 	//t_lexer	*curr_cont;
 	t_list	**env_copy;
 	int		i;
+	int		orig_i;
+	int		vns;
+	char	*var_value;
 }	t_expander_helper;
 
 t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code);
 
 char	*ft_remove_quote(char *str, int *i, char c);
-char	*ft_expand_dquote(char *str, int *i, t_list **env_copy, int exit_code);
+char	*ft_expand_dquote(t_expander_helper *h, int exit_code);
 char	*ft_expand_with_split(t_expander_helper *h, int *exit_code);
 t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num);
 
+int		ft_get_var_name_size(char *str, int *i);
 char	*ft_get_var_value(char *var_name, t_list **env_copy);
-char	*ft_expand_variable(char *new_str, int *i, char *str, t_list **env_copy);
+char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expansion);
 char	*ft_get_var_name(char *str);
 char	*ft_handle_dollar_question(char *new_str, int *exit_code, int *i, char *str);
 char	*ft_handle_dollar_question_q(char *new_str, int *exit_code, int *i, char *str);
