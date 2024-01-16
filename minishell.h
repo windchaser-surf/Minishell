@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 14:29:12 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/16 16:54:21 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,6 @@ typedef struct	s_main_helper {
 	t_list	*env_copy;
 	t_list	*parsed_list;
 	int		exit_code;
-	_Bool	was_empty_var;
 }			t_main_helper;
 
 //BUILTIN
@@ -208,6 +207,7 @@ typedef struct s_expander_helper {
 	int		orig_i;
 	int		vns;
 	char	*var_value;
+	_Bool	needs_expansion;
 }	t_expander_helper;
 
 t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code);
