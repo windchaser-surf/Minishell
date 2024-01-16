@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 12:51:54 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/16 14:29:12 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ typedef struct s_pipex
 {
 	int	*pid;
 	int	n;
+	int	n2;
 	int	nbr_p;
 	int	*p;
 	int exit_code;
@@ -143,9 +144,10 @@ int	one_execution(t_parser *command, t_list **env_copy, int exit_code, t_list *t
 
 //exec2.c
 void	ft_pipe_closer(t_pipex *data);
-int	n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, int n);
+int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, t_list *tokens);
 int	create_pipes(t_pipex *data);
 int	n_execution(t_list *tokens, t_list **env_copy, int exit_code);
+void	ft_free_child(t_pipex *data, t_list *tokens, t_list **env_copy);
 
 //check_builtin.c
 int	check_builtin(char *str);
@@ -155,8 +157,8 @@ int	run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, t_
 //exit.c
 int	builtin_exit(char **arg, int exit_code, int pid_check);
 int	builtin_exit_parent(char **arg, int exit_code, t_list *tokens, t_list **env_copy);
-void	exit_not_numeric(int pid_check, t_list *tokens, t_list **env_copy);
-void	exit_with_number(int pid_check, char *numb, t_list *tokens, t_list **env_copy); //hier kommt noch die nummer hin
+int	exit_not_numeric(int pid_check, t_list *tokens, t_list **env_copy);
+int	exit_with_number(int pid_check, char *numb, t_list *tokens, t_list **env_copy); //hier kommt noch die nummer hin
 
 
 //free. currently in cd file

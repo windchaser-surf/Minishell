@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:29:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/08 16:32:52 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/16 14:38:57 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,17 @@ void	ft_pipe_closer(t_pipex *data)
 	
 }
 
-void	error_closing(t_parser *command, t_pipex *data)
+void	error_closing(t_parser *command, t_pipex *data, t_list *tokens, t_list **env_copy)
 {
 	ft_file_closer_single(command);
-	ft_pipe_closer(data);
+	ft_free_child(data, tokens, env_copy);
 	exit(EXIT_FAILURE);
 }
 
-void	dup_input(t_parser *command, t_pipex *data, int n)
+void	dup_input(t_parser *command, t_pipex *data, t_list *tokens, t_list **env_copy)
 {
 	if (command->exit_code != 0)
-		error_closing(command, data);
+		error_closing(command, data, tokens, env_copy);
 	if (command->heredoc)
 		dup_heredoc(command);
 	else if (command->fd_in != -1)
@@ -43,88 +43,111 @@ void	dup_input(t_parser *command, t_pipex *data, int n)
 		if (dup2(command->fd_in, 0) == -1)
 		{
 			perror("dup2: ");
-			error_closing(command, data);
+			error_closing(command, data, tokens, env_copy);
 		}
 		close(command->fd_in);
 		command->fd_in = -1;
 	}
 	else 
 	{
-		if (n != 0)
+		if (data->n2 != 0)
 		{
-			if (dup2(data->p[(n * 2) - 2], 0) == -1)
+			if (dup2(data->p[(data->n2 * 2) - 2], 0) == -1)
 			{
 				perror("dup2: ");
-				error_closing(command, data);		
+				error_closing(command, data, tokens, env_copy);		
 			}
 		}
 	}	
 }
+void	ft_free_child(t_pipex *data, t_list *tokens, t_list **env_copy)
+{
+	t_list *tmp;
 
-void dup_output(t_parser *command, t_pipex *data, int n)
+	tmp = tokens; 
+	while (tmp)
+	{
+		ft_file_closer_single((t_parser *)(tmp->content));
+		tmp = tmp -> next;
+	}
+	ft_free_parser(tokens);
+	free (data->pid);
+	ft_pipe_closer(data);
+	free (data->p);
+	ft_lstclear (env_copy, free);
+}
+
+void dup_output(t_parser *command, t_pipex *data, t_list *tokens, t_list **env_copy)
 {
 	if (command->fd_out != -1)
 	{
 		if (dup2(command->fd_out, 1) == -1)
 		{
 			perror("dup21 ");
-			error_closing(command, data);
+			error_closing(command, data, tokens, env_copy);
 		}
 		close(command->fd_out);
 		command->fd_out = -1;
 	}
 	else 
 	{
-		if (n < data->nbr_p)
+		if (data->n2 < data->nbr_p)
 		{
 			
-			if (dup2(data->p[1 + (2 * n)], 1) == -1)
+			if (dup2(data->p[1 + (2 * data->n2)], 1) == -1)
 			{
 				perror("dup2 ");
-				error_closing(command, data);
+				error_closing(command, data, tokens, env_copy);
 			}
 		}
 	}	
 }
 
-void	cmd_not_found(t_parser *command)
+void	cmd_not_found(t_parser *command, t_list *tokens, t_pipex *data, t_list **env_copy)
 {
 	char *tmp;
 	
 	if (command->cmd_args == NULL)
 	{
 		ft_file_closer_single(command);
+		ft_free_child(data, tokens, env_copy);
 		exit (EXIT_SUCCESS);
 	}
 	tmp = ft_strjoin(command->cmd_args[0], ": command not found\n");
 	if (tmp == NULL)
 	{
 		perror("malloc: ");
+		ft_free_child(data, tokens, env_copy);
 		exit (MALLOC_ERR);
 	}
 	ft_putstr_fd(tmp, STDERR_FILENO);
 	free(tmp);
 	ft_file_closer_single(command);
+	ft_free_child(data, tokens, env_copy);
 	exit (CMD_NOT_FOUND);
 }
 
-int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, int n)
+int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, t_list *tokens)
 {
-	data->pid[n] = fork();
-	if (data->pid[n] == -1)
+	data->pid[data->n2] = fork();
+	if (data->pid[data->n2] == -1)
 	{
 		perror("fork: ");
 		return (EXIT_FAILURE);
 	}
-	if (data->pid[n] == 0)
+	if (data->pid[data->n2] == 0)
 	{
-		dup_input(command, data, n);
-		dup_output(command, data, n);
+		dup_input(command, data, tokens, env_copy);
+		dup_output(command, data, tokens, env_copy);
 		ft_pipe_closer(data);
 		if (command->cmd_path == NULL)
-			cmd_not_found(command);
+			cmd_not_found(command, tokens, data, env_copy);
 		else if (!ft_strncmp(command->cmd_path, "BUILTIN", 8))
-			exit (run_builtins(command, env_copy, data->exit_code, 1));
+		{
+			data->exit_code = run_builtins(command, env_copy, data->exit_code, 1);
+			ft_free_child(data, tokens, env_copy);
+			exit (data->exit_code);
+		}
 		else 
 			execution(command, *env_copy); //HIER MUSS NOCH WAS HIN		
 	}
@@ -203,20 +226,22 @@ int	waiting_for_childs(t_pipex *data, int n)
 int	n_execution(t_list *tokens, t_list **env_copy, int exit_code)
 {
 	t_pipex data;
-	int		n; 
+	t_list	*tmp;
+	//int		n; 
 	
-	n = 0;
+	tmp = tokens;
+	data.n2 = 0;
 	data.exit_code = exit_code;	
 	if (preperation_for_child(&data, tokens))
 		return (EXIT_FAILURE);
-	while (tokens != NULL)
+	while (tmp != NULL)
 	{
-		if (n_child_process((t_parser *)(tokens->content), env_copy, &data, n))
+		if (n_child_process((t_parser *)(tmp->content), env_copy, &data, tokens))
 			return (EXIT_FAILURE);
-		n++;
-		tokens = tokens->next;
+		data.n2++;
+		tmp = tmp->next;
 	}
-	return (waiting_for_childs(&data, n));
+	return (waiting_for_childs(&data, data.n2));
 }
 
 

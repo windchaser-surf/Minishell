@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 11:17:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/08 17:30:16 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/16 14:36:15 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,15 @@ int exec_builtins(t_parser *command, t_list **env_copy, int exit_code, t_list *t
 void	ft_file_closer_single(t_parser *command)
 {
 	if (command->fd_in != -1)
+	{
 		close (command->fd_in);
+		command->fd_in = -1;
+	}
 	if (command->fd_out != -1)
+	{
 		close (command->fd_out);
+		command->fd_out= -1;
+	}
 }
  
 int	child_process(t_parser *command, t_list **env_copy)

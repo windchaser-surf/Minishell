@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:40:12 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/05 15:42:02 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/16 14:34:59 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,10 +67,13 @@ int exit_too_many(int pid_check)
 	return (1);
 }
 
-void exit_not_numeric(int pid_check, t_list *tokens, t_list **env_copy)
+int exit_not_numeric(int pid_check, t_list *tokens, t_list **env_copy)
 {
 	if (pid_check == 1)
+	{
 		ft_putstr_fd("exit: numeric argumend required\n", STDERR_FILENO);
+		return (2);
+	}
 	else
 	{
 		ft_putstr_fd("exit: numeric argument required\n", STDERR_FILENO);
@@ -83,7 +86,7 @@ void exit_not_numeric(int pid_check, t_list *tokens, t_list **env_copy)
 	exit (2);
 }
 
-void exit_with_number(int pid_check, char *numb, t_list *tokens, t_list **env_copy) //hier kommt noch die nummer hin
+int exit_with_number(int pid_check, char *numb, t_list *tokens, t_list **env_copy) //hier kommt noch die nummer hin
 {
 	unsigned char c;
 	
@@ -95,10 +98,10 @@ void exit_with_number(int pid_check, char *numb, t_list *tokens, t_list **env_co
 		rl_clear_history();
 	}
 	c = ft_atoi_long(numb);
+	if (pid_check == 1)
+		return (c);
 	if (tokens)
-	{	
 		ft_free_parser(tokens);
-	}
 	exit (c); //Zahl muss noch richtig umgerechnet werden
 }
 
