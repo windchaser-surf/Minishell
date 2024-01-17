@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 12:04:30 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 16:13:54 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error,
 	if ((*parser_node)->heredoc != NULL)
 		free((*parser_node)->heredoc);
 	(*parser_node)->heredoc = ft_strdup("");
-	ft_set_mode(sig_mode , HEREDOC_INP);
+	ft_set_mode(sig_mode, HEREDOC_INP);
 	while (1)
 	{
 		tmp = readline("> ");
-		if (ft_strcmp(delim, tmp) == 0)
+		if (g_sig == CNTRL_C || ft_strcmp(delim, tmp) == 0)
 			break ;
 		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, tmp);
 		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, "\n");

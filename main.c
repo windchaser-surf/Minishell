@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 12:46:08 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 15:05:55 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,10 +119,12 @@ static void	init_main_helper(t_main_helper *h, char **argv)
 	(void)argv;
 }
 
+int g_sig = 0;
+
 int main(int argc, char **argv, char **envp)
 {
 	t_main_helper	h;
-	
+
 	if (argc > 1)
 		return (ft_putstr_fd("Minishell: arguments are not accepted.\n", 2), 1);
 	init_main_helper(&h, argv);
@@ -134,10 +136,10 @@ int main(int argc, char **argv, char **envp)
 		h.command = readline("Minishell> ");
 		ft_set_mode(&h.sig_mode, NOT_INPUT);
 		if (!h.command)
-			continue ;
+			break ;	//breaks the loop if ctrl+d is pressed
 		add_history(h.command); 
 		if (ft_basic_error_checker(&h.command, &h.exit_code) == 1)	// 1 if error, 0 if correct.
-			continue;
+			continue ;
 		h.lexed_list = ft_lexer(h.command);	// This function will tokenize the command and store it in a linked list called t_lexer.
 		h.lexed_list = ft_expander(&h.lexed_list, &h.env_copy, h.exit_code);
 
@@ -155,4 +157,5 @@ int main(int argc, char **argv, char **envp)
 		h.exit_code = execution_main(h.parsed_list, &h.env_copy, h.exit_code);
 		ft_free_parser(h.parsed_list);
 	}
+	ft_lstclear(&h.env_copy, del);
 }

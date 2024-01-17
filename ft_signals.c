@@ -6,15 +6,13 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 19:56:13 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 12:23:40 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 14:54:54 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <sys/ioctl.h>
 
-
-int	g_sig = 0;
 
 void	ft_sighandle_cmd(int sig)
 {
