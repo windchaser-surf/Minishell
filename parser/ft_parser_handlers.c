@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_handlers.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 13:39:41 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/17 12:04:30 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 	}
 }*/
 
-void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error)
+void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error, SigTyp *sig_mode)
 {
 	char	*delim;
 	char	*tmp;
@@ -40,16 +40,20 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error)
 		*error = 1;
 		return ;
 	}
-	//sigaction(SIGINT, &sa, NULL);
+	if ((*parser_node)->heredoc != NULL)
+		free((*parser_node)->heredoc);
+	(*parser_node)->heredoc = ft_strdup("");
+	ft_set_mode(sig_mode , HEREDOC_INP);
 	while (1)
 	{
 		tmp = readline("> ");
-		if (ft_strcmp(delim, tmp) == 0 /*|| g_running_process.while_true == 0*/)
+		if (ft_strcmp(delim, tmp) == 0)
 			break ;
 		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, tmp);
 		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, "\n");
 		free(tmp);
 	}
+	ft_set_mode(sig_mode, NOT_INPUT);
 	free(delim);
 	free(tmp);
 }
