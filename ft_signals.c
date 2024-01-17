@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 19:56:13 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 20:37:54 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 12:23:40 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	ft_sighandle_heredoc(int sig)
 
 void	ft_init_signals(SigTyp *sig_situation)
 {
-	if (*sig_situation == INFILE)
+	if (*sig_situation == INPUT)
 	{
 		signal(SIGINT, &ft_sighandle_cmd);
 		signal(SIGQUIT, SIG_IGN);

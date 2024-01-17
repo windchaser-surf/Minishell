@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 11:54:40 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 12:46:08 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,16 +140,19 @@ int main(int argc, char **argv, char **envp)
 			continue;
 		h.lexed_list = ft_lexer(h.command);	// This function will tokenize the command and store it in a linked list called t_lexer.
 		h.lexed_list = ft_expander(&h.lexed_list, &h.env_copy, h.exit_code);
-		ft_print_lexer_list(h.lexed_list);
-		h.parsed_list = ft_parser(h.lexed_list, &h.exit_code, &h.env_copy, &h.sig_mode);
-		
-		ft_free_lexer(h.lexed_list);
 
+		ft_print_lexer_list(h.lexed_list);
+		
+		h.parsed_list = ft_parser(h.lexed_list, &h.exit_code, &h.env_copy, &h.sig_mode);
+
+		ft_free_lexer(h.lexed_list);
+		free(h.command);
 		if (!h.parsed_list)
 			continue ;
-		ft_print_parser_list(&h.parsed_list);
-		h.exit_code = execution_main(h.parsed_list, &h.env_copy, h.exit_code);
 		
+		ft_print_parser_list(&h.parsed_list);
+		
+		h.exit_code = execution_main(h.parsed_list, &h.env_copy, h.exit_code);
 		ft_free_parser(h.parsed_list);
 	}
 }

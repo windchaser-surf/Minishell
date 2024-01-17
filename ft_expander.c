@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 11:48:56 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 12:43:00 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,6 @@ char	*ft_concat_rest(char *str, t_expander_helper *h, char *new_str, _Bool needs
 		return (perror("Malloc failed"), NULL);
 	new_str = ft_strjoin_free(new_str, rest);
 	free(rest);
-	free(h->var_value);
 	return (new_str);
 }
 
