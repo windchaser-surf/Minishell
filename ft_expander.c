@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 14:45:37 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 11:48:56 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,10 @@ char	*ft_expand_dquote(t_expander_helper *h, int exit_code)	//from ab"cde"fg"hi"
 			if (str[(h->i) + 1] == '?')
 				new_str = ft_handle_dollar_question_q(new_str, &exit_code, &h->i, str);
 			else
+			{
 				new_str = ft_expand_variable(new_str, h, NULL);	//it expands and attaches to the end of the string
+				h->i = h->orig_i + h->vns;
+			}
 			j = ft_strlen(new_str);
 		}
 		else
@@ -172,7 +175,6 @@ char	*ft_attach_beginning(char *head_node_str, char *str, t_expander_helper *h)
 	ft_strlcat(tmp, head_node_str, ft_strlen(head_node_str) + h->orig_i + 1);
 	free(head_node_str);
 	return (tmp);
-	
 }
 
 char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
@@ -272,7 +274,7 @@ void	ft_put_node_to_end_of_cmd(t_list **orig, t_list **first_in_cmd, t_list *to_
 	//ft_print_lexer_list(*first_in_cmd);
 }
 
-void	ft_rearrange_lexed_list(t_list **lexed_l, int i) //put every WORD type node to the end
+void	ft_rearrange_lexed_list(t_list **lexed_l, int i, t_expander_helper *h) //put every WORD type node to the end
 {
 	int		max_cmds;
 	int		j;
@@ -297,13 +299,13 @@ void	ft_rearrange_lexed_list(t_list **lexed_l, int i) //put every WORD type node
 		}
 		*lexed_l = beg;
 	}
+	free(h->var_value);
 }
 
 void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **env_copy)
 {
-	(void)lexed_list;
-	h->list_head = NULL;
-	h->current_node = NULL;
+	h->list_head = *lexed_list;
+	h->current_node = h->list_head;
 	//h->curr_cont = NULL;
 	h->env_copy = env_copy;
 	h->i = 0;
@@ -311,19 +313,15 @@ void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **en
 	h->vns = 0;
 	h->var_value = NULL;
 	h->needs_expansion = 0;
-
 }
 
 t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 {
 	t_expander_helper	h;
-	char *tmp;
 
 	init_expander_helper(&h, lexed_list, env_copy);
 	if (!(lexed_list))
 		return (NULL);
-	h.list_head = *lexed_list;
-	h.current_node = h.list_head;
 	while (h.current_node)
 	{
 		h.i = 0;
@@ -334,10 +332,7 @@ t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 			else if (((t_lexer *)h.current_node->content)->word[h.i] == '\"')
 				((t_lexer *)h.current_node->content)->word = ft_expand_dquote(&h, exit_code);	//expand, no split | abc"a$b"c --> abcabc, i was 3, now 3
 			else if (((t_lexer *)h.current_node->content)->word[h.i] == '$')	//expand, split | insert another lexer_node if needed | abc$a
-			{
-				tmp = ft_expand_with_split(&h, &exit_code);
-				((t_lexer *)h.current_node->content)->word = tmp;
-			}
+				((t_lexer *)h.current_node->content)->word = ft_expand_with_split(&h, &exit_code);
 			else
 				h.i++;
 			if (!((t_lexer *)h.current_node->content)->word)	//malloc failed
@@ -345,6 +340,6 @@ t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 		}
 		h.current_node = h.current_node->next;
 	}
-	ft_rearrange_lexed_list(&(h.list_head), -1);
+	ft_rearrange_lexed_list(&(h.list_head), -1, &h);
 	return (h.list_head);
 }

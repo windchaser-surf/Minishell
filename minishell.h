@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 16:54:21 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 11:48:42 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,24 @@ typedef enum WordTyp
 {
 	WORD,
 	REDIR,	//>
-	INPUT,	//<
+	INFILE,	//<
 	D_REDIR, //>>
 	HEREDOC	//<<
 }	WordTyp;
+
+typedef enum SigTyp
+{
+	INPUT = 1,
+	NOT_INPUT = 2,
+	CHILD = 3,
+	HEREDOC_INP = 4,
+}	SigTyp;
+
+enum	e_sig
+{
+	CNTRL_C = 1,
+	CNTRL_D = 2,
+};
 
 typedef struct s_pipex
 {
@@ -67,7 +81,7 @@ typedef struct s_pipex
 	int exit_code;
 }			t_pipex;
 
-extern int g_running_process;
+//extern int g_sig;
 
 typedef struct s_lexer
 {
@@ -100,6 +114,7 @@ typedef struct	s_main_helper {
 	t_list	*env_copy;
 	t_list	*parsed_list;
 	int		exit_code;
+	SigTyp	sig_mode;
 }			t_main_helper;
 
 //BUILTIN
@@ -165,6 +180,10 @@ void	free_2d(char **str);
 
 //BUILTIN END
 
+//Signals
+
+void	ft_set_mode(SigTyp *sig_mode, SigTyp mode);
+
 //Lexer and it's utils
 t_list	*ft_lexer(char *command);
 
@@ -227,11 +246,11 @@ char	*ft_handle_dollar_question_q(char *new_str, int *exit_code, int *i, char *s
 void	ft_print_ambig_redir(char *var_name);
 
 char	*ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h);
-void	ft_rearrange_lexed_list(t_list **lexed_l, int i);
+//void	ft_rearrange_lexed_list(t_list **lexed_l, int i);
 _Bool	ft_add_back_to_new_ll(t_list **new_lexed_list, t_list *lexed_list, _Bool num);
 
 //Parser and it's utils
-t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy);
+t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy, SigTyp *sig_mode);
 
 typedef struct s_parser_helper {
 	t_list		*list_head;
@@ -246,7 +265,7 @@ typedef struct s_parser_helper {
 void	ft_init_parser_node(t_parser **parser_node);
 void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp type);
 void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
-void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
+void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, SigTyp *sig_mode);
 _Bool	ft_handle_word(t_parser_helper *helper, t_list **env_copy);
 
 void	ft_free_parser(t_list *parser_head);
@@ -272,7 +291,7 @@ int	ft_count_amount_of_quotes(char *str);
 char	*ft_just_remove_quotes(char *str);
 
 //signals
-void	generic_sig_handler(int sig);
-void	init_sig(void);
+/* void	generic_sig_handler(int sig);
+void	init_sig(void); */
 
 #endif

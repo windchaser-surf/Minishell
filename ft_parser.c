@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 12:51:54 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/16 20:31:22 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,49 +49,31 @@ _Bool	ft_create_new_command(t_parser_helper *h, int exit_code, _Bool last)
 
 _Bool	ft_is_empty_lexed_lode(char *str, t_list **lexed_list, t_list *beg_of_cmd)
 {
-	//TODO: only true if there is nothing after, otherwise return 0
-	_Bool	nothing_after;
-	_Bool	nothing_before;
+
 	t_lexer	*lexed_i;
-	t_lexer	*lexed_i_next;
-	
-	nothing_after = 0;
-	nothing_before = 0;
+
 	(void)str;
+	(void)beg_of_cmd;
 	//there is a next AND the next's exec_num is greater than the current's
 	lexed_i = (t_lexer *)(*lexed_list)->content;
-	if (!(*lexed_list)->next && beg_of_cmd != *lexed_list /*&& str[0] == '\0'*/ && lexed_i->wasnt_empty_var == 0)
-		return (*lexed_list = (*lexed_list)->next, 1);
-	else if ((*lexed_list)->next)
-	{
-		lexed_i_next = (t_lexer *)(*lexed_list)->next->content;
-		if (lexed_i->exec_num < lexed_i_next->exec_num)
-			nothing_after = 1;
-	}
-	else if (!(*lexed_list)->next)
-		nothing_after = 1;
-	if (beg_of_cmd == *lexed_list)
-		nothing_before = 1;
-	(void)nothing_after;
-	(void)nothing_before;
-	if (lexed_i->wasnt_empty_var == 0 && (nothing_before))	// ''abc
+	if (lexed_i->wasnt_empty_var == 0)	// ''abc
 		return (*lexed_list = (*lexed_list)->next, 1);	//we skip inspecting this lexed node
 	return (0);	//we don't skip it
 }
 
-void	ft_parser_while(t_parser_helper *h, t_list **env_copy)
+void	ft_parser_while(t_parser_helper *h, t_list **env_copy, SigTyp *sig_mode)
 {
 	if (h->lexed_i->type == REDIR || h->lexed_i->type == D_REDIR)
 		ft_handle_redirs(&(h->parser_n), h->lexed_i, h->lexed_i->type);
-	else if (h->lexed_i->type == INPUT)
+	else if (h->lexed_i->type == INFILE)
 		ft_handle_input(&(h->parser_n), h->lexed_i, &(h->error));
 	else if (h->lexed_i->type == HEREDOC)
-		ft_handle_heredoc(&(h->parser_n), h->lexed_i, &(h->error));
+		ft_handle_heredoc(&(h->parser_n), h->lexed_i, &(h->error), sig_mode);
 	else if (h->lexed_i->type == WORD)
 		h->error = ft_handle_word(h, env_copy);
 }
 
-t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
+t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy, SigTyp *sig_mode)
 {
 	t_parser_helper	h;
 	t_list			*tmp;
@@ -103,7 +85,6 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 	ft_init_parser_helper_struct(&h);
 	while (lexed_list)
 	{
-		
 		if (((t_lexer *)lexed_list->content)->exec_num > h.ith_command)
 			first_cmd_lexed = lexed_list;
 		if (h.parser_n && h.parser_n->exit_code != 0)
@@ -118,7 +99,7 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 			continue ;
 		if ((h.lexed_i->exec_num > h.ith_command) && ft_create_new_command(&h, *exit_c, 0))
 			return (NULL);
-		ft_parser_while(&h, env_copy);
+		ft_parser_while(&h, env_copy, sig_mode);
 		if (h.error)
 			return (ft_free_parser(h.list_head), NULL);
 		lexed_list = lexed_list->next;
@@ -126,6 +107,5 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 	lexed_list = tmp;
 	if (ft_create_new_command(&h, *exit_c, 1) == 1)
 		return (NULL);
-	
 	return (h.list_head);
 }

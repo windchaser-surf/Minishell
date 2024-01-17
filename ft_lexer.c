@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 12:58:41 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/16 20:12:24 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ _Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command)
 {
 	if (ft_make_lnode(helper, command) == 1)
 		return (1);
-	helper->prev_wt = INPUT;
+	helper->prev_wt = INFILE;
 	if (command[helper->i + 1] == '<')
 	{
 		helper->prev_wt = HEREDOC;

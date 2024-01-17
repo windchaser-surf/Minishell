@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/10 14:44:15 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 11:54:40 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <termios.h>
-
-//t_pipex g_running_process = (t_pipex){NULL, 0, 0, NULL, 0, 1};
+//#include <termios.h>
 
 void	ft_print_parser_list(t_list **parser_head)
 {
@@ -117,6 +115,7 @@ static void	init_main_helper(t_main_helper *h, char **argv)
 	h->command = NULL;
 	h->exit_code = 0;
 	h->env_copy = NULL;
+	h->sig_mode = NOT_INPUT;
 	(void)argv;
 }
 
@@ -131,7 +130,9 @@ int main(int argc, char **argv, char **envp)
 		return (EXIT_FAILURE);
 	while (1)
 	{
+		ft_set_mode(&h.sig_mode, INPUT);
 		h.command = readline("Minishell> ");
+		ft_set_mode(&h.sig_mode, NOT_INPUT);
 		if (!h.command)
 			continue ;
 		add_history(h.command); 
@@ -140,7 +141,7 @@ int main(int argc, char **argv, char **envp)
 		h.lexed_list = ft_lexer(h.command);	// This function will tokenize the command and store it in a linked list called t_lexer.
 		h.lexed_list = ft_expander(&h.lexed_list, &h.env_copy, h.exit_code);
 		ft_print_lexer_list(h.lexed_list);
-		h.parsed_list = ft_parser(h.lexed_list, &h.exit_code, &h.env_copy);
+		h.parsed_list = ft_parser(h.lexed_list, &h.exit_code, &h.env_copy, &h.sig_mode);
 		
 		ft_free_lexer(h.lexed_list);
 
