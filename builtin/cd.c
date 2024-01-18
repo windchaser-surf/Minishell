@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:23:05 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/22 16:03:00 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/17 10:41:54 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,7 @@ int    cd_builtin(char **cmd, t_list **env_copy)
 		ft_putstr_fd("cd: too many arguments\n", STDERR_FILENO);
 		return (EXIT_FAILURE);
 	}
-	else if (cmd == NULL)
+	else if (cmd[1] == NULL)
 		return (ft_change_to_home(env_copy));
 	else if (!ft_strncmp(cmd[1], "-", 2))
 		return(ft_change_to_previous(env_copy));

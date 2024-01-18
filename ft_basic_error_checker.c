@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_basic_error_checker.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 12:07:07 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 14:12:23 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,26 @@ _Bool	ft_emptyness_in_cmd(char *cmd, int i)
 	}
 	return (0);
 }
+int	ft_valid_red(char *cmd)
+{
+	int	i;
+	int j;
+
+	i = 0;
+	while (cmd[i])
+	{
+		j = 0;
+		while (cmd[i] && (cmd[i] == '<' || cmd[i] =='>'))
+		{
+            i++;
+            j++;
+        }
+        if (j > 2)
+            return (1);
+		i++;
+	}
+    return (0);
+}
 
 _Bool	ft_basic_error_checker(char **command, int *error_code)
 {
@@ -94,6 +114,8 @@ _Bool	ft_basic_error_checker(char **command, int *error_code)
 	if (ft_emptyness_in_cmd(*command, 0) == 1)	//check for emptyness between pipes, incl beginning
 		return (free(*command), 1);
 	if (ft_ends_with_spec(*command, error_code) == 2)	//ends with redirection character
+		return (1);
+	if (ft_valid_red(*command))
 		return (1);
 	new_command = NULL;
 	ft_init_signals(INPUT);

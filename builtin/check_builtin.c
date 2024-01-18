@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:07:31 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/04 12:09:20 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/17 14:58:51 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int run_builtins(t_parser *command, t_list **env_copy, int error_code, int pid_c
 		exit_code = export_builtin(command->cmd_args, env_copy);
 	else if (!ft_strncmp(command->cmd_args[0], "unset", 6))
 		exit_code = builtin_unset(env_copy, command->cmd_args);
-	
 	if (command->fd_in != -1)
 	{
 		dup2(command->fd_in, 1);	

@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:40:12 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/16 14:34:59 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/18 11:26:06 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,9 +124,9 @@ int    builtin_exit(char **arg, int exit_code, int pid_check)
 	if (check == 0 && i > 2)
 		return(exit_too_many(pid_check));
 	else if (check == 1)
-		exit_not_numeric(pid_check, NULL, NULL);
+		return (exit_not_numeric(pid_check, NULL, NULL));
 	else if (check == 0 && i == 2)
-		exit_with_number(pid_check, arg[1], NULL, NULL);
+		return (exit_with_number(pid_check, arg[1], NULL, NULL));
 	return (EXIT_SUCCESS);
 }
 

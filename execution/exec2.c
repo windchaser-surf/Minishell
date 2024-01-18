@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:29:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/18 13:46:20 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 13:55:30 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void dup_output(t_parser *command, t_pipex *data, t_list *tokens, t_list **env_c
 	{
 		if (dup2(command->fd_out, 1) == -1)
 		{
-			perror("dup21 ");
+			perror("dup2 ");
 			error_closing(command, data, tokens, env_copy);
 		}
 		close(command->fd_out);
