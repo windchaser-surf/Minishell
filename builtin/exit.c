@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:40:12 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/18 11:26:06 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/18 18:14:47 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,11 +115,7 @@ int    builtin_exit(char **arg, int exit_code, int pid_check)
 	while (arg[i])
 		i++;
 	if ( i == 1)
-	{
-		if (pid_check == 0)
-			printf("exit\n");
-		exit (exit_code);
-	}
+		return (exit_code);
 	check = check_for_number(arg[1]);
 	if (check == 0 && i > 2)
 		return(exit_too_many(pid_check));
@@ -142,6 +138,8 @@ int    builtin_exit_parent(char **arg, int exit_code, t_list *tokens, t_list **e
 	if ( i == 1) // kann gelöscht werden muss aber auch noch exit_code für unused variable entfernt werden
 	{
 		printf("exit\n");
+		ft_lstclear(env_copy, free);
+		clear_history();
 		ft_free_parser(tokens);
 		exit (exit_code);
 	}
