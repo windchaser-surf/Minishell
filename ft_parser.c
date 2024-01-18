@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 17:49:15 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 18:54:17 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ _Bool	ft_create_empty_parser_list_with_heredoc(t_parser_helper *h, t_list **ll_h
 		return (1);
 	*ll_head = ll_head_orig;
 	ft_free_parser_makefiles(h->p_list_head);
-	ft_print_parser_list(&h->p_list_head);
+	//ft_print_parser_list(&h->p_list_head);
 	h->ith_command = -1;
 	return (0);
 }

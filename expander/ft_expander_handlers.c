@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 13:57:48 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 21:14:36 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,35 @@ int	ft_get_var_name_size(char *str, int *i)
 	return (vns);
 }
 
+_Bool	ft_has_word(char *str)
+{
+	int	i;
+
+	i = 0;
+	ft_skip_spaces(str, &i);
+	if (str[i] == '\0')
+		return (0);
+	else
+	{
+		while (str[i] && (str[i] != ' '))
+			i++;
+		if (str[i] == '\0')
+			return (0);
+		ft_skip_spaces(str, &i);
+		if (str[i] == '\0')
+			return (0);
+		else
+			return (1);
+	}
+	return (1);
+}
+
 char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expansion, char *str)
 {
 	char	*tmp;
 	int		ns_size;
 	char	*var_name;
-	//char	*str;
-	
-	//str = ((t_lexer *)(h->current_node)->content)->word;
+
 	h->orig_i = h->i;
 	h->vns = ft_get_var_name_size(str, &h->i);
 	var_name = ft_substr(str, (unsigned int)(h->i), (size_t)(h->vns));
@@ -87,11 +108,8 @@ char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expan
 	ft_strlcat(new_str, h->var_value, ns_size + ft_strlen(h->var_value) + 1);	//append the variable value to the end of the string
 	h->i = h->orig_i + ft_strlen(h->var_value);	
 	//we set i to the position of the last char of the variable name (not value !)
-	if (needs_expansion && ft_strchr(h->var_value, ' '))
+	if (needs_expansion && ft_has_word(h->var_value))
 		*needs_expansion = 1;
-	//copy everything after the var name ends
-	//ft_strlcat(new_str, &str[h->i], ns_size + ft_strlen(&str[h->i]) + ft_strlen(h->var_value) + 1);
-	//new_str = ft_strjoin_free(new_str, ft_substr(str, h->i - 1, ft_strlen(str) - (h->i - 1)));
 	return (new_str);
 }
 

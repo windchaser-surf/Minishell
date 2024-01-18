@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 13:28:52 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 20:14:02 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,7 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 	if (h->needs_expansion == 1)	//if it has a space, so we have to make new nodes
 	{
 		new_nodes_head = ft_lexer_but_with_words_and_one_cmd(new_str + h->orig_i, orig_lex_node->exec_num);
-		if (h->orig_i - 1 > 0)
+		if (h->orig_i > 0)
 			((t_lexer *)(new_nodes_head)->content)->word = ft_attach_beginning(((t_lexer *)(new_nodes_head)->content)->word, orig_lex_node->word, h);
 		free(new_str);
 		((t_lexer *)(ft_lstlast(new_nodes_head))->content)->word = ft_concat_rest(orig_lex_node->word, h, ((t_lexer *)(ft_lstlast(new_nodes_head))->content)->word, h->needs_expansion);

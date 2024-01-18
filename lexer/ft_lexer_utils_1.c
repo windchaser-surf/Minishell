@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 09:45:51 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 12:51:54 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 21:14:20 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,52 @@ _Bool	ft_handle_lexer_new_command(t_lexer_helper *h, char *cmd)
 	return (0);
 }
 
+char	*ft_remove_backslash(char *str)
+{
+	char	*new_str;
+	int		bcks;
+	int		i;
+	_Bool	was_bck;
+
+	if (ft_strchr(str, '\\') == NULL)
+		return (str);
+	was_bck = 0;
+	i = 0;
+	bcks = 0;
+	if (str == NULL)
+		return (NULL);
+	while (str[i])
+	{
+		if (str[i] == '\\')
+			bcks++;
+		i++;
+	}
+	int asd = - bcks + (bcks/2);
+	new_str = (char *)malloc(sizeof(char) * (strlen(str) + asd + 1));
+	if (new_str == NULL)
+		return (NULL);
+	i = 0;
+	bcks = 0;	//bcks becomes j which is for str
+	while (str[bcks])
+	{
+		if (str[bcks] != '\\')
+			new_str[i++] = str[bcks++];
+		else if (*str == '\\' && was_bck == 1)
+		{
+			new_str[i++] = str[bcks++];
+			was_bck = 0;
+		}
+		else
+		{
+			was_bck = 1;
+			bcks++;
+		}
+	}
+	new_str[i] = '\0';
+	free(str);
+	return(new_str);
+}
+
 _Bool	ft_make_lnode(t_lexer_helper *helper, char *command)
 {
 	t_lexer	*lexer_node;
@@ -43,6 +89,7 @@ _Bool	ft_make_lnode(t_lexer_helper *helper, char *command)
 	if (lexer_node == NULL)
 		return (ft_free_lexer(helper->list_head), perror("Malloc failed"), 1);
 	lexer_node->word = ft_substr(command, helper->start, helper->i - helper->start);
+	lexer_node->word = ft_remove_backslash(lexer_node->word);
 	if (lexer_node->word == NULL)
 		return (ft_free_lexer(helper->list_head), free(lexer_node), perror("Malloc failed"), 1);
 	lexer_node->type = helper->prev_wt;

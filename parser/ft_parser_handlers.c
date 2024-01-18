@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 17:53:20 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 20:16:05 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,19 @@
 	}
 }*/
 
-char	*ft_expand_inline(char *str, t_list **env_copy)
+void	ft_init_expander_helper_nulls(t_expander_helper *h, t_list **env_copy)
+{
+	h->list_head = NULL;
+	h->current_node = h->list_head;
+	h->env_copy = env_copy;
+	h->i = 0;
+	h->orig_i = 0;
+	h->vns = 0;
+	h->var_value = NULL;
+	h->needs_expansion = 0;
+}
+
+char	*ft_expand_inline(char *str, t_list **env_copy, _Bool had_quotes)
 {
 	t_expander_helper	h;
 	char				*new_str;
@@ -36,21 +48,11 @@ char	*ft_expand_inline(char *str, t_list **env_copy)
 	if (new_str == NULL)
 		return (NULL);
 	new_str[0] = '\0';
-	h.list_head = NULL;
-	h.current_node = h.list_head;
-	//h.curr_cont = NULL;
-	h.env_copy = env_copy;
-	h.i = 0;
-	h.orig_i = 0;
-	h.vns = 0;
-	h.var_value = NULL;
-	h.needs_expansion = 0;
-	
-	//init_expander_helper(&h, NULL, env_copy);
+	ft_init_expander_helper_nulls(&h, env_copy);
 	j = 0;
 	while (str[h.i])
 	{
-		if (str[h.i] == '$' && !ft_is_non_var_char(str[h.i + 1]))
+		if (str[h.i] == '$' && !ft_is_non_var_char(str[h.i + 1]) && had_quotes)
 		{
 			new_str = ft_expand_variable(new_str, &h, 0, str);
 			h.i = h.orig_i + h.vns;
@@ -62,6 +64,7 @@ char	*ft_expand_inline(char *str, t_list **env_copy)
 			new_str[j] = '\0';
 		}
 	}
+	free(h.var_value);
 	free(str);
 	return (new_str);
 }
@@ -110,9 +113,8 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error,
 		free(tmp);
 	}
 	ft_init_signals(NOT_INPUT);
-	(void)env_copy;
 	if ((*parser_node)->heredoc && ft_strchr((*parser_node)->heredoc, '$'))
-		(*parser_node)->heredoc = ft_expand_inline((*parser_node)->heredoc, env_copy);
+		(*parser_node)->heredoc = ft_expand_inline((*parser_node)->heredoc, env_copy, !ft_str_has_quote(lexed_item->word));
 	if ((*parser_node)->heredoc != NULL)
 	{
 		free((*parser_node)->heredoc_tmp);
