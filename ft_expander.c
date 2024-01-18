@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 20:14:02 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 22:17:32 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num)
 	{
 		if (command[helper.i] == ' ')	//a word ends with a space or a redirection sign
 		{
-			if (ft_handle_lexer_word(&helper, command) == 1)
+			if (ft_handle_lexer_word(&helper, command, 0, NULL))
 				return (NULL);
 		}
 		else

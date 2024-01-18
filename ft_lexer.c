@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 20:12:24 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 22:19:14 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,20 +53,23 @@ void	ft_print_lexer_list(t_list *list)
 }*/
 
 
-_Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command)
+_Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command, _Bool skip_spaces, int *exit_code)
 {
 	if (ft_make_lnode(helper, command) == 1)
 		return (1);
 	helper->prev_wt = WORD;
+	(void)skip_spaces;
+	char *asd = ((t_lexer *)helper->list_head->content)->word;
 	ft_skip_spaces(command, &(helper->i));
 	if (helper->prev_wt != WORD)
-		if (ft_check_word_first_letter(command[helper->i], helper->list_head) == 1)
+		if (ft_check_word_first_letter(command[helper->i], helper->list_head, exit_code) == 1)
 			return (1);
 	helper->start = helper->i;
+	(void)asd;
 	return (0);
 }
 
-_Bool	ft_handle_lexer_redir(t_lexer_helper *helper, char *command)
+_Bool	ft_handle_lexer_redir(t_lexer_helper *helper, char *command, int *exit_code)
 {
 	if (ft_make_lnode(helper, command) == 1)
 		return (1);
@@ -82,14 +85,14 @@ _Bool	ft_handle_lexer_redir(t_lexer_helper *helper, char *command)
 	
 	if (helper->prev_wt != WORD)
 	{
-		if (ft_check_word_first_letter(command[helper->i], helper->list_head) == 1)//for this case: cat asd > >of1
-			return (NULL);
+		if (ft_check_word_first_letter(command[helper->i], helper->list_head, exit_code) == 1)//for this case: cat asd > >of1
+			return (1);
 	}
 	helper->start = helper->i;
 	return (0);
 }
 
-_Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command)
+_Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command, int *exit_code)
 {
 	if (ft_make_lnode(helper, command) == 1)
 		return (1);
@@ -103,33 +106,33 @@ _Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command)
 	ft_skip_spaces(command, &(helper->i));
 	if (helper->prev_wt != WORD && helper->prev_wt != HEREDOC)
 	{
-		if (ft_check_word_first_letter(command[helper->i], helper->list_head) == 1)
+		if (ft_check_word_first_letter(command[helper->i], helper->list_head, exit_code) == 1)
 			return (1);
 	}
 	helper->start = helper->i;
 	return (0);
 }
 
-_Bool	ft_lexer_while(t_lexer_helper *helper, char *command)
+_Bool	ft_lexer_while(t_lexer_helper *helper, char *command, int *exit_code)
 {
 	if (command[helper->i] == ' ')	//a word ends with a space or a redirection sign
 	{
-		if (ft_handle_lexer_word(helper, command) == 1)
+		if (ft_handle_lexer_word(helper, command, 1, exit_code) == 1)
 			return (1);
 	}
 	else if (command[helper->i] == '|')
 	{
-		if (ft_handle_lexer_new_command(helper, command) == 1)
+		if (ft_handle_lexer_new_command(helper, command, exit_code) == 1)
 			return (1);
 	}
 	else if (command[helper->i] == '>' )	//we alreaady know that it doesnt end with a redir char
 	{
-		if (ft_handle_lexer_redir(helper, command) == 1)
+		if (ft_handle_lexer_redir(helper, command, exit_code) == 1)
 			return (1);
 	}
 	else if (command[helper->i] == '<')
 	{
-		if (ft_handle_lexer_input(helper, command) == 1)
+		if (ft_handle_lexer_input(helper, command, exit_code) == 1)
 			return (1);
 	}
 	else if (command[helper->i] == '\'' || command[helper->i] == '\"')
@@ -139,14 +142,14 @@ _Bool	ft_lexer_while(t_lexer_helper *helper, char *command)
 	return (0);
 }
 
-t_list	*ft_lexer(char *command)
+t_list	*ft_lexer(char *command, int *exit_code)
 {
 	t_lexer_helper	helper;
 
 	ft_init_lexer_helper(&helper, command, 0);
 	while (command[helper.i])
 	{
-		if (ft_lexer_while(&helper, command) == 1)
+		if (ft_lexer_while(&helper, command, exit_code) == 1)
 			return (NULL);
 	}
 	if (helper.start != helper.i)

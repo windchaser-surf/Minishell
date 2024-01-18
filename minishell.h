@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 16:24:07 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 22:16:50 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ typedef struct s_parser		//a node is piece of element that you need to pass to t
 _Bool	ft_basic_error_checker(char **command, int *error_code);
 int		ft_ends_with_spec(char *command, int *error_code);
 _Bool	ft_unmatched_quotes(char *command, int *error_code);
-_Bool	ft_emptyness_in_cmd(char *cmd, int i);
+_Bool	ft_emptyness_in_cmd(char *cmd, int i, int *error_code);
 
 typedef struct	s_main_helper {
 	char	*command;
@@ -188,7 +188,7 @@ extern int g_sig;
 void	ft_init_signals(SigTyp sig_situation);
 
 //Lexer and it's utils
-t_list	*ft_lexer(char *command);
+t_list	*ft_lexer(char *command, int *exit_code);
 
 typedef struct s_lexer_helper {
 	t_list	*list_head;
@@ -198,16 +198,16 @@ typedef struct s_lexer_helper {
 	int		exec_num;
 }	t_lexer_helper;
 
-int		ft_check_word_first_letter(char c, t_list *lexer_head);
+int		ft_check_word_first_letter(char c, t_list *lexer_head, int *exit_code);
 void	ft_skip_spaces(char *str, int *i);
 void	ft_skip_to_closing_quote(char *command, int *i, char close_char);
 void	ft_print_lexer_list(t_list *list);
 
-_Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command);
-_Bool	ft_handle_lexer_redir(t_lexer_helper *helper, char *command);
-_Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command);
-_Bool	ft_lexer_while(t_lexer_helper *helper, char *command);
-_Bool	ft_handle_lexer_new_command(t_lexer_helper *h, char *cmd);
+_Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command, _Bool skip_spaces, int *exit_code);
+_Bool	ft_handle_lexer_redir(t_lexer_helper *helper, char *command, int *exit_code);
+_Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command, int *exit_code);
+_Bool	ft_lexer_while(t_lexer_helper *helper, char *command, int *exit_code);
+_Bool	ft_handle_lexer_new_command(t_lexer_helper *h, char *cmd, int *exit_code);
 
 _Bool	ft_make_lnode(t_lexer_helper *helper, char *command);
 void	ft_init_lexer_helper(t_lexer_helper *helper, char *command, int exec_num);

@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 09:45:51 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 21:14:20 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 22:17:50 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 
 
-_Bool	ft_handle_lexer_new_command(t_lexer_helper *h, char *cmd)
+_Bool	ft_handle_lexer_new_command(t_lexer_helper *h, char *cmd, int *exit_code)
 {
 	if (ft_make_lnode(h, cmd) == 1)
 		return (1);
@@ -22,7 +22,7 @@ _Bool	ft_handle_lexer_new_command(t_lexer_helper *h, char *cmd)
 	h->i++;
 	ft_skip_spaces(cmd, &(h->i));
 	//if (!(isalnum(cmd[h->i]) || (cmd[h->i] == '>' || cmd[h->i] == '<'))) //for this case: cat asd | | >of1
-	if (ft_check_word_first_letter(cmd[h->i], h->list_head) == 1)
+	if (ft_check_word_first_letter(cmd[h->i], h->list_head, exit_code) == 1)
 	{
 		//ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2);
 		return (1);
@@ -114,7 +114,7 @@ void	ft_init_lexer_helper(t_lexer_helper *helper, char *command, int exec_num)
 	helper->start = helper->i;
 }
 
-int	ft_check_word_first_letter(char c, t_list *lexer_head)
+int	ft_check_word_first_letter(char c, t_list *lexer_head, int *exit_code)
 {
 	if (ft_isalnum(c) == 0 && c != ' ' && c != '\"' && c != '\''
 		&& c != '$' && c != '>' && c != '<' && c != '/' && c != '.')
@@ -123,6 +123,8 @@ int	ft_check_word_first_letter(char c, t_list *lexer_head)
 		ft_putchar_fd(c, 2);
 		ft_putstr_fd("'\n", 2);
 		ft_free_lexer(lexer_head);
+		if (exit_code)
+			*exit_code = 2;
 		return (1);
 	}
 	return (0);	//no error
