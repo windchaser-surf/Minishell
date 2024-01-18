@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/01 15:10:40 by rluari            #+#    #+#             */
-/*   Updated: 2023/11/28 15:33:19 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 19:48:15 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ struct s_joinvars {
 	char	*res;
 };
 
-char	*ft_strjoin_gnl(char *leftov_str, char const *line)
+char	*ft_strjoin_gnl(char *leftov_str, char *line)
 {
 	struct s_joinvars	jv;
 
@@ -31,7 +31,7 @@ char	*ft_strjoin_gnl(char *leftov_str, char const *line)
 		leftov_str = (char *)malloc(1);
 		leftov_str[0] = '\0';
 	}
-	jv.full_len = ft_strlen(leftov_str) + ft_strlen(line);
+	jv.full_len = ft_strlen2(leftov_str) + ft_strlen2(line);
 	if (jv.full_len == 0)
 	{
 		free(leftov_str);
@@ -40,7 +40,7 @@ char	*ft_strjoin_gnl(char *leftov_str, char const *line)
 	jv.res = (char *)malloc(jv.full_len + 1);
 	if (!jv.res)
 		return (NULL);
-	while (++jv.i < jv.full_len - (int)ft_strlen(line))
+	while (++jv.i < jv.full_len - (int)ft_strlen2(line))
 		jv.res[jv.i] = leftov_str[jv.i];
 	while (jv.i < jv.full_len)
 		jv.res[jv.i++] = line[jv.j++];

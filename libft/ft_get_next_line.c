@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/01 13:31:29 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 19:19:34 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 19:48:29 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-int ft_strlen(char *str)
+int ft_strlen2(char *str)
 {
 	int i = 0;
 
@@ -24,7 +24,7 @@ int ft_strlen(char *str)
 	return (i);
 }
 
-char *ft_strchr(char *str, int c)
+char *ft_strchr2(char *str, int c)
 {
 	int i = 0;
 	
@@ -41,7 +41,7 @@ char *ft_strchr(char *str, int c)
 	return (NULL);
 }
 
-char	*ft_strjoin(char *str, char *buf)
+char	*ft_strjoin2(char *str, char *buf)
 {
 	int i = -1, j = 0;
 	int len;
@@ -56,7 +56,7 @@ char	*ft_strjoin(char *str, char *buf)
 	}
 	if (!str || !buf)
 		return (NULL);
-	len = ft_strlen(str) + ft_strlen(buf);
+	len = ft_strlen2(str) + ft_strlen2(buf);
 	res = (char *)malloc(sizeof(char) * (len + 1));
 	if (!res)
 		return (NULL);
@@ -79,7 +79,7 @@ char	*ft_new(char *str)
 		i++;
 	if (!str[i])
 		return(free(str), NULL);
-	new = (char *)malloc(sizeof(char) * (ft_strlen(str) - i + 1));
+	new = (char *)malloc(sizeof(char) * (ft_strlen2(str) - i + 1));
 	if (!new)	
 		return (NULL);
 	i++;
@@ -125,13 +125,13 @@ char	*ft_read(int fd, char *str)
 	buf = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	if (!buf)
 		return (NULL);
-	while (!ft_strchr(str, '\n') && rc != 0)
+	while (!ft_strchr2(str, '\n') && rc != 0)
 	{
 		rc = read(fd, buf, BUFFER_SIZE);
 		if (rc == -1)
 			return(free(buf), free(str), NULL);
 		buf[rc] = '\0';
-		str = ft_strjoin(str, buf);
+		str = ft_strjoin2(str, buf);
 	}
 	free(buf);
 	return (str);

@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/01 13:34:37 by rluari            #+#    #+#             */
-/*   Updated: 2023/11/28 15:40:04 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 19:47:21 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 # include <stdlib.h>
 
 char	*get_next_line(int fd);
-char	*ft_strjoin_gnl(char *leftov_str, char const *line);
+char	*ft_strjoin_gnl(char *leftov_str, char *line);
+
+int ft_strlen2(char *str);
+char *ft_strchr2(char *str, int c);
+char	*ft_strjoin2(char *str, char *buf);
 
 #endif
