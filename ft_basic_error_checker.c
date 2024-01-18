@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_basic_error_checker.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 14:12:23 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/18 21:58:10 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,14 +54,14 @@ int	ft_ends_with_spec(char *command, int *error_code)
 	return (0);
 }
 
-_Bool	ft_emptyness_in_cmd(char *cmd, int i)
+_Bool	ft_emptyness_in_cmd(char *cmd, int i, int *error_code)
 {
 	_Bool	prev_was_pipe;
 
 	prev_was_pipe = 1;
 	ft_skip_spaces(cmd, &i);
 	if (cmd[i] == '\0')
-		return (1);
+		return (*error_code = 2, 1);
 	while (cmd[i])
 	{
 		ft_skip_spaces(cmd, &i);
@@ -103,23 +103,23 @@ int	ft_valid_red(char *cmd)
     return (0);
 }
 
-_Bool	ft_basic_error_checker(char **command, int *error_code)
+_Bool	ft_basic_error_checker(char **command, int *exit_code)
 {
 	char	*attach_to_end;
 	char	*new_command;
 
-	if (ft_unmatched_quotes(*command, error_code))
+	if (ft_unmatched_quotes(*command, exit_code))
 		return (1);
 	
-	if (ft_emptyness_in_cmd(*command, 0) == 1)	//check for emptyness between pipes, incl beginning
+	if (ft_emptyness_in_cmd(*command, 0, exit_code) == 1)	//check for emptyness between pipes, incl beginning
 		return (free(*command), 1);
-	if (ft_ends_with_spec(*command, error_code) == 2)	//ends with redirection character
+	if (ft_ends_with_spec(*command, exit_code) == 2)	//ends with redirection character
 		return (1);
 	if (ft_valid_red(*command))
 		return (1);
 	new_command = NULL;
 	ft_init_signals(INPUT);
-	while(ft_ends_with_spec(*command, error_code) == 1)	//ends with pipe
+	while(ft_ends_with_spec(*command, exit_code) == 1)	//ends with pipe
 	{
 		free(new_command);
 		attach_to_end = readline("> ");
