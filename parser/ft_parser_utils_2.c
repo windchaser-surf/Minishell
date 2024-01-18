@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_utils_2.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:56:15 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 13:45:16 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/18 14:47:16 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void	ft_init_parser_node(t_parser **parser_node)
 	(*parser_node)->fd_out = -1;
 	(*parser_node)->exit_code = 0;
 	(*parser_node)->heredoc = NULL;
+	(*parser_node)->heredoc_tmp = NULL;
 }
 
 void	ft_free_parser(t_list *parser_head)
@@ -35,6 +36,7 @@ void	ft_free_parser(t_list *parser_head)
 			free(parser_node->cmd_path);
 		ft_free_array(parser_node->cmd_args);
 		free(parser_node->heredoc);
+		free(parser_node->heredoc_tmp);
 		free(parser_head->content);
 		free(parser_head);
 		parser_head = tmp;
@@ -47,6 +49,7 @@ void	ft_free_parser_node(t_parser *parser_node)
 		free(parser_node->cmd_path);
 	ft_free_array(parser_node->cmd_args);
 	free(parser_node->heredoc);
+	free(parser_node->heredoc_tmp);
 	free(parser_node);
 	
 }

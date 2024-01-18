@@ -6,11 +6,12 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 12:25:35 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 17:18:34 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <readline/history.h>
 //#include <termios.h>
 
 void	ft_print_parser_list(t_list **parser_head)
@@ -119,5 +120,6 @@ int main(int argc, char **argv, char **envp)
 		h.exit_code = execution_main(h.parsed_list, &h.env_copy, h.exit_code);
 		ft_free_parser(h.parsed_list);
 	}
+	clear_history();
 	ft_lstclear(&h.env_copy, del);
 }

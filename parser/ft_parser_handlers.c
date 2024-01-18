@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 12:57:10 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 17:53:20 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,37 @@ char	*ft_expand_inline(char *str, t_list **env_copy)
 {
 	t_expander_helper	h;
 	char				*new_str;
+	int					j;
 
-	new_str = strdup(str);
+	new_str = malloc(sizeof(char) * (ft_strlen(str) + 1));
 	if (new_str == NULL)
 		return (NULL);
-	init_expander_helper(&h, NULL, env_copy);
-	while (new_str[h.i])
+	new_str[0] = '\0';
+	h.list_head = NULL;
+	h.current_node = h.list_head;
+	//h.curr_cont = NULL;
+	h.env_copy = env_copy;
+	h.i = 0;
+	h.orig_i = 0;
+	h.vns = 0;
+	h.var_value = NULL;
+	h.needs_expansion = 0;
+	
+	//init_expander_helper(&h, NULL, env_copy);
+	j = 0;
+	while (str[h.i])
 	{
-		if (str[h.i] == '$' && ft_is_non_var_char(str[h.i + 1]))
-			new_str = ft_expand_variable(new_str, &h, 0);
+		if (str[h.i] == '$' && !ft_is_non_var_char(str[h.i + 1]))
+		{
+			new_str = ft_expand_variable(new_str, &h, 0, str);
+			h.i = h.orig_i + h.vns;
+			j = ft_strlen(new_str);
+		}
 		else
-			h.i++;
+		{
+			new_str[j++] = str[(h.i)++];
+			new_str[j] = '\0';
+		}
 	}
 	free(str);
 	return (new_str);
@@ -50,23 +70,38 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error,
 {
 	char	*delim;
 	char	*tmp;
-;
+
 	//we dont expand variables in heredoc, so "<< $test" the delimiter is "$test" and not what's in the test variable
+	if ((*parser_node)->fd_in != -1)
+	{
+		close ((*parser_node)->fd_in);
+		(*parser_node)->fd_in = -1;
+	}
 	if (ft_str_has_quote(lexed_item->word))
 		delim = ft_just_remove_quotes(lexed_item->word);
 	else
 		delim = ft_strdup(lexed_item->word);
 	if ((*parser_node)->heredoc != NULL)
+	{
 		free((*parser_node)->heredoc);
+		(*parser_node)->heredoc = NULL;
+	}
 	(*parser_node)->heredoc = ft_strdup("");
 	if (delim == NULL || !(*parser_node)->heredoc)
 	{
 		*error = 1;
 		return ;
 	}
+	tmp = NULL;
 	ft_init_signals(HEREDOC_INP);
 	while (1)
 	{
+		if ((*parser_node)->heredoc_tmp != NULL)
+		{
+			free((*parser_node)->heredoc);
+			(*parser_node)->heredoc = ft_strdup((*parser_node)->heredoc_tmp);
+			break ;
+		}
 		tmp = readline("> ");
 		if (tmp == NULL || g_sig == CNTRL_C || ft_strcmp(delim, tmp) == 0)
 			break ;
@@ -76,8 +111,17 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error,
 	}
 	ft_init_signals(NOT_INPUT);
 	(void)env_copy;
-	/*if ((*parser_node)->heredoc && (*parser_node)->heredoc[0] == '\0')
-		(*parser_node)->heredoc = ft_expand_inline((*parser_node)->heredoc, env_copy);*/
+	if ((*parser_node)->heredoc && ft_strchr((*parser_node)->heredoc, '$'))
+		(*parser_node)->heredoc = ft_expand_inline((*parser_node)->heredoc, env_copy);
+	if ((*parser_node)->heredoc != NULL)
+	{
+		free((*parser_node)->heredoc_tmp);
+		(*parser_node)->heredoc_tmp = ft_strdup((*parser_node)->heredoc);
+		if ((*parser_node)->heredoc_tmp == NULL)
+			*error = 1;
+	}
+	else
+		*error = 1;
 	free(delim);
 	free(tmp);
 }
@@ -148,6 +192,13 @@ void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error)
 		free(*parser_node);
 		*error = 1;
 		return ;
+	}
+	if ((*parser_node)->heredoc)
+	{
+		free((*parser_node)->heredoc);
+		//free((*parser_node)->heredoc_tmp);
+		(*parser_node)->heredoc = NULL;
+		//(*parser_node)->heredoc_tmp = NULL;
 	}
 	if ((*parser_node)->fd_in != -1)// if there is already an infile, close it
 		close ((*parser_node)->fd_in);

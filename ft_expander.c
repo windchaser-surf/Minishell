@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 21:57:14 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 13:28:52 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ char	*ft_expand_dquote(t_expander_helper *h, int exit_code)	//from ab"cde"fg"hi"
 	char	*new_str;
 	int		j;
 	char	*str;
+
 	str = ((t_lexer *)h->current_node->content)->word;
 	new_str = ft_make_new_str_for_expanstion(&h->i, str, &j);
 	if (!new_str)
@@ -110,7 +111,7 @@ char	*ft_expand_dquote(t_expander_helper *h, int exit_code)	//from ab"cde"fg"hi"
 				new_str = ft_handle_dollar_question_q(new_str, &exit_code, &h->i, str);
 			else
 			{
-				new_str = ft_expand_variable(new_str, h, NULL);	//it expands and attaches to the end of the string
+				new_str = ft_expand_variable(new_str, h, NULL, str);	//it expands and attaches to the end of the string
 				h->i = h->orig_i + h->vns;
 			}
 			j = ft_strlen(new_str);
@@ -203,7 +204,7 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 	if (orig_lex_node->word[(h->i) + 1] == '?')	//for $? we need to handle it differently
 		return (ft_handle_dollar_question(new_str, exit_code, &h->i, orig_lex_node->word));
 	//new_str = ft_expand_variable(new_str, &h->i, orig_lex_node->word, h->env_copy);
-	new_str = ft_expand_variable(new_str, h, &h->needs_expansion);
+	new_str = ft_expand_variable(new_str, h, &h->needs_expansion, orig_lex_node->word);
 	if (!new_str)
 		return (NULL);
 	if (new_str[h->orig_i] == '\0' && h->orig_i == 0 && orig_lex_node->word[h->vns] == '\0')	//if it was an empty variable

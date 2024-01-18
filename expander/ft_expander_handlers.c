@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 21:58:15 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 13:57:48 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,14 @@ int	ft_get_var_name_size(char *str, int *i)
 	return (vns);
 }
 
-char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expansion)
+char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expansion, char *str)
 {
 	char	*tmp;
 	int		ns_size;
 	char	*var_name;
-	char	*str;
+	//char	*str;
 	
-	str = ((t_lexer *)(h->current_node)->content)->word;
+	//str = ((t_lexer *)(h->current_node)->content)->word;
 	h->orig_i = h->i;
 	h->vns = ft_get_var_name_size(str, &h->i);
 	var_name = ft_substr(str, (unsigned int)(h->i), (size_t)(h->vns));
@@ -80,7 +80,7 @@ char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expan
 	ns_size = ft_strlen(new_str);
 	tmp = malloc(ns_size + ft_strlen(&str[h->i]) - (++h->vns) + ft_strlen(h->var_value) + 2);	//update len with the variable value
 	if (!tmp)
-		return (perror("Malloc failed"), free(var_name),NULL);
+		return (perror("Malloc failed"), NULL);
 	ft_strcpy(tmp, new_str);	//copy everything before the $
 	free(new_str);
 	new_str = tmp;
