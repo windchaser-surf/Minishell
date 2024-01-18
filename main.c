@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 17:18:34 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 21:19:36 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,16 @@ int main(int argc, char **argv, char **envp)
 	{
 		g_sig = 0;
 		ft_init_signals(INPUT);
-		h.command = readline("Minishell> ");
+		if (isatty(fileno(stdin)))
+			h.command = readline("Minishell> ");
+		else
+		{
+			char *line;
+			line = get_next_line(fileno(stdin));
+			h.command = ft_strtrim(line, "\n");
+			free(line);
+		}
+		//h.command = readline("Minishell> ");
 		ft_init_signals(NOT_INPUT);
 		if (!h.command)
 			break ;	//breaks the loop if ctrl+d is pressed
@@ -106,7 +115,7 @@ int main(int argc, char **argv, char **envp)
 		h.lexed_list = ft_lexer(h.command);	// This function will tokenize the command and store it in a linked list called t_lexer.
 		h.lexed_list = ft_expander(&h.lexed_list, &h.env_copy, h.exit_code);
 
-		ft_print_lexer_list(h.lexed_list);
+		//ft_print_lexer_list(h.lexed_list);
 		
 		h.parsed_list = ft_parser(h.lexed_list, &h.exit_code, &h.env_copy);
 
@@ -115,11 +124,12 @@ int main(int argc, char **argv, char **envp)
 		if (!h.parsed_list)
 			continue ;
 		
-		ft_print_parser_list(&h.parsed_list);
+		//ft_print_parser_list(&h.parsed_list);
 		
 		h.exit_code = execution_main(h.parsed_list, &h.env_copy, h.exit_code);
 		ft_free_parser(h.parsed_list);
 	}
 	clear_history();
 	ft_lstclear(&h.env_copy, del);
+	return (h.exit_code);
 }
