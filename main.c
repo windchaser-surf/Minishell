@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 15:05:55 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 12:25:35 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,45 +69,6 @@ void ft_print_orig_env(char **envp)
 	}
 }
 
-/*void generic_sig_handler(int sig)
-{
-	if (g_running_process.pid && g_running_process.pid[g_running_process.n] > 0) // TODO: don't use a global variable? (would need to establish signal disposition in run_command())
-    {
-        kill(g_running_process.pid[g_running_process.n], sig);
-        return ;
-    }
-
-	if (sig == SIGINT)
-	{
-		ft_putstr_fd("\n", 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
-	else if (sig == SIGQUIT)
-	{
-		ft_putstr_fd("\b\b  \b\b", 1);
-	}
-	
-}*/
-
-/*void init_sig(void)
-{
-	struct sigaction	sa;
-	struct termios		current;
-	int					tty_fd;
-
-	sa.sa_handler = generic_sig_handler;
-	//sa.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &sa, NULL);
-	tcgetattr(0, &current);
-	tty_fd = open(ttyname(0), O_RDONLY);
-	current.c_lflag |= ISIG;
-	tcsetattr(tty_fd, TCSANOW, &current);
-	sigaction(SIGQUIT, &sa, NULL);
-	close(tty_fd);
-}*/
-
 static void	init_main_helper(t_main_helper *h, char **argv)
 {
 	h->lexed_list = NULL;
@@ -132,9 +93,10 @@ int main(int argc, char **argv, char **envp)
 		return (EXIT_FAILURE);
 	while (1)
 	{
-		ft_set_mode(&h.sig_mode, INPUT);
+		g_sig = 0;
+		ft_init_signals(INPUT);
 		h.command = readline("Minishell> ");
-		ft_set_mode(&h.sig_mode, NOT_INPUT);
+		ft_init_signals(NOT_INPUT);
 		if (!h.command)
 			break ;	//breaks the loop if ctrl+d is pressed
 		add_history(h.command); 
@@ -145,7 +107,7 @@ int main(int argc, char **argv, char **envp)
 
 		ft_print_lexer_list(h.lexed_list);
 		
-		h.parsed_list = ft_parser(h.lexed_list, &h.exit_code, &h.env_copy, &h.sig_mode);
+		h.parsed_list = ft_parser(h.lexed_list, &h.exit_code, &h.env_copy);
 
 		ft_free_lexer(h.lexed_list);
 		free(h.command);

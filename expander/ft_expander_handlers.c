@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/16 12:05:52 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 21:58:15 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int	ft_get_var_name_size(char *str, int *i)
 	*i += 1;	//skip the $
 	vns = 0;
 	//1. cutting the variable name
-	while (str[*i + vns] && (ft_isalnum(str[*i + vns]) || str[*i + vns] == '_'))	//example: ab"cd$ef"gh -->var name is "ef"
+	while (str[*i + vns] && !ft_is_non_var_char(str[*i + vns]))	//example: ab"cd$ef"gh -->var name is "ef"
 		(vns)++;
 	return (vns);
 }

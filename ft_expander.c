@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 12:43:00 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 21:57:14 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,13 @@ char	*ft_attach_beginning(char *head_node_str, char *str, t_expander_helper *h)
 	return (tmp);
 }
 
+_Bool	ft_is_non_var_char(char c)
+{
+	if (ft_isalnum(c) || c == '_' || c == '?' || c == '$')
+			return (0);
+	return (1);
+}
+
 char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 {
 	char	*new_str;
@@ -216,8 +223,6 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 	else
 		return (new_str = ft_concat_rest(orig_lex_node->word, h, new_str, 0), free(orig_lex_node->word), new_str);
 }
-
-
 
 int	ft_get_number_of_nodes_in_cmd(t_list *lexed_l, int i)
 {

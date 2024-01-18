@@ -6,11 +6,12 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 16:13:54 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 12:16:25 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <string.h>
 
 /*void	heredoc_sig_handler(int sig)
 {
@@ -25,7 +26,27 @@
 	}
 }*/
 
-void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error, SigTyp *sig_mode)
+char	*ft_expand_inline(char *str, t_list **env_copy)
+{
+	t_expander_helper	h;
+	char				*new_str;
+
+	new_str = strdup(str);
+	if (new_str == NULL)
+		return (NULL);
+	init_expander_helper(&h, NULL, env_copy);
+	while (new_str[h.i])
+	{
+		if (str[h.i] == '$' && ft_is_non_var_char(str[h.i + 1]))
+			new_str = ft_expand_variable(new_str, &h, 0);
+		else
+			h.i++;
+	}
+	free(str);
+	return (new_str);
+}
+
+void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error, t_list **env_copy)
 {
 	char	*delim;
 	char	*tmp;
@@ -35,15 +56,15 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error,
 		delim = ft_just_remove_quotes(lexed_item->word);
 	else
 		delim = ft_strdup(lexed_item->word);
-	if (delim == NULL)
+	if ((*parser_node)->heredoc != NULL)
+		free((*parser_node)->heredoc);
+	(*parser_node)->heredoc = ft_strdup("");
+	if (delim == NULL || !(*parser_node)->heredoc)
 	{
 		*error = 1;
 		return ;
 	}
-	if ((*parser_node)->heredoc != NULL)
-		free((*parser_node)->heredoc);
-	(*parser_node)->heredoc = ft_strdup("");
-	ft_set_mode(sig_mode, HEREDOC_INP);
+	ft_init_signals(HEREDOC_INP);
 	while (1)
 	{
 		tmp = readline("> ");
@@ -53,7 +74,10 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error,
 		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, "\n");
 		free(tmp);
 	}
-	ft_set_mode(sig_mode, NOT_INPUT);
+	ft_init_signals(NOT_INPUT);
+	(void)env_copy;
+	/*if ((*parser_node)->heredoc && (*parser_node)->heredoc[0] == '\0')
+		(*parser_node)->heredoc = ft_expand_inline((*parser_node)->heredoc, env_copy);*/
 	free(delim);
 	free(tmp);
 }

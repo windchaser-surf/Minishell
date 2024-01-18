@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 11:48:42 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 22:02:40 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,9 @@ void	free_2d(char **str);
 
 //Signals
 
-void	ft_set_mode(SigTyp *sig_mode, SigTyp mode);
+extern int g_sig;
+
+void	ft_init_signals(SigTyp sig_situation);
 
 //Lexer and it's utils
 t_list	*ft_lexer(char *command);
@@ -231,11 +233,13 @@ typedef struct s_expander_helper {
 
 t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code);
 
+_Bool	ft_is_non_var_char(char c);
 char	*ft_remove_quote(char *str, int *i, char c);
 char	*ft_expand_dquote(t_expander_helper *h, int exit_code);
 char	*ft_expand_with_split(t_expander_helper *h, int *exit_code);
 t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num);
 
+void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **env_copy);
 int		ft_get_var_name_size(char *str, int *i);
 char	*ft_get_var_value(char *var_name, t_list **env_copy);
 char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expansion);
@@ -250,11 +254,11 @@ char	*ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h);
 _Bool	ft_add_back_to_new_ll(t_list **new_lexed_list, t_list *lexed_list, _Bool num);
 
 //Parser and it's utils
-t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy, SigTyp *sig_mode);
+t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy);
 
 typedef struct s_parser_helper {
-	t_list		*list_head;
-	t_list		*new_node_head;
+	t_list		*p_list_head;
+	t_list		*p_new_node;
 	t_parser	*parser_n;
 	t_lexer		*lexed_i;
 	int			ith_command;
@@ -265,7 +269,7 @@ typedef struct s_parser_helper {
 void	ft_init_parser_node(t_parser **parser_node);
 void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp type);
 void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
-void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, SigTyp *sig_mode);
+void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, t_list **env_copy);
 _Bool	ft_handle_word(t_parser_helper *helper, t_list **env_copy);
 
 void	ft_free_parser(t_list *parser_head);
@@ -290,8 +294,15 @@ _Bool	ft_str_has_quote(char *str);
 int	ft_count_amount_of_quotes(char *str);
 char	*ft_just_remove_quotes(char *str);
 
-//signals
-/* void	generic_sig_handler(int sig);
-void	init_sig(void); */
+
+
+
+
+
+
+
+
+
+void	ft_print_parser_list(t_list **parser_head);
 
 #endif

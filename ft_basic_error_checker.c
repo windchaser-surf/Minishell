@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_basic_error_checker.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/09 12:47:09 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/18 12:07:07 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,11 +90,13 @@ _Bool	ft_basic_error_checker(char **command, int *error_code)
 
 	if (ft_unmatched_quotes(*command, error_code))
 		return (1);
+	
 	if (ft_emptyness_in_cmd(*command, 0) == 1)	//check for emptyness between pipes, incl beginning
 		return (free(*command), 1);
 	if (ft_ends_with_spec(*command, error_code) == 2)	//ends with redirection character
 		return (1);
 	new_command = NULL;
+	ft_init_signals(INPUT);
 	while(ft_ends_with_spec(*command, error_code) == 1)	//ends with pipe
 	{
 		free(new_command);
@@ -110,6 +112,8 @@ _Bool	ft_basic_error_checker(char **command, int *error_code)
 			return (perror("Malloc failed"), free(new_command), 1);
 		ft_strcpy(*command, new_command);
 	}
+	ft_init_signals(NOT_INPUT);
+
 	free(new_command);
 	return (0);
 }

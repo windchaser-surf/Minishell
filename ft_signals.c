@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 19:56:13 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 14:54:54 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/17 21:09:49 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,32 +37,32 @@ void	ft_sighandle_heredoc(int sig)
 	}
 }
 
-void	ft_init_signals(SigTyp *sig_situation)
+void	ft_init_signals(SigTyp sig_situation)
 {
-	if (*sig_situation == INPUT)
+	if (sig_situation == INPUT)
 	{
 		signal(SIGINT, &ft_sighandle_cmd);
 		signal(SIGQUIT, SIG_IGN);
 	}
-	else if (*sig_situation == NOT_INPUT)
+	else if (sig_situation == NOT_INPUT)
 	{
 		signal(SIGINT, SIG_IGN);
 		signal(SIGQUIT, SIG_IGN);
 	}
-	else if (*sig_situation == CHILD)
+	else if (sig_situation == CHILD)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
 	}
-	else if (*sig_situation == HEREDOC_INP)
+	else if (sig_situation == HEREDOC_INP)
 	{
 		signal(SIGINT, &ft_sighandle_heredoc);
 		signal(SIGQUIT, SIG_IGN);
 	}
 }
 
-void	ft_set_mode(SigTyp *sig_mode, SigTyp mode)
+/*void	ft_set_mode(SigTyp *sig_mode, SigTyp mode)
 {
 	*sig_mode = mode;
 	ft_init_signals(sig_mode);
-}
+}*/
