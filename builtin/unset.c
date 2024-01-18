@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 10:50:44 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/22 13:40:42 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/18 21:13:12 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,11 @@ void	del_env_var(t_list **env_copy, char *var)
 	t_list	*current;
     t_list	*prev;
 
+
 	current = *env_copy;
 	prev = NULL;
     while (current != NULL && (ft_strncmp(current->content, var, ft_strlen(var))\
-		 || (((char *)(current)->content)[ft_strlen(var)] != '=')))
+		 || (((char *)(current)->content)[ft_strlen(var)] != '=')) && ((char *)(current->content))[ft_strlen(var) != 0])
 	{
 		prev = current;
         current = current->next;
@@ -31,7 +32,8 @@ void	del_env_var(t_list **env_copy, char *var)
     	*env_copy = current->next;
     else 
     {
-		prev->next = current->next;
+		if (current)
+			prev->next = current->next;
 	}
     if (current)
 		ft_lstdelone(current, del);
@@ -61,7 +63,6 @@ int    builtin_unset(t_list **env_copy, char **var)
 {
 	t_list *tmp;
 	int	i; 
-	
 	i = 1;
 	if (var[i] == NULL)
 		return (EXIT_SUCCESS); //if there is no var nothing happen
