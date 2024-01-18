@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:29:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/16 14:38:57 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/18 13:46:20 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,7 @@ int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, t_list 
 	}
 	if (data->pid[data->n2] == 0)
 	{
+		ft_init_signals(CHILD);
 		dup_input(command, data, tokens, env_copy);
 		dup_output(command, data, tokens, env_copy);
 		ft_pipe_closer(data);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 11:17:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/16 14:36:15 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/18 13:44:11 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ void	ft_file_closer_single(t_parser *command)
  
 int	child_process(t_parser *command, t_list **env_copy)
 {
+	ft_init_signals(CHILD);
 	if (command->heredoc)
 		dup_heredoc(command);
 	else if (command->fd_in != -1)
