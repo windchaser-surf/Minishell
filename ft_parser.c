@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 12:24:01 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/18 12:50:32 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,6 @@
 
 void	ft_init_parser_helper_struct(t_parser_helper *helper)
 {
-	/*
-	t_list		*p_list_head;
-	t_list		*p_new_node;
-	t_parser	*parser_n;
-	t_lexer		*lexed_i;
-	int			ith_command;
-	_Bool		error;
-	_Bool		prev_was_word;
-	*/
 	helper->error = 0;
 	helper->ith_command = -1;
 	helper->p_list_head = NULL;
@@ -102,14 +93,14 @@ _Bool	ft_create_empty_parser_list_with_heredoc(t_parser_helper *h, t_list **ll_h
 		{
 			ft_handle_heredoc(&(h->parser_n), h->lexed_i, &(h->error), env_copy);
 			if (h->error || g_sig == CNTRL_C)
-				return (ft_free_parser_node(h->parser_n), /*ft_lstdelone(h->p_new_node, free) ,*/ft_free_parser(h->p_list_head), 1);
+				return (ft_free_parser_node(h->parser_n), ft_free_parser(h->p_list_head), 1);
 		}
 		*ll_head = (*ll_head)->next;
 	}
 	if (ft_create_new_command(h, *exit_c, 1) == 1)
 		return (1);
 	*ll_head = ll_head_orig;
-	ft_print_parser_list(&(h->p_list_head));
+	//ft_print_parser_list(&(h->p_list_head));
 	return (0);
 }
 
@@ -119,13 +110,12 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 	t_list			*tmp;
 	t_list			*first_cmd_lexed;
 
-	tmp = lexed_list;
 	if (lexed_list == NULL)
 		return (NULL);
+	tmp = lexed_list;
 	ft_init_parser_helper_struct(&h);
-	if (ft_create_empty_parser_list_with_heredoc(&h, &lexed_list, exit_c, env_copy) == 1)
+	if (ft_create_empty_parser_list_with_heredoc(&h, &lexed_list, exit_c, env_copy))
 		return (NULL);
-	printf("----------------------\n");
 	h.p_new_node = h.p_list_head;
 	while (lexed_list)
 	{
@@ -153,8 +143,5 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 		lexed_list = lexed_list->next;
 	}
 	lexed_list = tmp;
-	//remove last parsed node if necessary?
-	/*if (ft_create_new_command(&h, *exit_c, 1) == 1)
-		return (NULL);*/
 	return (h.p_list_head);
 }
