@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 15:54:47 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 18:23:18 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ char	*ft_expand_inline(char *str, t_list **env_copy, _Bool had_quotes)
 	j = 0;
 	while (str[h.i])
 	{
-		if (str[h.i] == '$' && !ft_is_non_var_char(str[h.i + 1]) && had_quotes)
+		if (str[h.i] == '$' && !ft_is_var_char(str[h.i + 1]) && had_quotes)
 		{
 			new_str = ft_expand_variable(new_str, &h, 0, str);
 			h.i = h.orig_i + h.vns;
@@ -134,19 +134,19 @@ _Bool	ft_handle_word(t_parser_helper *h, t_list **env_copy)
 	{
 		h->parser_n->cmd_args = (char **)malloc(sizeof(char *) * 2);
 		if (h->parser_n->cmd_args == NULL)
-			return (perror("Malloc failed\n"), ft_free_parser_node(&h->parser_n), 1);
-		if (ft_strchr(h->lexed_i->word, '/') || (h->lexed_i->word[0] == '.' && ft_strchr(h->lexed_i->word, '/')))// "/usr/bin/grep" or "./user/bin/grep"
+			return (ft_putstr_fd(EMSG_MAL, 2), ft_free_parser_node(&h->parser_n), 1);
+		if (ft_strchr(h->lexed_i->word, '/') || (h->lexed_i->word[0] == '.' && ft_strchr(h->lexed_i->word, '/')))
 		{
-			if (ft_handle_absolute_command(&(h->parser_n), h->lexed_i) == 1)	//malloc failed
+			if (ft_handle_absolute_command(&(h->parser_n), h->lexed_i) == 1)
 				return (perror("Malloc failed\n"), ft_free_parser_node(&h->parser_n), 1);
 		}
-		else// "grep"
+		else
 		{
 			h->parser_n->cmd_path = ft_get_path(env_copy, h->lexed_i->word, &h->parser_n);
 			h->parser_n->cmd_args[0] = ft_strdup(h->lexed_i->word);
 		}
 		if (h->parser_n->cmd_args[0] == NULL)
-			return (perror("Malloc failed\n")/*, ft_free_parser_node(&h->parser_n)*/, 1);
+			return (perror("Malloc failed\n"), 1);
 		h->parser_n->cmd_args[1] = NULL;
 		h->prev_was_word = 1;
 	}
@@ -159,28 +159,28 @@ _Bool	ft_handle_word(t_parser_helper *h, t_list **env_copy)
 	return (0);
 }
 
-void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp type)
+void	ft_handle_redirs(t_parser **p_n, t_lexer *l_i, WordTyp type)
 {
-	if ((*parser_node)->fd_out != -1)// if there is already an outfile, close it
-		close ((*parser_node)->fd_out);
-	if (access(lexed_item->word, F_OK) != -1)	//file exists
+	if ((*p_n)->fd_out != -1)
+		close ((*p_n)->fd_out);
+	if (access(l_i->word, F_OK) != -1)
 	{
 		if (type == REDIR)
-			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_TRUNC);	//truncate the file
+			(*p_n)->fd_out = open(l_i->word, O_WRONLY | O_TRUNC);
 		else if (type == D_REDIR)
-			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_APPEND);	//append to the file
+			(*p_n)->fd_out = open(l_i->word, O_WRONLY | O_APPEND);
 	}
 	else
 	{
 		if (type == REDIR)
-			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			(*p_n)->fd_out = open(l_i->word, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (type == D_REDIR)
-			(*parser_node)->fd_out = open(lexed_item->word, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			(*p_n)->fd_out = open(l_i->word, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	}
-	if ((*parser_node)->fd_out == -1)
+	if ((*p_n)->fd_out == -1)
 	{
-		(*parser_node)->exit_code = 1;
-		ft_perror_and_free(lexed_item->word);
+		(*p_n)->exit_code = 1;
+		ft_perror_and_free(l_i->word);
 	}
 }
 
@@ -191,18 +191,16 @@ void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error)
 	infile_name = ft_strdup(lexed_item->word);
 	if (infile_name == NULL)
 	{
-		ft_free_parser_node(parser_node);	//maybe free_parser_node() is better
+		ft_free_parser_node(parser_node);
 		*error = 1;
 		return ;
 	}
 	if ((*parser_node)->heredoc)
 	{
 		free((*parser_node)->heredoc);
-		//free((*parser_node)->heredoc_tmp);
 		(*parser_node)->heredoc = NULL;
-		//(*parser_node)->heredoc_tmp = NULL;
 	}
-	if ((*parser_node)->fd_in != -1)// if there is already an infile, close it
+	if ((*parser_node)->fd_in != -1)
 		close ((*parser_node)->fd_in);
 	(*parser_node)->fd_in = open(infile_name, O_RDONLY);
 	if ((*parser_node)->fd_in == -1)

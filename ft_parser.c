@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 14:41:03 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 18:38:10 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 void	ft_init_parser_helper_struct(t_parser_helper *helper)
 {
 	helper->error = 0;
-	helper->ith_command = -1;
+	helper->i_cmd = -1;
 	helper->p_list_head = NULL;
 	helper->p_new_node = NULL;
 	helper->parser_n = NULL;
@@ -25,11 +25,11 @@ void	ft_init_parser_helper_struct(t_parser_helper *helper)
 	
 }
 
-_Bool	ft_create_new_command(t_parser_helper *h, int exit_code, _Bool last)
+_Bool	ft_make_command(t_parser_helper *h, int exit_code, _Bool last)
 {
 	if (h->error)
 		return (ft_free_parser(h->p_list_head), 1);
-	if (h->ith_command != -1 || last == 1)	// if we are not at the first command or at the last command, we add the command to the list
+	if (h->i_cmd != -1 || last == 1)	// if we are not at the first command or at the last command, we add the command to the list
 	{
 		(void)exit_code;
 		/*if (ft_set_exit_err_empty_arg(&(h->parser_n), exit_code) == 1)	//only in case of "exit" command
@@ -45,7 +45,7 @@ _Bool	ft_create_new_command(t_parser_helper *h, int exit_code, _Bool last)
 		if (h->parser_n == NULL)
 			return (ft_free_parser(h->p_list_head), perror("Malloc failed"), 1);
 		ft_init_parser_node(&(h->parser_n));
-		h->ith_command = h->lexed_i->exec_num;
+		h->i_cmd = h->lexed_i->exec_num;
 		h->prev_was_word = 0;
 	}
 	return (0);
@@ -97,7 +97,7 @@ void	ft_free_parser_makefiles(t_list *p_list_head)
 	}
 }
 
-_Bool	ft_create_empty_parser_list_with_heredoc(t_parser_helper *h, t_list **ll_head, int *exit_c, t_list **env_copy)
+_Bool	ft_create_empty_parser_list_with_heredoc(t_parser_helper *h, t_list **ll_head, int *e_c, t_list **env)
 {
 	t_list	*ll_head_orig;
 
@@ -105,26 +105,48 @@ _Bool	ft_create_empty_parser_list_with_heredoc(t_parser_helper *h, t_list **ll_h
 	while (*ll_head)
 	{
 		h->lexed_i = (*ll_head)->content;
-		//init empty parser node
-		if ((h->lexed_i->exec_num > h->ith_command) && ft_create_new_command(h, *exit_c, 0))
+		if ((h->lexed_i->exec_num > h->i_cmd) && ft_make_command(h, *e_c, 0))
 			return (1);
 		if (h->lexed_i->type == HEREDOC)
 		{
 			free(h->parser_n->heredoc_tmp);
 			h->parser_n->heredoc_tmp = NULL;
-			ft_handle_heredoc(&(h->parser_n), h->lexed_i, &(h->error), env_copy);
+			ft_handle_heredoc(&(h->parser_n), h->lexed_i, &(h->error), env);
 			if (h->error || g_sig == CNTRL_C)
-				return (ft_free_parser_node(&h->parser_n), ft_free_parser(h->p_list_head), 1);
+				return (ft_free_parser_node(&h->parser_n), 
+					ft_free_parser(h->p_list_head), 1);
 		}
 		*ll_head = (*ll_head)->next;
 	}
-	if (ft_create_new_command(h, *exit_c, 1) == 1)
+	if (ft_make_command(h, *e_c, 1) == 1)
 		return (1);
 	*ll_head = ll_head_orig;
 	ft_free_parser_makefiles(h->p_list_head);
-	//ft_print_parser_list(&h->p_list_head);
-	h->ith_command = -1;
+	h->i_cmd = -1;
 	return (0);
+}
+
+void	ft_normie_shortener1(t_parser_helper *h, t_list **lexed_list, t_list **first_cmd_lexed)
+{
+	if (((t_lexer *)(*lexed_list)->content)->exec_num > h->i_cmd)
+		*first_cmd_lexed = *lexed_list;
+	if (h->parser_n && h->parser_n->exit_code != 0)
+	{	
+		while ((*lexed_list) && ((t_lexer *)(*lexed_list)->content)->exec_num == h->i_cmd)
+			(*lexed_list) = (*lexed_list)->next;
+	}
+	h->i_cmd = h->lexed_i->exec_num;
+	if (*lexed_list != NULL)
+		h->lexed_i = (t_lexer *)(*lexed_list)->content;
+}
+
+void	ft_normie_shortener2(t_parser_helper *h)
+{
+	if ((h->lexed_i->exec_num > h->i_cmd))
+	{
+		h->p_new_node = h->p_new_node->next;
+		h->prev_was_word = 0;
+	}
 }
 
 t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
@@ -142,31 +164,17 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 	h.p_new_node = h.p_list_head;
 	while (lexed_list)
 	{
-		if (((t_lexer *)lexed_list->content)->exec_num > h.ith_command)
-			first_cmd_lexed = lexed_list;	//set the first lexed node of the given command
-		if (h.parser_n && h.parser_n->exit_code != 0)	//if error, skip to the next command
-		{	
-			while (lexed_list && ((t_lexer *)lexed_list->content)->exec_num == h.ith_command)
-				lexed_list = lexed_list->next;
-		}
+		ft_normie_shortener1(&h, &lexed_list, &first_cmd_lexed);
 		if (lexed_list == NULL)
 			break ;
-		h.ith_command = h.lexed_i->exec_num;
-		h.lexed_i = (t_lexer *)lexed_list->content;
-		if (ft_is_empty_lexed_lode(h.lexed_i->word, &lexed_list, first_cmd_lexed)) // if the lexed item is empty, we skip it ONLY IF something before or after
+		if (ft_is_empty_lexed_lode(h.lexed_i->word, &lexed_list, first_cmd_lexed))
 			continue ;
-		if ((h.lexed_i->exec_num > h.ith_command))
-		{
-			h.p_new_node = h.p_new_node->next;
-			h.prev_was_word = 0;
-		}
+		ft_normie_shortener2(&h);
 		ft_parser_while(&h, env_copy);
-
 		if (h.error)
 			return (ft_free_parser(h.p_list_head), NULL);
 		lexed_list = lexed_list->next;
 	}
-	(void)first_cmd_lexed;
 	lexed_list = tmp;
 	return (h.p_list_head);
 }

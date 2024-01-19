@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 22:19:14 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 16:50:48 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,116 +29,87 @@ void	ft_print_lexer_list(t_list *list)
 	}
 }
 
-/*int	ft_check_for_empty_command(t_list *list_head)
+_Bool	ft_handle_lexer_word(t_lexer_helper *h, char *command, int *e_c)
 {
-	t_lexer	*lexer_node;
-
-	while (list_head->next)
-	{
-		lexer_node = (t_lexer *)list_head->content;
-		if (lexer_node->word == NULL)
-		{
-			return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), 1);
-		}
-		list_head = list_head->next;
-	}
-	lexer_node = (t_lexer *)list_head->content;
-	if (lexer_node->word == NULL)
-	{
-		return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), 1);
-	}
-
-	
-	return (0);
-}*/
-
-
-_Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command, _Bool skip_spaces, int *exit_code)
-{
-	if (ft_make_lnode(helper, command) == 1)
+	if (ft_make_lnode(h, command) == 1)
 		return (1);
-	helper->prev_wt = WORD;
-	(void)skip_spaces;
-	char *asd = ((t_lexer *)helper->list_head->content)->word;
-	ft_skip_spaces(command, &(helper->i));
-	if (helper->prev_wt != WORD)
-		if (ft_check_word_first_letter(command[helper->i], helper->list_head, exit_code) == 1)
+	h->prev_wt = WORD;
+	ft_skip_spaces(command, &(h->i));
+	if (h->prev_wt != WORD)
+		if (ft_check_word_first_letter(command[h->i], h->list_head, e_c) == 1)
 			return (1);
-	helper->start = helper->i;
-	(void)asd;
+	h->start = h->i;
 	return (0);
 }
 
-_Bool	ft_handle_lexer_redir(t_lexer_helper *helper, char *command, int *exit_code)
+_Bool	ft_handle_lexer_redir(t_lexer_helper *h, char *command, int *e_c)
 {
-	if (ft_make_lnode(helper, command) == 1)
+	if (ft_make_lnode(h, command) == 1)
 		return (1);
-			
-	helper->prev_wt = REDIR;
-	if (command[helper->i + 1] == '>')
+	h->prev_wt = REDIR;
+	if (command[h->i + 1] == '>')
 	{
-		helper->prev_wt = D_REDIR;
-		helper->i++;
+		h->prev_wt = D_REDIR;
+		h->i++;
 	}
-	helper->i++;
-	ft_skip_spaces(command, &(helper->i));
-	
-	if (helper->prev_wt != WORD)
+	h->i++;
+	ft_skip_spaces(command, &(h->i));
+	if (h->prev_wt != WORD)
 	{
-		if (ft_check_word_first_letter(command[helper->i], helper->list_head, exit_code) == 1)//for this case: cat asd > >of1
+		if (ft_check_word_first_letter(command[h->i], h->list_head, e_c) == 1)
 			return (1);
 	}
-	helper->start = helper->i;
+	h->start = h->i;
 	return (0);
 }
 
-_Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command, int *exit_code)
+_Bool	ft_handle_lexer_input(t_lexer_helper *h, char *command, int *e_c)
 {
-	if (ft_make_lnode(helper, command) == 1)
+	if (ft_make_lnode(h, command) == 1)
 		return (1);
-	helper->prev_wt = INFILE;
-	if (command[helper->i + 1] == '<')
+	h->prev_wt = INFILE;
+	if (command[h->i + 1] == '<')
 	{
-		helper->prev_wt = HEREDOC;
-		helper->i++;
+		h->prev_wt = HEREDOC;
+		h->i++;
 	}
-	helper->i++;
-	ft_skip_spaces(command, &(helper->i));
-	if (helper->prev_wt != WORD && helper->prev_wt != HEREDOC)
+	h->i++;
+	ft_skip_spaces(command, &(h->i));
+	if (h->prev_wt != WORD && h->prev_wt != HEREDOC)
 	{
-		if (ft_check_word_first_letter(command[helper->i], helper->list_head, exit_code) == 1)
+		if (ft_check_word_first_letter(command[h->i], h->list_head, e_c) == 1)
 			return (1);
 	}
-	helper->start = helper->i;
+	h->start = h->i;
 	return (0);
 }
 
-_Bool	ft_lexer_while(t_lexer_helper *helper, char *command, int *exit_code)
+_Bool	ft_lexer_while(t_lexer_helper *h, char *command, int *exit_code)
 {
-	if (command[helper->i] == ' ')	//a word ends with a space or a redirection sign
+	if (command[h->i] == ' ')
 	{
-		if (ft_handle_lexer_word(helper, command, 1, exit_code) == 1)
+		if (ft_handle_lexer_word(h, command, exit_code) == 1)
 			return (1);
 	}
-	else if (command[helper->i] == '|')
+	else if (command[h->i] == '|')
 	{
-		if (ft_handle_lexer_new_command(helper, command, exit_code) == 1)
+		if (ft_handle_lexer_new_command(h, command, exit_code) == 1)
 			return (1);
 	}
-	else if (command[helper->i] == '>' )	//we alreaady know that it doesnt end with a redir char
+	else if (command[h->i] == '>' )
 	{
-		if (ft_handle_lexer_redir(helper, command, exit_code) == 1)
+		if (ft_handle_lexer_redir(h, command, exit_code) == 1)
 			return (1);
 	}
-	else if (command[helper->i] == '<')
+	else if (command[h->i] == '<')
 	{
-		if (ft_handle_lexer_input(helper, command, exit_code) == 1)
+		if (ft_handle_lexer_input(h, command, exit_code) == 1)
 			return (1);
 	}
-	else if (command[helper->i] == '\'' || command[helper->i] == '\"')
-		ft_skip_to_closing_quote(command, &(helper->i), command[helper->i]);
+	else if (command[h->i] == '\'' || command[h->i] == '\"')
+		ft_skip_to_closing_quote(command, &(h->i), command[h->i]);
 	else
-		helper->i++;
+		h->i++;
 	return (0);
 }
 

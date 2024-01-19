@@ -6,13 +6,12 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 19:56:13 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/17 21:09:49 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 16:19:57 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <sys/ioctl.h>
-
 
 void	ft_sighandle_cmd(int sig)
 {
@@ -32,7 +31,7 @@ void	ft_sighandle_heredoc(int sig)
 	{
 		g_sig = CNTRL_C;
 		ioctl(STDOUT_FILENO, TIOCSTI, "\n");
-		rl_on_new_line();	//swap maybe with rl_replace_line?
+		rl_on_new_line();
 		rl_replace_line("", 0);
 	}
 }
@@ -60,9 +59,3 @@ void	ft_init_signals(SigTyp sig_situation)
 		signal(SIGQUIT, SIG_IGN);
 	}
 }
-
-/*void	ft_set_mode(SigTyp *sig_mode, SigTyp mode)
-{
-	*sig_mode = mode;
-	ft_init_signals(sig_mode);
-}*/

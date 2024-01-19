@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:39:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 15:57:46 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 18:21:25 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,13 @@ int	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
 {
 	int validity;
 
-	//here it cannot happen "cmd not found"
-	validity = ft_is_path_invalid(lexed_item->word, parser_node); //1 (invalid), 0 (valid), -1 (malloc error)
-	if (validity == 1)	//INvalid path
+	validity = ft_is_path_invalid(lexed_item->word, parser_node);
+	if (validity == 1)
 		(*parser_node)->cmd_path = NULL;
 	else
 	{
 		(*parser_node)->cmd_path = ft_strdup(lexed_item->word);
-		if ((*parser_node)->cmd_path == NULL || validity == -1) //substr OR strdup malloc failed, so we free the whole parsed list
+		if ((*parser_node)->cmd_path == NULL || validity == -1)
 			return (1);
 	}
 	(*parser_node)->cmd_args[0] = ft_get_cmd_name(lexed_item->word);
@@ -93,7 +92,7 @@ char	**ft_realloc_array(char **outfiles, char *new_item)
 	return (new_array);
 }
 
-int	ft_is_path_invalid(char *cmd, t_parser **parser_n)	//it an return 1 (invalid), 0 (valid), -1 (malloc error)
+int	ft_is_path_invalid(char *cmd, t_parser **parser_n)
 {
 	if (!is_directory(cmd))
 	{
@@ -104,7 +103,7 @@ int	ft_is_path_invalid(char *cmd, t_parser **parser_n)	//it an return 1 (invalid
 
 	}
 	else
-		return (ft_dir_accession(cmd, parser_n));	//if it's 1 we make cmd_path to be NULL, but set just exit code to not 0, if it's -1, we free the whole parsed list
+		return (ft_dir_accession(cmd, parser_n));
 
 }
 
@@ -126,7 +125,8 @@ char	*ft_get_env_value(t_list *env, char *var_name)
 		if (env_var == NULL)
 			return (free(env_name), NULL);
 		if (ft_strcmp(env_name, env_var) == 0)
-			return (free(env_name), free(env_var), ft_substr((env)->content, i + 1, ft_strlen((env)->content) - i - 1));
+			return (free(env_name), free(env_var), 
+				ft_substr((env)->content, i + 1, ft_strlen((env)->content) - i - 1));
 		free(env_var);
 		env = (env)->next;
 	}
