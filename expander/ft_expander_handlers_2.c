@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 20:01:36 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 20:03:08 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 22:00:40 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	ft_get_var_name_size(char *str, int *i)
 
 	*i += 1;
 	vns = 0;
-	while (str[*i + vns] && !ft_is_var_char(str[*i + vns]))
+	while (str[*i + vns] && ft_is_var_char(str[*i + vns]))
 		(vns)++;
 	return (vns);
 }

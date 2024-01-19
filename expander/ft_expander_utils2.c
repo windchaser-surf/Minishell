@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_utils2.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 20:31:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 20:46:05 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 21:59:55 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ _Bool	ft_is_var_char(char c)
 	if (c == '\0')
 		return (0);
 	if (ft_isalnum(c) || c == '_' || c == '?')
-		return (0);
-	return (1);
+		return (1);
+	return (0);
 }
 
 char	*ft_checker_for_expand_with_split(t_expander_helper *h, char *new_str, \

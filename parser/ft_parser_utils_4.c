@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 18:59:46 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 19:01:16 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 21:43:57 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,5 +45,30 @@ _Bool	ft_is_empty_lexed_lode(t_list **lexed_list)
 	lexed_i = (t_lexer *)(*lexed_list)->content;
 	if (lexed_i->wasnt_empty_var == 0)
 		return (*lexed_list = (*lexed_list)->next, 1);
+	return (0);
+}
+
+_Bool	ft_unmatched_quotes(char *command, int *error_code)
+{
+	int		i;
+	char	quote;
+
+	i = 0;
+	while (command[i])
+	{
+		if (command[i] == '\'' || command[i] == '\"')
+		{
+			quote = command[i];
+			i++;
+			while (command[i] && command[i] != quote)
+				i++;
+			if (command[i] == '\0')
+			{
+				ft_putstr_fd("Minishell: syntax error: Unmatched quotes\n", 2);
+				return (*error_code = 2, 1);
+			}
+		}
+		i++;
+	}
 	return (0);
 }

@@ -6,36 +6,11 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 16:39:22 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 21:43:24 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-_Bool	ft_unmatched_quotes(char *command, int *error_code)
-{
-	int		i;
-	char	quote;
-
-	i = 0;
-	while (command[i])
-	{
-		if (command[i] == '\'' || command[i] == '\"')
-		{
-			quote = command[i];
-			i++;
-			while (command[i] && command[i] != quote)
-				i++;
-			if (command[i] == '\0')
-			{
-				ft_putstr_fd("Minishell: syntax error: Unmatched quotes\n", 2);
-				return (*error_code = 2, 1);
-			}
-		}
-		i++;
-	}
-	return (0);
-}
 
 int	ft_ends_with_spec(char *command, int *error_code)
 {

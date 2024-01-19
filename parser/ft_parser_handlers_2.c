@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 19:47:16 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 19:49:54 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 22:00:52 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ char	*ft_expand_inline(char *str, t_list **env_copy, _Bool had_quotes)
 	j = 0;
 	while (str[h.i])
 	{
-		if (str[h.i] == '$' && !ft_is_var_char(str[h.i + 1]) && had_quotes)
+		if (str[h.i] == '$' && ft_is_var_char(str[h.i + 1]) && had_quotes)
 		{
 			new_str = ft_expand_variable(new_str, &h, 0, str);
 			h.i = h.orig_i + h.vns;
