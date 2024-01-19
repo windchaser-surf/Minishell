@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_handlers.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 19:21:19 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 19:36:10 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,18 +150,18 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, \
 	free(delim);
 }
 
-int	ft_checking_for_handle_word(t_parser_helper *h, t_list **env_copy)
+int	ft_checking_for_handle_word(t_parser_h *h, t_list **env_copy)
 {
 	h->parser_n->cmd_args = (char **)malloc(sizeof(char *) * 2);
 	if (h->parser_n->cmd_args == NULL)
-		return (ft_putstr_fd(EMSG_MAL, 2), ft_free_parser_node(&h->parser_n), \
+		return (ft_putstr_fd(EMSG_MAL, 2), ft_free_p_node(&h->parser_n), \
 			1);
 	if (ft_strchr(h->lexed_i->word, '/') || (h->lexed_i->word[0] == '.' && \
 		ft_strchr(h->lexed_i->word, '/')))
 	{
 		if (ft_handle_absolute_command(&(h->parser_n), h->lexed_i) == 1)
-			return (perror("Malloc failed\n"), \
-				ft_free_parser_node(&h->parser_n), 1);
+			return (ft_putstr_fd(EMSG_MAL, 2), \
+				ft_free_p_node(&h->parser_n), 1);
 	}
 	else
 	{
@@ -170,13 +170,13 @@ int	ft_checking_for_handle_word(t_parser_helper *h, t_list **env_copy)
 		h->parser_n->cmd_args[0] = ft_strdup(h->lexed_i->word);
 	}
 	if (h->parser_n->cmd_args[0] == NULL)
-		return (perror("Malloc failed\n"), 1);
+		return (ft_putstr_fd(EMSG_MAL, 2), 1);
 	h->parser_n->cmd_args[1] = NULL;
 	h->prev_was_word = 1;
 	return (0);
 }
 
-_Bool	ft_handle_word(t_parser_helper *h, t_list **env_copy)
+_Bool	ft_handle_word(t_parser_h *h, t_list **env_copy)
 {
 	if (h->prev_was_word == 0)
 	{
@@ -188,8 +188,8 @@ _Bool	ft_handle_word(t_parser_helper *h, t_list **env_copy)
 		h->parser_n->cmd_args = ft_realloc_array(h->parser_n->cmd_args, \
 			h->lexed_i->word);
 		if (h->parser_n->cmd_args == NULL)
-			return (ft_putstr_fd("Malloc failed\n", 2), \
-				ft_free_parser_node(&h->parser_n), 1);
+			return (ft_putstr_fd(EMSG_MAL, 2), \
+				ft_free_p_node(&h->parser_n), 1);
 	}
 	return (0);
 }
@@ -229,7 +229,7 @@ void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, \
 	infile_name = ft_strdup(lexed_item->word);
 	if (infile_name == NULL)
 	{
-		ft_free_parser_node(parser_node);
+		ft_free_p_node(parser_node);
 		*error = 1;
 		return ;
 	}

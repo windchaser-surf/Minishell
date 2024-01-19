@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:59:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 18:25:08 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 19:31:08 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,18 +60,42 @@ char	*ft_cut_until_equal(char *str)
 	return (new_str);
 }
 
-int is_directory(const char *path)
+int	is_directory(const char *path)
 {
-    struct stat path_stat;
-	// Get information about the file or directory
+	struct stat	path_stat;
+
 	if (stat(path, &path_stat) == 0)
 	{
-		// Check if it's a directory
 		if (S_ISDIR(path_stat.st_mode))
-			return 1;  // It's a directory
+			return (1);
 		else
-			return 0;  // It's not a directory (could be a file)
+			return (0);
 	}
 	else
-		return(-1);
+		return (-1);
+}
+
+_Bool	ft_make_command(t_parser_h *h, _Bool last)
+{
+	if (h->error)
+		return (ft_free_parser(h->p_list_head), 1);
+	if (h->i_cmd != -1 || last == 1)
+	{
+		h->p_new_node = ft_lstnew(h->parser_n);
+		if (h->p_new_node == NULL)
+			return (ft_free_parser(h->p_list_head),
+				ft_free_p_node(&h->parser_n), ft_putstr_fd(EMSG_MAL, 2), 1);
+		ft_lstadd_back(&h->p_list_head, h->p_new_node);
+	}
+	if (last == 0)
+	{
+		h->parser_n = (t_parser *)malloc(sizeof(t_parser));
+		if (h->parser_n == NULL)
+			return (ft_free_parser(h->p_list_head),
+				ft_putstr_fd(EMSG_MAL, 2), 1);
+		ft_init_parser_node(&(h->parser_n));
+		h->i_cmd = h->lexed_i->exec_num;
+		h->prev_was_word = 0;
+	}
+	return (0);
 }
