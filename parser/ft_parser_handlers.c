@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_handlers.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 18:23:18 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 19:21:19 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,16 @@ void	ft_init_expander_helper_nulls(t_expander_helper *h, t_list **env_copy)
 	h->needs_expansion = 0;
 }
 
+char	*ft_free_for_expand_inline(char *new_str, char *str, \
+	t_expander_helper *h)
+{
+	free(h->var_value);
+	h->var_value = NULL;
+	free(str);
+	str = NULL;
+	return (new_str);
+}
+
 char	*ft_expand_inline(char *str, t_list **env_copy, _Bool had_quotes)
 {
 	t_expander_helper	h;
@@ -64,37 +74,13 @@ char	*ft_expand_inline(char *str, t_list **env_copy, _Bool had_quotes)
 			new_str[j] = '\0';
 		}
 	}
-	free(h.var_value);
-	free(str);
-	return (new_str);
+	return (ft_free_for_expand_inline(new_str, str, &h));
 }
 
-void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error, t_list **env_copy)
+void	ft_get_heredoc(t_parser **parser_node, char *delim)
 {
-	char	*delim;
 	char	*tmp;
 
-	//we dont expand variables in heredoc, so "<< $test" the delimiter is "$test" and not what's in the test variable
-	if ((*parser_node)->fd_in != -1)
-	{
-		close ((*parser_node)->fd_in);
-		(*parser_node)->fd_in = -1;
-	}
-	if (ft_str_has_quote(lexed_item->word))
-		delim = ft_just_remove_quotes(lexed_item->word);
-	else
-		delim = ft_strdup(lexed_item->word);
-	if ((*parser_node)->heredoc != NULL)
-	{
-		free((*parser_node)->heredoc);
-		(*parser_node)->heredoc = NULL;
-	}
-	(*parser_node)->heredoc = ft_strdup("");
-	if (delim == NULL || !(*parser_node)->heredoc)
-	{
-		*error = 1;
-		return ;
-	}
 	tmp = NULL;
 	ft_init_signals(HEREDOC_INP);
 	while (1)
@@ -109,12 +95,49 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error,
 		if (tmp == NULL || g_sig == CNTRL_C || ft_strcmp(delim, tmp) == 0)
 			break ;
 		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, tmp);
-		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, "\n");
+		(*parser_node)->heredoc = \
+			ft_strjoin_free((*parser_node)->heredoc, "\n");
 		free(tmp);
+		tmp = NULL;
 	}
 	ft_init_signals(NOT_INPUT);
+}
+
+void	ft_checking_for_heredoc(t_parser **parser_node, t_lexer *lexed_item, \
+	char **delim)
+{
+	if ((*parser_node)->fd_in != -1)
+	{
+		close ((*parser_node)->fd_in);
+		(*parser_node)->fd_in = -1;
+	}
+	if (ft_str_has_quote(lexed_item->word))
+		*delim = ft_just_remove_quotes(lexed_item->word);
+	else
+		*delim = ft_strdup(lexed_item->word);
+	if ((*parser_node)->heredoc != NULL)
+	{
+		free((*parser_node)->heredoc);
+		(*parser_node)->heredoc = NULL;
+	}
+	(*parser_node)->heredoc = ft_strdup("");
+}
+
+void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, \
+	bool *error, t_list **env_copy)
+{
+	char	*delim;
+
+	ft_checking_for_heredoc(parser_node, lexed_item, &delim);
+	if (delim == NULL || !(*parser_node)->heredoc)
+	{
+		*error = 1;
+		return ;
+	}
+	ft_get_heredoc(parser_node, delim);
 	if ((*parser_node)->heredoc && ft_strchr((*parser_node)->heredoc, '$'))
-		(*parser_node)->heredoc = ft_expand_inline((*parser_node)->heredoc, env_copy, !ft_str_has_quote(lexed_item->word));
+		(*parser_node)->heredoc = ft_expand_inline((*parser_node)->heredoc, \
+			env_copy, !ft_str_has_quote(lexed_item->word));
 	if ((*parser_node)->heredoc != NULL)
 	{
 		free((*parser_node)->heredoc_tmp);
@@ -125,36 +148,48 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, bool *error,
 	else
 		*error = 1;
 	free(delim);
-	free(tmp);
+}
+
+int	ft_checking_for_handle_word(t_parser_helper *h, t_list **env_copy)
+{
+	h->parser_n->cmd_args = (char **)malloc(sizeof(char *) * 2);
+	if (h->parser_n->cmd_args == NULL)
+		return (ft_putstr_fd(EMSG_MAL, 2), ft_free_parser_node(&h->parser_n), \
+			1);
+	if (ft_strchr(h->lexed_i->word, '/') || (h->lexed_i->word[0] == '.' && \
+		ft_strchr(h->lexed_i->word, '/')))
+	{
+		if (ft_handle_absolute_command(&(h->parser_n), h->lexed_i) == 1)
+			return (perror("Malloc failed\n"), \
+				ft_free_parser_node(&h->parser_n), 1);
+	}
+	else
+	{
+		h->parser_n->cmd_path = ft_get_path(env_copy, h->lexed_i->word, \
+			&h->parser_n);
+		h->parser_n->cmd_args[0] = ft_strdup(h->lexed_i->word);
+	}
+	if (h->parser_n->cmd_args[0] == NULL)
+		return (perror("Malloc failed\n"), 1);
+	h->parser_n->cmd_args[1] = NULL;
+	h->prev_was_word = 1;
+	return (0);
 }
 
 _Bool	ft_handle_word(t_parser_helper *h, t_list **env_copy)
 {
 	if (h->prev_was_word == 0)
 	{
-		h->parser_n->cmd_args = (char **)malloc(sizeof(char *) * 2);
-		if (h->parser_n->cmd_args == NULL)
-			return (ft_putstr_fd(EMSG_MAL, 2), ft_free_parser_node(&h->parser_n), 1);
-		if (ft_strchr(h->lexed_i->word, '/') || (h->lexed_i->word[0] == '.' && ft_strchr(h->lexed_i->word, '/')))
-		{
-			if (ft_handle_absolute_command(&(h->parser_n), h->lexed_i) == 1)
-				return (perror("Malloc failed\n"), ft_free_parser_node(&h->parser_n), 1);
-		}
-		else
-		{
-			h->parser_n->cmd_path = ft_get_path(env_copy, h->lexed_i->word, &h->parser_n);
-			h->parser_n->cmd_args[0] = ft_strdup(h->lexed_i->word);
-		}
-		if (h->parser_n->cmd_args[0] == NULL)
-			return (perror("Malloc failed\n"), 1);
-		h->parser_n->cmd_args[1] = NULL;
-		h->prev_was_word = 1;
+		if (ft_checking_for_handle_word(h, env_copy) == 1)
+			return (1);
 	}
 	else
 	{
-		h->parser_n->cmd_args = ft_realloc_array(h->parser_n->cmd_args, h->lexed_i->word);
+		h->parser_n->cmd_args = ft_realloc_array(h->parser_n->cmd_args, \
+			h->lexed_i->word);
 		if (h->parser_n->cmd_args == NULL)
-			return (ft_putstr_fd("Malloc failed\n", 2), ft_free_parser_node(&h->parser_n), 1);
+			return (ft_putstr_fd("Malloc failed\n", 2), \
+				ft_free_parser_node(&h->parser_n), 1);
 	}
 	return (0);
 }
@@ -173,9 +208,11 @@ void	ft_handle_redirs(t_parser **p_n, t_lexer *l_i, WordTyp type)
 	else
 	{
 		if (type == REDIR)
-			(*p_n)->fd_out = open(l_i->word, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			(*p_n)->fd_out = \
+				open(l_i->word, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (type == D_REDIR)
-			(*p_n)->fd_out = open(l_i->word, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			(*p_n)->fd_out = \
+				open(l_i->word, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	}
 	if ((*p_n)->fd_out == -1)
 	{
@@ -184,7 +221,8 @@ void	ft_handle_redirs(t_parser **p_n, t_lexer *l_i, WordTyp type)
 	}
 }
 
-void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error)
+void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, \
+	_Bool *error)
 {
 	char	*infile_name;
 
