@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_handlers.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 19:41:22 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 19:56:28 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,21 +97,21 @@ char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expan
 		return (free(h->var_value), perror("Malloc failed"), NULL);
 	ns_size = ft_strlen(new_str);
 	tmp = malloc(ns_size + ft_strlen(&str[h->i]) - (++h->vns)
-		+ ft_strlen(h->var_value) + 2);
+			+ ft_strlen(h->var_value) + 2);
 	if (!tmp)
 		return (free(h->var_value), perror("Malloc failed"), NULL);
 	ft_strcpy(tmp, new_str);
 	free(new_str);
 	new_str = tmp;
 	ft_strlcat(new_str, h->var_value, ns_size + ft_strlen(h->var_value) + 1);
-	h->i = h->orig_i + ft_strlen(h->var_value);	
+	h->i = h->orig_i + ft_strlen(h->var_value);
 	if (needs_expansion && ft_has_word(h->var_value))
 		*needs_expansion = 1;
 	free(h->var_value);
 	return (new_str);
 }
 
-char *ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h)
+char	*ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h)
 {
 	t_list	*new_current;
 	t_list	*tmp;
@@ -125,7 +125,7 @@ char *ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h)
 		while (tmp->next != (h->current_node) && tmp->next)
 			tmp = tmp->next;
 		tmp->next = new_nodes_head;
-	}	
+	}
 	if ((h->current_node)->next != NULL)
 		new_current->next = (h->current_node)->next;
 	ft_free_lexer_node(h->current_node);
@@ -146,10 +146,8 @@ char	*ft_handle_dollar_question(char *n_s, int *exit_code, int *i, char *str)
 	char	*ecs;
 
 	ecs = ft_itoa(*exit_code);
-	int asd = ft_strlen(n_s) + ft_strlen(ecs)	+ ft_strlen(&str[*i + 2]) + 1;
 	tmp = malloc(sizeof(char) * (ft_strlen(n_s)
-		+ ft_strlen(ecs) + ft_strlen(&str[*i + 2]) + 1));
-	(void)asd;
+				+ ft_strlen(ecs) + ft_strlen(&str[*i + 2]) + 1));
 	if (!tmp || !ecs)
 		return (ft_putstr_fd(EMSG_MAL, 2), NULL);
 	ft_strcpy(tmp, n_s);
@@ -163,21 +161,22 @@ char	*ft_handle_dollar_question(char *n_s, int *exit_code, int *i, char *str)
 	n_s = tmp;
 	return (n_s);
 }
-char	*ft_handle_dollar_question_q(char *new_str, int *exit_code, int *i, char *str)
+
+char	*ft_handle_dollar_question_q(char *new_str, int *e_c, int *i, char *str)
 {
 	char	*tmp;
-	char	*exit_code_str;
+	char	*e_c_str;
 
-	exit_code_str = ft_itoa(*exit_code);
-	tmp = malloc(sizeof(char) * (ft_strlen(new_str) +
-		ft_strlen(exit_code_str) + ft_strlen(&str[*i + 2])));
-	if (!tmp || !exit_code_str)
+	e_c_str = ft_itoa(*e_c);
+	tmp = malloc(sizeof(char) * (ft_strlen(new_str)
+				+ ft_strlen(e_c_str) + ft_strlen(&str[*i + 2])));
+	if (!tmp || !e_c_str)
 		return (perror("Malloc failed"), NULL);
 	ft_strcpy(tmp, new_str);
-	ft_strlcat(tmp, exit_code_str, ft_strlen(new_str) + ft_strlen(exit_code_str) + 1);
+	ft_strlcat(tmp, e_c_str, ft_strlen(new_str) + ft_strlen(e_c_str) + 1);
 	*i += 2;
 	free(new_str);
-	free(exit_code_str);
+	free(e_c_str);
 	new_str = tmp;
 	return (new_str);
 }

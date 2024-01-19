@@ -6,14 +6,13 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 14:49:53 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 16:50:48 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 19:39:49 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/libft.h"
 #include "minishell.h"
 
-void	ft_print_lexer_list(t_list *list)
+/*void	ft_print_lexer_list(t_list *list)
 {
 	t_lexer	*lexer_node;
 
@@ -27,7 +26,7 @@ void	ft_print_lexer_list(t_list *list)
 		printf("\n");
 		list = list->next;
 	}
-}
+}*/
 
 _Bool	ft_handle_lexer_word(t_lexer_helper *h, char *command, int *e_c)
 {

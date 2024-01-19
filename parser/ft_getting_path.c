@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:39:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 19:32:08 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 19:44:09 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
 {
-	int validity;
+	int	validity;
 
 	validity = ft_is_path_invalid(lexed_item->word, parser_node);
 	if (validity == 1)
@@ -55,7 +55,7 @@ char	*ft_get_path(t_list **env, char *cmd, t_parser **parser_node)
 	{
 		cmd_path = ft_strjoin(path_dirs[i], "/");
 		cmd_path = ft_strjoin_free(cmd_path, cmd);
-		if (access(cmd_path, F_OK) == 0 )
+		if (access(cmd_path, F_OK) == 0)
 		{
 			ft_free_array(path_dirs);
 			return (cmd_path);
@@ -100,36 +100,34 @@ int	ft_is_path_invalid(char *cmd, t_parser **parser_n)
 			return (0);
 		else
 			return ((*parser_n)->exit_code = 127, ft_perror_and_free(cmd), 1);
-
 	}
 	else
 		return (ft_dir_accession(cmd, parser_n));
-
 }
 
 char	*ft_get_env_value(t_list *env, char *var_name)
 {
 	int		i;
-	char	*env_name;
+	char	*e_n;
 	char	*env_var;
 
 	i = 0;
 	while (var_name[i] && var_name[i] != '=')
 		i++;
-	env_name = ft_substr(var_name, 0, i);
-	if (env_name == NULL)
+	e_n = ft_substr(var_name, 0, i);
+	if (e_n == NULL)
 		return (NULL);
 	while (env)
 	{
 		env_var = ft_cut_until_equal((env)->content);
 		if (env_var == NULL)
-			return (free(env_name), NULL);
-		if (ft_strcmp(env_name, env_var) == 0)
-			return (free(env_name), free(env_var), 
-				ft_substr((env)->content, i + 1, ft_strlen((env)->content) - i - 1));
+			return (free(e_n), NULL);
+		if (ft_strcmp(e_n, env_var) == 0)
+			return (free(e_n), free(env_var), ft_substr((env)->content,
+					i + 1, ft_strlen((env)->content) - i - 1));
 		free(env_var);
 		env = (env)->next;
 	}
-	free(env_name);
+	free(e_n);
 	return (NULL);
 }

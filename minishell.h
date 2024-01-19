@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 19:30:55 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 19:55:10 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -297,7 +297,7 @@ char	*ft_get_var_name(char *str);
 char	*ft_handle_dollar_question(char *new_str, int *exit_code, int *i, char *str);
 char	*ft_handle_dollar_question_q(char *new_str, int *exit_code, int *i, char *str);
 
-void	ft_print_ambig_redir(char *var_name);
+void	p_amb_re(char *var_name);
 
 char	*ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h);
 //void	ft_rearrange_lexed_list(t_list **lexed_l, int i);
@@ -322,6 +322,11 @@ void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, t_list **env_copy);
 _Bool	ft_handle_word(t_parser_h *helper, t_list **env_copy);
 
+void	ft_init_expander_helper_nulls(t_expander_helper *h, t_list **env_copy);
+char	*ft_free_for_expand_inline(char *new_str, char *str, t_expander_helper *h);
+char	*ft_expand_inline(char *str, t_list **env_copy, _Bool had_quotes);
+void	ft_get_heredoc(t_parser **parser_node, char *delim);
+int	ft_checking_for_handle_word(t_parser_h *h, t_list **env_copy);
 void	ft_init_parser_helper_struct(t_parser_h *helper);
 _Bool	ft_is_empty_lexed_lode(t_list **lexed_list);
 void	ft_free_parser_makefiles(t_list *p_list_head);
