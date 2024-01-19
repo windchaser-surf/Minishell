@@ -6,13 +6,13 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 20:36:10 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 20:45:58 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 22:02:35 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
+char	*ft_expand_with_split(t_ex_h *h, int *exit_code)
 {
 	char	*new_str;
 	t_lexer	*o_node;
@@ -97,7 +97,7 @@ t_list *t_b_m)
 	prev->next = t_b_m;
 }
 
-void	ft_rearrange_lexed_list(t_list **lexed_l, int i, t_expander_helper *h)
+void	ft_rearrange_lexed_list(t_list **lexed_l, int i, t_ex_h *h)
 {
 	int		max_cmds;
 	int		j;

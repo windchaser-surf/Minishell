@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_signals.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 19:56:13 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 16:19:57 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 21:46:42 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	ft_sighandle_heredoc(int sig)
 	}
 }
 
-void	ft_init_signals(SigTyp sig_situation)
+void	ft_init_signals(t_SigTyp sig_situation)
 {
 	if (sig_situation == INPUT)
 	{

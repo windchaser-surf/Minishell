@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_handlers_2.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 20:01:36 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 22:00:40 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 22:08:50 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	ft_get_var_name_size(char *str, int *i)
 	return (vns);
 }
 
-char	*ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h)
+char	*ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_ex_h *h)
 {
 	t_list	*new_current;
 	t_list	*tmp;

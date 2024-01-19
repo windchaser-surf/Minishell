@@ -6,13 +6,13 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:40:12 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 16:46:06 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 21:54:59 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-long long	ft_atoi_long(const char *str)
+long	ft_atoi_long(const char *str)
 {
 	int			i;
 	long long	result;

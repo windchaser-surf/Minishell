@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_handlers.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 20:03:10 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 22:02:35 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ _Bool	ft_has_word(char *str)
 	return (1);
 }
 
-char	*ft_expand_variable(char *new_str, t_expander_helper *h,
+char	*ft_expand_variable(char *new_str, t_ex_h *h,
 	_Bool *needs_exp, char *str)
 {
 	char	*tmp;

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_handlers_2.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 19:47:16 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 22:00:52 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 22:08:37 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_init_expander_helper_nulls(t_expander_helper *h, t_list **env_copy)
+void	ft_init_expander_helper_nulls(t_ex_h *h, t_list **env_copy)
 {
 	h->list_head = NULL;
 	h->current_node = h->list_head;
@@ -25,7 +25,7 @@ void	ft_init_expander_helper_nulls(t_expander_helper *h, t_list **env_copy)
 }
 
 char	*ft_free_for_expand_inline(char *new_str, char *str, \
-	t_expander_helper *h)
+	t_ex_h *h)
 {
 	free(h->var_value);
 	h->var_value = NULL;
@@ -36,9 +36,9 @@ char	*ft_free_for_expand_inline(char *new_str, char *str, \
 
 char	*ft_expand_inline(char *str, t_list **env_copy, _Bool had_quotes)
 {
-	t_expander_helper	h;
-	char				*new_str;
-	int					j;
+	t_ex_h	h;
+	char	*new_str;
+	int		j;
 
 	new_str = malloc(sizeof(char) * (ft_strlen(str) + 1));
 	if (new_str == NULL)

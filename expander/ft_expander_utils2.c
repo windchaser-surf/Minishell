@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_utils2.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 20:31:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 21:59:55 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 22:09:30 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num)
 	return (helper.list_head);
 }
 
-char	*ft_concat_rest(char *str, t_expander_helper *h, char *new_str, \
+char	*ft_concat_rest(char *str, t_ex_h *h, char *new_str, \
 	_Bool needs_expansion)
 {
 	char	*rest;
@@ -52,7 +52,7 @@ char	*ft_concat_rest(char *str, t_expander_helper *h, char *new_str, \
 }
 
 char	*ft_attach_beginning(char *head_node_str, char *str, \
-	t_expander_helper *h)
+	t_ex_h *h)
 {
 	char	*tmp;
 
@@ -74,7 +74,7 @@ _Bool	ft_is_var_char(char c)
 	return (0);
 }
 
-char	*ft_checker_for_expand_with_split(t_expander_helper *h, char *new_str, \
+char	*ft_checker_for_expand_with_split(t_ex_h *h, char *new_str, \
 	t_lexer *orig_lex_node)
 {
 	t_list	*new_nodes_head;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_handlers.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/03 14:10:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 19:50:31 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 21:46:11 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ _Bool	ft_handle_word(t_parser_h *h, t_list **env_copy)
 	return (0);
 }
 
-void	ft_handle_redirs(t_parser **p_n, t_lexer *l_i, WordTyp type)
+void	ft_handle_redirs(t_parser **p_n, t_lexer *l_i, t_WordTyp type)
 {
 	if ((*p_n)->fd_out != -1)
 		close ((*p_n)->fd_out);

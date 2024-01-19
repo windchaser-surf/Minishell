@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 20:29:42 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 22:00:29 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 22:09:10 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void	ft_copy_whats_after_the_quote(int *i, int *j, char *str, char *new_str)
 	free(str);
 }
 
-t_expander_helper	*ft_checker_expand_dqoute(t_expander_helper *h, \
+t_ex_h	*ft_checker_expand_dqoute(t_ex_h *h, \
 	char **new_str, char *str)
 {
 	*new_str = ft_expand_variable(*new_str, h, NULL, str);
@@ -75,7 +75,7 @@ t_expander_helper	*ft_checker_expand_dqoute(t_expander_helper *h, \
 	return (h);
 }
 
-char	*ft_expand_dquote(t_expander_helper *h, int exit_code)
+char	*ft_expand_dquote(t_ex_h *h, int exit_code)
 {
 	char	*new_str;
 	int		j;
