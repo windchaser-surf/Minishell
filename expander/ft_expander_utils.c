@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 20:29:42 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 22:09:10 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 22:16:46 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ char	*ft_expand_dquote(t_ex_h *h, int exit_code)
 		return (NULL);
 	while (str[h->i] && str[h->i] != '\"')
 	{
-		if (str[h->i] == '$' && !ft_is_var_char(str[h->i]))
+		if (str[h->i] == '$' && ft_is_var_char(str[h->i + 1]))
 		{
 			if (str[(h->i) + 1] == '?')
 				new_str = ft_handle_dollar_question_q(new_str, \
