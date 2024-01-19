@@ -6,13 +6,13 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:07:31 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/17 14:58:51 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 17:47:47 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int check_builtin(char *str)
+int	check_builtin(char *str)
 {
 	if (!ft_strncmp(str, "cd", 3))
 		return (1);
@@ -31,12 +31,13 @@ int check_builtin(char *str)
 	return (0);
 }
 
-int run_builtins(t_parser *command, t_list **env_copy, int error_code, int pid_check)
+int	run_builtins(t_parser *command, t_list **env_copy, int error_code, \
+	int pid_check)
 {
-	int exit_code;
-	
+	int	exit_code;
+
 	exit_code = 0;
-	if (!ft_strncmp(command->cmd_args[0], "cd",3))
+	if (!ft_strncmp(command->cmd_args[0], "cd", 3))
 		exit_code = cd_builtin(command->cmd_args, env_copy);
 	else if (!ft_strncmp(command->cmd_args[0], "exit", 5))
 		exit_code = builtin_exit(command->cmd_args, error_code, pid_check);
@@ -49,24 +50,26 @@ int run_builtins(t_parser *command, t_list **env_copy, int error_code, int pid_c
 	else if (!ft_strncmp(command->cmd_args[0], "export", 7))
 		exit_code = export_builtin(command->cmd_args, env_copy);
 	else if (!ft_strncmp(command->cmd_args[0], "unset", 6))
-		exit_code = builtin_unset(env_copy, command->cmd_args);
+		exit_code = builtin_unset(env_copy, command->cmd_args, 1);
 	if (command->fd_in != -1)
 	{
-		dup2(command->fd_in, 1);	
+		dup2(command->fd_in, 1);
 		close(command->fd_in);
 	}
 	return (exit_code);
 }
 
-int run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, t_list *tokens)
+int	run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, \
+	t_list *tokens)
 {
-	int exit_code;
-	
+	int	exit_code;
+
 	exit_code = 0;
-	if (!ft_strncmp(command->cmd_args[0], "cd",3))
+	if (!ft_strncmp(command->cmd_args[0], "cd", 3))
 		exit_code = cd_builtin(command->cmd_args, env_copy);
 	else if (!ft_strncmp(command->cmd_args[0], "exit", 5))
-		exit_code = builtin_exit_parent(command->cmd_args, error_code, tokens, env_copy);
+		exit_code = builtin_exit_parent(command->cmd_args, error_code, tokens, \
+		env_copy);
 	else if (!ft_strncmp(command->cmd_args[0], "pwd", 4))
 		exit_code = ft_pwd_builtin();
 	else if (!ft_strncmp(command->cmd_args[0], "echo", 5))
@@ -76,11 +79,10 @@ int run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, t_
 	else if (!ft_strncmp(command->cmd_args[0], "export", 7))
 		exit_code = export_builtin(command->cmd_args, env_copy);
 	else if (!ft_strncmp(command->cmd_args[0], "unset", 6))
-		exit_code = builtin_unset(env_copy, command->cmd_args);
-	
+		exit_code = builtin_unset(env_copy, command->cmd_args, 1);
 	if (command->fd_in != -1)
 	{
-		dup2(command->fd_in, 1);	
+		dup2(command->fd_in, 1);
 		close(command->fd_in);
 	}
 	return (exit_code);

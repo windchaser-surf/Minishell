@@ -6,16 +6,16 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 10:17:32 by fwechsle          #+#    #+#             */
-/*   Updated: 2023/12/19 17:53:40 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 16:40:04 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int    ft_echo_builtin(char **arg)
+int	ft_echo_builtin(char **arg)
 {
-	int i; 
-	int option;
+	int	i;
+	int	option;
 
 	option = 0;
 	i = 1;

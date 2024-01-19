@@ -3,35 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   exec1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 11:17:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/18 13:44:11 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 18:05:47 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int exec_builtins(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens)
+/* int	exec_builtins(t_parser *command, t_list **env_copy, int exit_code, \
+	t_list *tokens)
 {
-		if (command->fd_in != -1)
+	if (command->fd_in != -1)
+	{
+		close (command->fd_in);
+		command->fd_in = -1;
+	}
+	if (command->fd_out != -1)
+	{
+		command->fd_in = dup(STDOUT_FILENO);
+		if (dup2(command->fd_out, 1) == -1)
 		{
-			close (command->fd_in);
-			command->fd_in = -1;
+			perror("dup: ");
+			ft_file_closer_single(command);
+			return (EXIT_FAILURE);
 		}
-		if (command->fd_out != -1)
-		{
-			command->fd_in = dup(STDOUT_FILENO);
-			if (dup2(command->fd_out, 1) == -1)
-			{
-				perror("dup: ");
-				ft_file_closer_single(command);
-				return (EXIT_FAILURE);
-			}
-			close(command->fd_out);
-		}
-		return(run_builtins_parent(command, env_copy, exit_code, tokens));
-}
+		close (command->fd_out);
+	}
+	return (run_builtins_parent(command, env_copy, exit_code, tokens));
+} */
 
 void	ft_file_closer_single(t_parser *command)
 {
@@ -43,10 +44,10 @@ void	ft_file_closer_single(t_parser *command)
 	if (command->fd_out != -1)
 	{
 		close (command->fd_out);
-		command->fd_out= -1;
+		command->fd_out = -1;
 	}
 }
- 
+
 int	child_process(t_parser *command, t_list **env_copy)
 {
 	ft_init_signals(CHILD);
@@ -75,10 +76,10 @@ int	child_process(t_parser *command, t_list **env_copy)
 	return (EXIT_SUCCESS);
 }
 
-int	cmd_path_NULL(t_parser *command)
+int	cmd_path_null(t_parser *command)
 {
-	char *tmp;
-	
+	char	*tmp;
+
 	if (command->cmd_args == NULL)
 	{
 		ft_file_closer_single(command);
@@ -98,13 +99,13 @@ int	cmd_path_NULL(t_parser *command)
 	return (CMD_NOT_FOUND);
 }
 
-int exec_path(t_parser *command, t_list **env_copy)
+int	exec_path(t_parser *command, t_list **env_copy)
 {
-	t_pipex data;
-	int status;
-	
+	t_pipex	data;
+	int		status;
+
 	status = 0;
-	data.pid=(int *)malloc(sizeof(int));
+	data.pid = (int *)malloc(sizeof(int));
 	if (data.pid == NULL)
 	{
 		perror("malloc: ");
@@ -115,7 +116,7 @@ int exec_path(t_parser *command, t_list **env_copy)
 	{
 		perror(command->cmd_args[0]);
 		return (EXIT_FAILURE);
-	}    
+	}
 	if (data.pid[0] == 0)
 		child_process(command, env_copy);
 	else
@@ -126,7 +127,8 @@ int exec_path(t_parser *command, t_list **env_copy)
 	return (status);
 }
 
-int    one_execution(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens)
+int	one_execution(t_parser *command, t_list **env_copy, int exit_code, \
+	t_list *tokens)
 {
 	if (command->exit_code != 0)
 	{
@@ -134,11 +136,9 @@ int    one_execution(t_parser *command, t_list **env_copy, int exit_code, t_list
 		return (command->exit_code);
 	}
 	if (command->cmd_path == NULL)
-		return (cmd_path_NULL(command));
+		return (cmd_path_null(command));
 	else if (check_builtin(command->cmd_args[0]))
 		return (exec_builtins(command, env_copy, exit_code, tokens));
-	else 
+	else
 		return (exec_path(command, env_copy));
 }
-
-

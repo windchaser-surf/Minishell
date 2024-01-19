@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 12:17:52 by felix             #+#    #+#             */
-/*   Updated: 2024/01/05 15:39:05 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 17:38:54 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,21 +45,19 @@ int	print_alpha(char **arr)
 	char			*variable_name;
 	char			*variable_value;
 	unsigned int	position;
+
 	if (!arr)
-		return (EXIT_FAILURE); 
+		return (EXIT_FAILURE);
 	while (*arr)
 	{
 		if (ft_strchr(*arr, '='))
 		{
-			variable_value =  ft_strchr(*arr, '=');
+			variable_value = ft_strchr(*arr, '=');
 			position = variable_value - *arr;
 			variable_value++;
 			variable_name = ft_substr(*arr, 0, position);
 			if (variable_name == NULL)
-			{
-				perror("export");
-				return (MALLOC_ERR);
-			}
+				return (perror("export"), MALLOC_ERR);
 			printf("declare -x %s=\"%s\"\n", variable_name, variable_value);
 			free(variable_name);
 		}
@@ -69,54 +67,56 @@ int	print_alpha(char **arr)
 	}
 	return (EXIT_SUCCESS);
 }
-int	print_export(t_list *env_copy)
-{
-	int lstsize;
-	char **arr;
-	int i;
 
-	lstsize = ft_lstsize(env_copy);
-	arr = (char **)malloc(sizeof(char *) * (lstsize));
-	if (arr == NULL)
-	{
-		perror("export");
-		return (MALLOC_ERR);
-	}	  //Error code
+char	**ft_copy_lst_to_arr(t_list *env_copy, char **arr)
+{
+	int	i;
+
 	i = 0;
 	while (env_copy)
 	{
-		if ((((char *)env_copy->content)[0] >= 'A' && ((char *)env_copy->content)[0] <= 'Z')\
-			|| (((char *)env_copy->content)[0] >= 'a' && ((char *)env_copy->content)[0] <= 'z'))
+		if ((((char *)env_copy->content)[0] >= 'A' && \
+			((char *)env_copy->content)[0] <= 'Z') \
+			|| (((char *)env_copy->content)[0] >= 'a' && \
+			((char *)env_copy->content)[0] <= 'z'))
 		{
 			if (env_copy->content)
 				arr[i] = ft_strdup(env_copy->content);
 			if (arr[i] == NULL)
-			{
-				perror("export");
-				return (MALLOC_ERR);
-			}	
+				return (free_2d(arr), perror("export"), NULL);
 			i++;
 		}
-		env_copy = env_copy->next; 
+		env_copy = env_copy->next;
 	}
 	arr[i] = NULL;
+	return (arr);
+}
+
+int	print_export(t_list *env_copy)
+{
+	int		lstsize;
+	char	**arr;
+
+	lstsize = ft_lstsize(env_copy);
+	arr = (char **)malloc(sizeof(char *) * (ft_lstsize(env_copy)));
+	if (arr == NULL)
+		return (perror("export"), MALLOC_ERR);
+	arr = ft_copy_lst_to_arr(env_copy, arr);
+	if (arr == NULL)
+		return (MALLOC_ERR);
 	arr = sort_arr(arr, lstsize);
 	if (print_alpha(arr) == EXIT_FAILURE)
-	{
-		free_2d(arr);
-		return (EXIT_FAILURE);
-	}
-	free_2d(arr);
-	return (EXIT_SUCCESS);
+		return (free_2d(arr), EXIT_FAILURE);
+	return (free_2d(arr), EXIT_SUCCESS);
 }
 
 int	err_msg_not_valid(void)
 {
 	ft_putstr_fd("export: not a valid identifier\n", STDERR_FILENO);
-	return (EXIT_FAILURE);	
+	return (EXIT_FAILURE);
 }
 
-int	valid_new_variable(char *cmd)
+/* int	valid_new_variable(char *cmd)
 {
 	int	i;
 
@@ -126,7 +126,7 @@ int	valid_new_variable(char *cmd)
 	while (cmd[i] && cmd[i] != '=')
 	{
 		if ((cmd[0] >= '0' && cmd[0] <= '9') || cmd[0] == '=')
-			return(err_msg_not_valid());
+			return (err_msg_not_valid());
 		if (cmd[i] >= 'A' && cmd[i] <= 'Z')
 			i++;
 		else if (cmd[i] >= 'a' && cmd[i] <= 'z')
@@ -136,15 +136,15 @@ int	valid_new_variable(char *cmd)
 		else if (cmd[i] == '_')
 			i++;
 		else
-			return(err_msg_not_valid());
+			return (err_msg_not_valid());
 	}
 	return (EXIT_SUCCESS);
 }
 
 int	check_exist(char *var, t_list *env_copy)
-{	
+{
 	int	i;
-	
+
 	i = 0;
 	while (var[i] && var[i] != '=')
 		i++;
@@ -160,11 +160,11 @@ int	check_exist(char *var, t_list *env_copy)
 int	set_value_env(char *cmd, t_list *env_copy)
 {
 	int	i;
-	
+
 	i = 0;
 	while (cmd[i] && cmd[i] != '=')
 		i++;
-	if(cmd[i] != '=')
+	if (cmd[i] != '=')
 		return (EXIT_SUCCESS);
 	while (env_copy)
 	{
@@ -182,37 +182,32 @@ int	set_value_env(char *cmd, t_list *env_copy)
 	}
 	return (EXIT_SUCCESS);
 }
-//Before adding a new list element, needs to check if there is already this var! 
-//if it exist => change the value! 
+
 int	export_builtin(char **cmd, t_list **env_copy)
 {
-	int i;
-	int check2; 
+	int	i;
+	int	check2;
 
 	check2 = 0;
-	i = 1; 
+	i = 1;
 	if (cmd[i] == NULL)
-		return(print_export(*env_copy));
+		return (print_export(*env_copy));
 	while (cmd[i])
 	{
 		if (!valid_new_variable(cmd[i]))
 		{
-			if(!check_exist(cmd[i], *env_copy))
-				ft_lstadd_back(&*env_copy, ft_lstnew((char *)ft_strdup(cmd[i]))); //malloc protection? 
-			else 
+			if (!check_exist(cmd[i], *env_copy))
+				ft_lstadd_back(&*env_copy, \
+				ft_lstnew((char *)ft_strdup(cmd[i])));
+			else
 				set_value_env(cmd[i], *env_copy);
 		}
 		else
 			check2 = 1;
 		i++;
-	}	
+	}
 	if (check2 == 1)
 		return (EXIT_FAILURE);
-	else 
+	else
 		return (EXIT_SUCCESS);
-}
-
-//Hier muss noch mehrer auf einmal hinzufügt werden. das bedeutet dann einfach ich werden einen while loop machen
-//muss aber noch *cmd mit **arg ersetzen und dann durch loopen 
-//Sobald eines der namen falsch ist muss error_code 1 returned werden aber es werden trotzdem alle validen ausgeführt
-
+} */

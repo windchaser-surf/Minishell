@@ -3,31 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   exec_main.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: felix <felix@student.42.fr>                +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 13:19:01 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/03 17:50:29 by felix            ###   ########.fr       */
+/*   Updated: 2024/01/19 17:57:07 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int    execution_main(t_list *tokens, t_list **env_copy, int exit_code)
+int	execution_main(t_list *tokens, t_list **env_copy, int exit_code)
 {
-	int p_nbr;
-	
+	int	p_nbr;
+
 	p_nbr = ft_lstsize(tokens);
-	if (p_nbr == 1) //lst_size = 1; 
-		return(one_execution((t_parser *)(tokens->content), env_copy, exit_code, tokens)); 
+	if (p_nbr == 1)
+		return (one_execution((t_parser *)(tokens->content), env_copy, \
+			exit_code, tokens));
 	else if (p_nbr > 1)
-	 	return (n_execution(tokens, env_copy, exit_code));
-   /*  else
-		n_execution(arg, env_copy); */
+		return (n_execution(tokens, env_copy, exit_code));
 	return (EXIT_SUCCESS);
 }
-char **free_error(char **arr, int i)
+
+char	**free_error(char **arr, int i)
 {
-	int n;
+	int	n;
 
 	n = 0;
 	while (n < i)
@@ -38,21 +38,19 @@ char **free_error(char **arr, int i)
 	free(arr);
 	return (NULL);
 }
+
 char	**convert_lst_to_arr(t_list *env_copy)
 {
-	char **arr;
-	int i;
-	int lstsize;
-	t_list *tmp;
+	char	**arr;
+	int		i;
+	int		lstsize;
+	t_list	*tmp;
 
 	tmp = env_copy;
 	lstsize = ft_lstsize(env_copy);
 	arr = (char **)malloc(sizeof(char *) * ((lstsize) + 1));
 	if (arr == NULL)
-	{
-		perror("malloc");
-		return (NULL);  
-	} 
+		return (perror("malloc"), NULL);
 	i = 0;
 	while (tmp)
 	{
@@ -60,23 +58,20 @@ char	**convert_lst_to_arr(t_list *env_copy)
 		{
 			arr[i] = ft_strdup(tmp->content);
 			if (arr[i] == NULL)
-			{
-            	perror("malloc");
-            	return (free_error(arr, i));  
-        	}
-        	i++;
+				return (perror("malloc"), free_error(arr, i));
+			i++;
 		}
-		tmp = tmp->next; 
+		tmp = tmp->next;
 	}
 	arr[i] = NULL;
-	return(arr);
+	return (arr);
 }
 
 void	execution(t_parser *command, t_list *env_copy)
 {
 	char	**envp;
 	t_list	*tmp;
-	
+
 	tmp = env_copy;
 	envp = convert_lst_to_arr(tmp);
 	if (envp == NULL)
@@ -94,7 +89,7 @@ void	free_2d(char **str)
 
 	i = 0;
 	if (!str)
-		return;
+		return ;
 	while (str[i])
 	{
 		free(str[i]);

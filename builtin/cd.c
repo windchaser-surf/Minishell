@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:23:05 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/17 10:41:54 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 16:34:20 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 int	ft_pwd_builtin(void)
 {
-	char cwd[4097];
-	
+	char	cwd[4097];
+
 	if (getcwd(cwd, 4096) == NULL)
 	{
 		perror("pwd");
@@ -27,13 +27,13 @@ int	ft_pwd_builtin(void)
 
 void	ft_set_old_env(t_list **env_copy, char *old_pwd)
 {
-	t_list *tmp;
+	t_list	*tmp;
 
 	tmp = *env_copy;
 	while (tmp)
 	{
 		if (!ft_strncmp(tmp->content, "OLDPWD=", 7))
-			break; 
+			break ;
 		tmp = tmp -> next;
 	}
 	if (tmp)
@@ -45,7 +45,7 @@ void	ft_set_old_env(t_list **env_copy, char *old_pwd)
 
 void	ft_set_new_env(t_list **env_copy)
 {
-	t_list *tmp;
+	t_list	*tmp;
 	char	new_pwd[4097];
 
 	if (getcwd(new_pwd, 4096) == NULL)
@@ -54,11 +54,11 @@ void	ft_set_new_env(t_list **env_copy)
 	while (tmp)
 	{
 		if (!ft_strncmp(tmp->content, "PWD=", 4))
-			break; 
+			break ;
 		tmp = tmp -> next;
 	}
 	if (tmp)
-	{	
+	{
 		free(tmp->content);
 		tmp->content = ft_strjoin("PWD=", new_pwd);
 	}
@@ -66,7 +66,7 @@ void	ft_set_new_env(t_list **env_copy)
 
 int	ft_change_to_home(t_list **env_copy)
 {
-	char old_pwd[4097];
+	char	old_pwd[4097];
 
 	if (getcwd(old_pwd, 4096) == NULL)
 	{
@@ -79,75 +79,25 @@ int	ft_change_to_home(t_list **env_copy)
 		return (EXIT_FAILURE);
 	}
 	ft_set_old_env(env_copy, old_pwd);
-	ft_set_new_env(env_copy);	
+	ft_set_new_env(env_copy);
 	return (EXIT_SUCCESS);
 }
 
 int	ft_change_to_previous(t_list **env_copy)
 {
-	char old_pwd[4097];
+	char	old_pwd[4097];
 
 	if (getcwd(old_pwd, 4096) == NULL)
 	{
 		perror("cd");
 		return (EXIT_FAILURE);
 	}
-	if(chdir(getenv("OLDPWD")) == -1)
+	if (chdir(getenv("OLDPWD")) == -1)
 	{
 		perror("cd");
 		return (EXIT_FAILURE);
 	}
-	ft_set_old_env(env_copy, old_pwd);
-	ft_set_new_env(env_copy);	
-	return (EXIT_SUCCESS);
-}
-
-int ft_change_to_dir(char *cmd, t_list **env_copy)
-{
-	char old_pwd[4097];
-	char *error;
-
-	if (getcwd(old_pwd, 4096) == NULL)
-	{
-		error = ft_strjoin("cd: ", cmd);
-		perror(error);
-		free(error);
-		return (EXIT_FAILURE);
-	}
-	if (chdir(cmd) == -1)
-	{
-		error = ft_strjoin("cd: ", cmd);
-		perror(error);
-		free(error);
-		return (EXIT_FAILURE);
-	}	
 	ft_set_old_env(env_copy, old_pwd);
 	ft_set_new_env(env_copy);
 	return (EXIT_SUCCESS);
 }
-
-//cd function
-// - cd => change dir to home
-// - cd - => change dir to OLDPWD
-// - cd - => with Path! 
-int    cd_builtin(char **cmd, t_list **env_copy)
-{
-	int	i;
-	
-	i = 0;
-	while (cmd[i])
-		i++;
-	if (i > 2)
-	{
-		ft_putstr_fd("cd: too many arguments\n", STDERR_FILENO);
-		return (EXIT_FAILURE);
-	}
-	else if (cmd[1] == NULL)
-		return (ft_change_to_home(env_copy));
-	else if (!ft_strncmp(cmd[1], "-", 2))
-		return(ft_change_to_previous(env_copy));
-	else if (cmd[1])
-		return (ft_change_to_dir(cmd[1], env_copy));
-	return (EXIT_SUCCESS);	
-}
-
