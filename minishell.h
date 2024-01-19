@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 19:55:10 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 20:43:31 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,15 +281,40 @@ typedef struct s_expander_helper {
 	_Bool	needs_expansion;
 }	t_expander_helper;
 
+//ft_expander
+void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **env_copy);
+char	*ft_checker_for_expander(t_expander_helper *h, int exit_code, char *str);
 t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code);
 
-_Bool	ft_is_var_char(char c);
+//ft_expander_utils.c
 char	*ft_remove_quote(char *str, int *i, char c);
+char	*ft_make_new_str_for_expanstion(int *i, char *str, int *j);
+void	ft_copy_whats_after_the_quote(int *i, int *j, char *str, char *new_str);
+t_expander_helper	*ft_checker_expand_dqoute(t_expander_helper *h, \
+	char **new_str, char *str);
 char	*ft_expand_dquote(t_expander_helper *h, int exit_code);
-char	*ft_expand_with_split(t_expander_helper *h, int *exit_code);
-t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num);
 
-void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **env_copy);
+//ft_expander_utils2.c
+t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num);
+char	*ft_concat_rest(char *str, t_expander_helper *h, char *new_str, \
+	_Bool needs_expansion);
+char	*ft_attach_beginning(char *head_node_str, char *str, \
+	t_expander_helper *h);
+_Bool	ft_is_var_char(char c);
+char	*ft_checker_for_expand_with_split(t_expander_helper *h, char *new_str, \
+	t_lexer *orig_lex_node);
+
+//ft_expander_utils3.c
+char	*ft_expand_with_split(t_expander_helper *h, int *exit_code);
+int	ft_get_number_of_nodes_in_cmd(t_list *lexed_l, int i);
+void	ft_helper_put_node_to_end_of_cmd(t_list *t_b_m, t_list **first_in_cmd, \
+	t_list **orig, t_list *prev);
+void	ft_put_node_to_end_of_cmd(t_list **orig, t_list **first_in_cmd, \
+t_list *t_b_m);
+void	ft_rearrange_lexed_list(t_list **lexed_l, int i, t_expander_helper *h);
+
+
+
 int		ft_get_var_name_size(char *str, int *i);
 char	*ft_get_var_value(char *var_name, t_list **env_copy, _Bool need_free);
 char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expansion, char *str);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strncpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 20:11:16 by rluari            #+#    #+#             */
-/*   Updated: 2023/12/04 16:06:26 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 20:52:45 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ char	*ft_strncpy(char *dest, const char *src, size_t n)
 		i++;
 	}
 	while (i < n)
-		dest[i++] = '\0';		
-
-	return dest;
+		dest[i++] = '\0';
+	return (dest);
 }

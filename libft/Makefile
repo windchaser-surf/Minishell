@@ -6,7 +6,7 @@
 #    By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/10 15:38:38 by rluari            #+#    #+#              #
-#    Updated: 2024/01/04 12:04:08 by fwechsle         ###   ########.fr        #
+#    Updated: 2024/01/19 21:07:46 by fwechsle         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRCS			=	ft_isalnum.c ft_isprint.c ft_memcmp.c  ft_putchar_fd.c ft_split.c \
 					printf/ft_print_string.c	\
 					printf/ft_print_uns.c		\
 					printf/ft_do_the_comparison.c	\
+					ft_get_next_line_utils2.c
 
 BONUS_SRCS		=	ft_lstadd_back.c ft_lstadd_front.c ft_lstclear.c \
 					ft_lstdelone.c ft_lstlast.c ft_lstnew.c ft_lstsize.c ft_lstiter.c \

@@ -3,22 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ft_get_next_line_utils.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/01 15:10:40 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 19:48:15 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 20:56:08 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_get_next_line.h"
 #include "libft.h"
-
-struct s_joinvars {
-	int		full_len;
-	int		i;
-	int		j;
-	char	*res;
-};
 
 char	*ft_strjoin_gnl(char *leftov_str, char *line)
 {

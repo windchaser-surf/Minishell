@@ -3,22 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/10 11:47:15 by rluari            #+#    #+#             */
-/*   Updated: 2023/11/22 09:45:41 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 20:54:56 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-
-struct s_things
-{
-	int		beg;
-	int		i;
-	int		j;
-	char	c;
-};
 
 static int	ft_count_words(const char *str, char target)
 {

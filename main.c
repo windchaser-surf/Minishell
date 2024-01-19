@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 22:13:33 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 21:17:11 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,24 +108,17 @@ int main(int argc, char **argv, char **envp)
 		//h.command = readline("Minishell> ");
 		ft_init_signals(NOT_INPUT);
 		if (!h.command)
-			break ;	//breaks the loop if ctrl+d is pressed
+			break ;
 		add_history(h.command); 
-		if (ft_basic_error_checker(&h.command, &h.exit_code) == 1)	// 1 if error, 0 if correct.
+		if (ft_basic_error_checker(&h.command, &h.exit_code) == 1)
 			continue ;
-		h.lexed_list = ft_lexer(h.command, &h.exit_code);	// This function will tokenize the command and store it in a linked list called t_lexer.
+		h.lexed_list = ft_lexer(h.command, &h.exit_code);
 		h.lexed_list = ft_expander(&h.lexed_list, &h.env_copy, h.exit_code);
-
-		//ft_print_lexer_list(h.lexed_list);
-		
-		h.parsed_list = ft_parser(h.lexed_list, &h.exit_code, &h.env_copy);
-
+		h.parsed_list = ft_parser(h.lexed_list, &h.env_copy);
 		ft_free_lexer(h.lexed_list);
 		free(h.command);
 		if (!h.parsed_list)
 			continue ;
-		
-		//ft_print_parser_list(&h.parsed_list);
-		
 		h.exit_code = execution_main(h.parsed_list, &h.env_copy, h.exit_code);
 		ft_free_parser(h.parsed_list);
 	}

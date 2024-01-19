@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/15 09:42:04 by luari             #+#    #+#             */
-/*   Updated: 2023/12/15 15:12:00 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 21:06:43 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,22 @@
 # include <unistd.h>
 # include "ft_get_next_line.h"
 # include "printf/ft_printf.h"
+
+struct s_things
+{
+	int		beg;
+	int		i;
+	int		j;
+	char	c;
+};
+
+struct s_joinvars
+{
+	int		full_len;
+	int		i;
+	int		j;
+	char	*res;
+};
 
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
