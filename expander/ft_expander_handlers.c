@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_handlers.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 18:20:22 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 19:41:22 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ char *ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h)
 	return (((t_lexer *)h->current_node->content)->word);
 }
 
-void	ft_print_ambig_redir(char *var_name)
+void	p_amb_re(char *var_name)
 {
 	ft_putstr_fd("Minishell: ", 2);
 	ft_putstr_fd(var_name, 2);
