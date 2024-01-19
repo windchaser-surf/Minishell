@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 18:28:48 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 18:44:04 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,8 +123,17 @@ typedef struct	s_main_helper {
 
 //BUILTIN
 //cd.c 
-int	cd_builtin(char **cmd, t_list **env_copy);
 int	ft_pwd_builtin(void);
+void	ft_set_old_env(t_list **env_copy, char *old_pwd);
+void	ft_set_new_env(t_list **env_copy);
+int	ft_change_to_home(t_list **env_copy);
+int	ft_change_to_previous(t_list **env_copy);
+
+//cd2.c
+int	cd_builtin(char **cmd, t_list **env_copy);
+int	ft_change_to_dir(char *cmd, t_list **env_copy);
+
+
 
 //echo.c
 int	ft_echo_builtin(char **arg);
@@ -136,12 +145,24 @@ int	 print_env(t_list *env_copy);
 void	del(void *content);
 
 //export.c
-int	export_builtin(char **cmd, t_list **env_copy);
+char	**sort_arr(char **arr, int size);
+int	print_alpha(char **arr);
+char	**ft_copy_lst_to_arr(t_list *env_copy, char **arr);
 int	print_export(t_list *env_copy);
+int	err_msg_not_valid(void);
+
+
+//export2.c
+int	valid_new_variable(char *cmd);
 int	check_exist(char *var, t_list *env_copy);
+int	set_value_env(char *cmd, t_list *env_copy);
+int	export_builtin(char **cmd, t_list **env_copy);
+
+
+
 
 //unset.c
-int    builtin_unset(t_list **env_copy, char **var);
+int	builtin_unset(t_list **env_copy, char **var, int i);
 
 //exec_main.c
 int    execution_main(t_list *tokens, t_list **env_copy, int exit_code);
@@ -154,30 +175,55 @@ void	dup_heredoc(t_parser *command);
 void	close_fds(int *fds);
 
 //exec1.c
-int	exec_builtins(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens);
 void	ft_file_closer_single(t_parser *command);
 int	child_process(t_parser *command, t_list **env_copy);
-int	cmd_path_NULL(t_parser *command);
+int	cmd_path_null(t_parser *command);
 int	one_execution(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens);
 
-//exec2.c
-void	ft_pipe_closer(t_pipex *data);
-int n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, t_list *tokens);
-int	create_pipes(t_pipex *data);
-int	n_execution(t_list *tokens, t_list **env_copy, int exit_code);
-void	ft_free_child(t_pipex *data, t_list *tokens, t_list **env_copy);
+//exec1_1.c
+int	exec_builtins(t_parser *command, t_list **env_copy, int exit_code, t_list *tokens);
 
+//exec2.c
+int	n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, \
+	t_list *tokens);
+int	create_pipes(t_pipex *data);
+int	preperation_for_child(t_pipex *data, t_list *tokens);
+int	waiting_for_childs(t_pipex *data, int n);
+int	n_execution(t_list *tokens, t_list **env_copy, int exit_code);
+
+
+//exec2_2.c
+void	dup_output(t_parser *command, t_pipex *data, t_list *tokens, \
+	t_list **env_copy);
+void	ft_free_child(t_pipex *data, t_list *tokens, t_list **env_copy);
+void	dup_input(t_parser *command, t_pipex *data, t_list *tokens, \
+	t_list **env_copy);
+void	error_closing(t_parser *command, t_pipex *data, t_list *tokens, \
+	t_list **env_copy);
+void	ft_pipe_closer(t_pipex *data);
+
+
+//exec2_3.c
+void	cmd_not_found(t_parser *command, t_list *tokens, t_pipex *data, \
+	t_list **env_copy);
+	
 //check_builtin.c
 int	check_builtin(char *str);
 int	run_builtins(t_parser *command, t_list **env_copy, int error_code, int pid_check);
 int	run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, t_list *tokens);
 
 //exit.c
-int	builtin_exit(char **arg, int exit_code, int pid_check);
-int	builtin_exit_parent(char **arg, int exit_code, t_list *tokens, t_list **env_copy);
+long long	ft_atoi_long(const char *str);
+int	check_for_number(char *arg);
+int	exit_too_many(int pid_check);
 int	exit_not_numeric(int pid_check, t_list *tokens, t_list **env_copy);
-int	exit_with_number(int pid_check, char *numb, t_list *tokens, t_list **env_copy); //hier kommt noch die nummer hin
+int	exit_with_number(int pid_check, char *numb, t_list *tokens, \
+	t_list **env_copy);
 
+//exit2.c
+int	builtin_exit(char **arg, int exit_code, int pid_check);
+int	builtin_exit_parent(char **arg, int exit_code, t_list *tokens, \
+	t_list **env_copy);
 
 //free. currently in cd file
 void	free_2d(char **str);
