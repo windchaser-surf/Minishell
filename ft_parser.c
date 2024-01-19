@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 18:54:17 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 14:41:03 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ _Bool	ft_create_new_command(t_parser_helper *h, int exit_code, _Bool last)
 			return (ft_free_parserh->p_list_head), 1);*/
 		h->p_new_node = ft_lstnew(h->parser_n);
 		if (h->p_new_node == NULL)
-			return (ft_free_parser(h->p_list_head), ft_free_parser_node(h->parser_n), perror("Malloc failed"), 1);
+			return (ft_free_parser(h->p_list_head), ft_free_parser_node(&h->parser_n), perror("Malloc failed"), 1);
 		ft_lstadd_back(&h->p_list_head, h->p_new_node);
 	}
 	if (last == 0) // if we are not at the last command, initialize a new command
@@ -114,7 +114,7 @@ _Bool	ft_create_empty_parser_list_with_heredoc(t_parser_helper *h, t_list **ll_h
 			h->parser_n->heredoc_tmp = NULL;
 			ft_handle_heredoc(&(h->parser_n), h->lexed_i, &(h->error), env_copy);
 			if (h->error || g_sig == CNTRL_C)
-				return (ft_free_parser_node(h->parser_n), ft_free_parser(h->p_list_head), 1);
+				return (ft_free_parser_node(&h->parser_n), ft_free_parser(h->p_list_head), 1);
 		}
 		*ll_head = (*ll_head)->next;
 	}
@@ -161,6 +161,7 @@ t_list	*ft_parser(t_list *lexed_list, int *exit_c, t_list **env_copy)
 			h.prev_was_word = 0;
 		}
 		ft_parser_while(&h, env_copy);
+
 		if (h.error)
 			return (ft_free_parser(h.p_list_head), NULL);
 		lexed_list = lexed_list->next;

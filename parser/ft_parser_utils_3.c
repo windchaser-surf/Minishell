@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:59:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 13:07:12 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 14:05:03 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int is_directory(const char *path)
 		return(-1);
 }
 
-_Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code)
+/*Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code)
 {
 	char	*ec;
 
@@ -98,6 +98,8 @@ _Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code)
 	if (!ec)
 		return (perror("Malloc failed"), 1);
 	(*parser_node)->cmd_args = ft_realloc_array((*parser_node)->cmd_args, ec);
+	if ((*parser_node)->cmd_args == NULL)
+		return (perror("Malloc failed"), 1);
 	free(ec);
 	return (0);
-}
+}*/

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_getting_path.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:39:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/11 14:24:35 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 15:57:46 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ int	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item)
 			return (1);
 	}
 	(*parser_node)->cmd_args[0] = ft_get_cmd_name(lexed_item->word);
+	if ((*parser_node)->cmd_args[0] == NULL)
+		return (1);
 	if (ft_is_builtin((*parser_node)->cmd_args[0]))
 	{
 		free ((*parser_node)->cmd_path);
@@ -80,7 +82,7 @@ char	**ft_realloc_array(char **outfiles, char *new_item)
 	{
 		new_array[i] = ft_strdup(outfiles[i]);
 		if (new_array[i] == NULL)
-			return (ft_free_array(new_array), ft_free_array(outfiles),NULL);
+			return (ft_free_array(new_array), ft_free_array(outfiles), NULL);
 		i++;
 	}
 	new_array[i] = ft_strdup(new_item);

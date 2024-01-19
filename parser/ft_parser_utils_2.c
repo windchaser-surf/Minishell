@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:56:15 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 13:07:43 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 15:13:55 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,13 @@ void	ft_free_parser(t_list *parser_head)
 	{
 		tmp = parser_head->next;
 		parser_node = (t_parser *)parser_head->content;
-		if (parser_node->cmd_path && ft_strcmp( parser_node->cmd_path , "BUILTIN") != 0)
-			free(parser_node->cmd_path);
-		ft_free_array(parser_node->cmd_args);
+		if (parser_node->cmd_path) 
+		{
+			if (ft_strcmp( parser_node->cmd_path , "BUILTIN"))
+				free(parser_node->cmd_path);
+		}
+		if (parser_node->cmd_args)
+			ft_free_array(parser_node->cmd_args);
 		free(parser_node->heredoc);
 		free(parser_node->heredoc_tmp);
 		free(parser_head->content);
@@ -43,15 +47,18 @@ void	ft_free_parser(t_list *parser_head)
 	}
 }
 
-void	ft_free_parser_node(t_parser *parser_node)
+void	ft_free_parser_node(t_parser **parser_node)
 {
-	if (parser_node->cmd_path && ft_strcmp( parser_node->cmd_path , "BUILTIN") != 0)
-		free(parser_node->cmd_path);
-	ft_free_array(parser_node->cmd_args);
-	free(parser_node->heredoc);
-	free(parser_node->heredoc_tmp);
-	free(parser_node);
-	
+	if (!(*parser_node))
+		return ;
+	if ((*parser_node)->cmd_path && ft_strcmp( (*parser_node)->cmd_path , "BUILTIN") != 0)
+		free((*parser_node)->cmd_path);
+	ft_free_array((*parser_node)->cmd_args);
+	(*parser_node)->cmd_args = NULL;
+	free((*parser_node)->heredoc);
+	free((*parser_node)->heredoc_tmp);
+	/*free(*parser_node);
+	*parser_node = NULL;*/
 }
 
 void	ft_perror_and_free(char *str)

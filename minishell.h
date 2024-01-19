@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 13:16:25 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 14:15:50 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,7 +274,7 @@ void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error
 _Bool	ft_handle_word(t_parser_helper *helper, t_list **env_copy);
 
 void	ft_free_parser(t_list *parser_head);
-void	ft_free_parser_node(t_parser *parser_node);
+void	ft_free_parser_node(t_parser **parser_node);
 char	**ft_realloc_array(char **array, char *new_item);
 void	ft_perror_and_free(char *str);
 
@@ -290,7 +290,7 @@ _Bool	ft_cmd_is_dot(char *cmd, t_parser **parser_node);
 char	*ft_get_path(t_list **env, char *cmd, t_parser **parser_node);
 int	is_directory(const char *path);
 int	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item);
-_Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code);
+//_Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code);
 _Bool	ft_str_has_quote(char *str);
 int	ft_count_amount_of_quotes(char *str);
 char	*ft_just_remove_quotes(char *str);
