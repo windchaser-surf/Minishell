@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 14:15:50 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 18:28:48 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,9 @@
 
 #define MALLOC_ERR 1 
 #define CMD_NOT_FOUND 127
+
+#define EMSG_SYN "Minishell: syntax error near unexpected token `"
+#define EMSG_MAL "Minishell: Malloc error\n"
 
 typedef struct t_variable
 {
@@ -107,7 +110,7 @@ typedef struct s_parser		//a node is piece of element that you need to pass to t
 _Bool	ft_basic_error_checker(char **command, int *error_code);
 int		ft_ends_with_spec(char *command, int *error_code);
 _Bool	ft_unmatched_quotes(char *command, int *error_code);
-_Bool	ft_emptyness_in_cmd(char *cmd, int i, int *error_code);
+_Bool	ft_emptyness_in_cmd(char *cmd, int i, int *error_code, _Bool prev_was_pipe);
 
 typedef struct	s_main_helper {
 	char	*command;
@@ -203,7 +206,7 @@ void	ft_skip_spaces(char *str, int *i);
 void	ft_skip_to_closing_quote(char *command, int *i, char close_char);
 void	ft_print_lexer_list(t_list *list);
 
-_Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command, _Bool skip_spaces, int *exit_code);
+_Bool	ft_handle_lexer_word(t_lexer_helper *helper, char *command, int *exit_code);
 _Bool	ft_handle_lexer_redir(t_lexer_helper *helper, char *command, int *exit_code);
 _Bool	ft_handle_lexer_input(t_lexer_helper *helper, char *command, int *exit_code);
 _Bool	ft_lexer_while(t_lexer_helper *helper, char *command, int *exit_code);
@@ -234,7 +237,7 @@ typedef struct s_expander_helper {
 
 t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code);
 
-_Bool	ft_is_non_var_char(char c);
+_Bool	ft_is_var_char(char c);
 char	*ft_remove_quote(char *str, int *i, char c);
 char	*ft_expand_dquote(t_expander_helper *h, int exit_code);
 char	*ft_expand_with_split(t_expander_helper *h, int *exit_code);
@@ -262,7 +265,7 @@ typedef struct s_parser_helper {
 	t_list		*p_new_node;
 	t_parser	*parser_n;
 	t_lexer		*lexed_i;
-	int			ith_command;
+	int			i_cmd;
 	_Bool		error;
 	_Bool		prev_was_word;
 }	t_parser_helper;
