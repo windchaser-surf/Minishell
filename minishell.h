@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 18:44:04 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 19:30:55 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,7 +304,7 @@ char	*ft_insert_new_lexed_nodes(t_list *new_nodes_head, t_expander_helper *h);
 _Bool	ft_add_back_to_new_ll(t_list **new_lexed_list, t_list *lexed_list, _Bool num);
 
 //Parser and it's utils
-t_list	*ft_parser(t_list *lexed_list, int *exit_code, t_list **env_copy);
+t_list	*ft_parser(t_list *lexed_list, t_list **env_copy);
 
 typedef struct s_parser_helper {
 	t_list		*p_list_head;
@@ -314,16 +314,20 @@ typedef struct s_parser_helper {
 	int			i_cmd;
 	_Bool		error;
 	_Bool		prev_was_word;
-}	t_parser_helper;
+}	t_parser_h;
 
 void	ft_init_parser_node(t_parser **parser_node);
 void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp type);
 void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, t_list **env_copy);
-_Bool	ft_handle_word(t_parser_helper *helper, t_list **env_copy);
+_Bool	ft_handle_word(t_parser_h *helper, t_list **env_copy);
 
+void	ft_init_parser_helper_struct(t_parser_h *helper);
+_Bool	ft_is_empty_lexed_lode(t_list **lexed_list);
+void	ft_free_parser_makefiles(t_list *p_list_head);
+_Bool	ft_make_command(t_parser_h *h, _Bool last);
 void	ft_free_parser(t_list *parser_head);
-void	ft_free_parser_node(t_parser **parser_node);
+void	ft_free_p_node(t_parser **parser_node);
 char	**ft_realloc_array(char **array, char *new_item);
 void	ft_perror_and_free(char *str);
 
