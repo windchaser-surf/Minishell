@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 21:58:10 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 11:27:49 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ _Bool	ft_emptyness_in_cmd(char *cmd, int i, int *error_code)
 			continue ;
 		}
 		else if (cmd[i] == '|' && prev_was_pipe == 1)
-			return (ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), 1);
+			return (*error_code = 2, ft_putstr_fd("Minishell: syntax error near unexpected token `|'\n", 2), 1);
 		else if (cmd[i] == '|' && prev_was_pipe == 0)
 			prev_was_pipe = 1;
 		else

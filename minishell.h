@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 22:16:50 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 13:16:25 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,7 +242,7 @@ t_list	*ft_lexer_but_with_words_and_one_cmd(char *command, int cmd_num);
 
 void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **env_copy);
 int		ft_get_var_name_size(char *str, int *i);
-char	*ft_get_var_value(char *var_name, t_list **env_copy);
+char	*ft_get_var_value(char *var_name, t_list **env_copy, _Bool need_free);
 char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expansion, char *str);
 char	*ft_get_var_name(char *str);
 char	*ft_handle_dollar_question(char *new_str, int *exit_code, int *i, char *str);
@@ -303,7 +303,7 @@ char	*ft_just_remove_quotes(char *str);
 
 
 
-
+char	*ft_remove_backslash(char *str, int *i);
 void	ft_print_parser_list(t_list **parser_head);
 
 #endif

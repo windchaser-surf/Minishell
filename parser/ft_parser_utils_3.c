@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:59:26 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/06 21:44:11 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 13:07:12 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ char	*ft_cut_until_equal(char *str)
 int is_directory(const char *path)
 {
     struct stat path_stat;
-
 	// Get information about the file or directory
 	if (stat(path, &path_stat) == 0)
 	{
@@ -79,9 +78,7 @@ int is_directory(const char *path)
 			return 0;  // It's not a directory (could be a file)
 	}
 	else
-	{
 		return(-1);
-	}
 }
 
 _Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code)

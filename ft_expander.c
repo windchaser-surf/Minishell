@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 10:37:28 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 22:17:32 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 13:24:04 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,32 @@ void	ft_copy_whats_after_the_quote(int *i, int *j, char *str, char *new_str)
 		new_str[(*j)++] = str[tmp_i++];
 	new_str[*j] = '\0';
 	free(str);
+}
+
+char	*ft_expand_tilde(char *new_str, t_expander_helper *h, char *str)
+{
+	char	*tmp;
+	int		ns_size;
+
+	h->orig_i = h->i;
+	h->vns = 4;
+	//2. getting the variable value
+	h->var_value = ft_get_var_value("HOME", h->env_copy, 0);	//0, str that has the whole command with the var, str index where we encountered the $
+	if (!h->var_value)
+		return (perror("Malloc failed"), NULL);
+	//3. concatenating it to the end of the string and removing the $var_name
+	ns_size = ft_strlen(new_str);
+	tmp = malloc(ns_size + ft_strlen(&str[h->i]) - (++h->vns) + ft_strlen(h->var_value) + 2);	//update len with the variable value
+	if (!tmp)
+		return (perror("Malloc failed"), NULL);
+	ft_strcpy(tmp, new_str);	//copy everything before the $
+	free(new_str);
+	new_str = tmp;
+	ft_strlcat(new_str, h->var_value, ns_size + ft_strlen(h->var_value) + 1);	//append the variable value to the end of the string
+	h->i = h->orig_i + ft_strlen(h->var_value);	
+	//we set i to the position of the last char of the variable name (not value !)
+
+	return (new_str);
 }
 
 char	*ft_expand_dquote(t_expander_helper *h, int exit_code)	//from ab"cde"fg"hi" to abcdefghi, and setting i to the position of f
@@ -192,7 +218,8 @@ char	*ft_expand_with_split(t_expander_helper *h, int *exit_code)
 
 	h->needs_expansion = 0;
 	orig_lex_node  = (t_lexer *)(h->current_node)->content;	//we are in this one, only in this
-	if (orig_lex_node->word[h->i + 1] == '\0' || orig_lex_node->word[h->i + 1] == '$')	//if it is the last char or another $, then it is not a variable, so we return
+	// || orig_lex_node->word[h->i + 1] == '$'
+	if (orig_lex_node->word[h->i + 1] == '\0' /*|| ft_is_non_var_char(orig_lex_node->word[h->i + 1])*/ || orig_lex_node->word[h->i + 1] == '$' )	//if it is the last char or another $, then it is not a variable, so we return
 		return ((h->i)++, orig_lex_node->word);
 	new_str = malloc(sizeof(char) * ft_strlen(orig_lex_node->word) + 1);
 	if (!new_str)
@@ -285,6 +312,7 @@ void	ft_rearrange_lexed_list(t_list **lexed_l, int i, t_expander_helper *h) //pu
 	int		j;
 	t_list *beg;
 
+	(void)h;
 	if (!lexed_l || !*lexed_l)
 		return ;
 	max_cmds = ((t_lexer *)ft_lstlast(*lexed_l)->content)->exec_num;
@@ -304,7 +332,6 @@ void	ft_rearrange_lexed_list(t_list **lexed_l, int i, t_expander_helper *h) //pu
 		}
 		*lexed_l = beg;
 	}
-	free(h->var_value);
 }
 
 void init_expander_helper(t_expander_helper *h, t_list **lexed_list, t_list **env_copy)
@@ -338,6 +365,8 @@ t_list	*ft_expander(t_list **lexed_list, t_list **env_copy, int exit_code)
 				((t_lexer *)h.current_node->content)->word = ft_expand_dquote(&h, exit_code);	//expand, no split | abc"a$b"c --> abcabc, i was 3, now 3
 			else if (((t_lexer *)h.current_node->content)->word[h.i] == '$')	//expand, split | insert another lexer_node if needed | abc$a
 				((t_lexer *)h.current_node->content)->word = ft_expand_with_split(&h, &exit_code);
+			/*else if (((t_lexer *)h.current_node->content)->word[h.i] == '\\')
+				((t_lexer *)h.current_node->content)->word = ft_remove_backslash(((t_lexer *)h.current_node->content)->word, &h.i);*/
 			else
 				h.i++;
 			if (!((t_lexer *)h.current_node->content)->word)	//malloc failed

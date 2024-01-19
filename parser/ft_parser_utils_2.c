@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:56:15 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 22:05:49 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 13:07:43 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ _Bool	ft_cmd_is_dot(char *cmd, t_parser **parser_node)
 	else if (cmd[0] == '.' && strlen(cmd) == 1)
 	{
 		ft_putstr_fd("Minishell: .: filename argument required\n", 2);
-		return ((*parser_node)->exit_code = 2, 1);
+		return ((*parser_node)->exit_code = 127, 1);
 	}
 	return (0);
 }

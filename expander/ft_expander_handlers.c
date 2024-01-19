@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 13:21:35 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/18 21:14:36 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/19 12:07:55 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 
-char	*ft_get_var_value(char *var_name, t_list **env_copy)	//0, str that has the whole command with the var, str index where we encountered the $
+char	*ft_get_var_value(char *var_name, t_list **env_copy, _Bool need_free)	//0, str that has the whole command with the var, str index where we encountered the $
 {
 	char 	*var_value;
 
@@ -22,7 +22,8 @@ char	*ft_get_var_value(char *var_name, t_list **env_copy)	//0, str that has the 
 	if (!var_name)
 		return (NULL);
 	var_value = ft_get_env_value(*env_copy, var_name);
-	free(var_name);
+	if (need_free)
+		free(var_name);
 	if (!var_value)
 		var_value = ft_strdup("");	//if variable does not exist, then var_value = ""
 
@@ -94,14 +95,14 @@ char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expan
 	h->vns = ft_get_var_name_size(str, &h->i);
 	var_name = ft_substr(str, (unsigned int)(h->i), (size_t)(h->vns));
 	//2. getting the variable value
-	h->var_value = ft_get_var_value(var_name, h->env_copy);	//0, str that has the whole command with the var, str index where we encountered the $
+	h->var_value = ft_get_var_value(var_name, h->env_copy, 1);	//0, str that has the whole command with the var, str index where we encountered the $
 	if (!h->var_value)
-		return (perror("Malloc failed"), NULL);
+		return (free(h->var_value), perror("Malloc failed"), NULL);
 	//3. concatenating it to the end of the string and removing the $var_name
 	ns_size = ft_strlen(new_str);
 	tmp = malloc(ns_size + ft_strlen(&str[h->i]) - (++h->vns) + ft_strlen(h->var_value) + 2);	//update len with the variable value
 	if (!tmp)
-		return (perror("Malloc failed"), NULL);
+		return (free(h->var_value), perror("Malloc failed"), NULL);
 	ft_strcpy(tmp, new_str);	//copy everything before the $
 	free(new_str);
 	new_str = tmp;
@@ -110,6 +111,7 @@ char	*ft_expand_variable(char *new_str, t_expander_helper *h, _Bool *needs_expan
 	//we set i to the position of the last char of the variable name (not value !)
 	if (needs_expansion && ft_has_word(h->var_value))
 		*needs_expansion = 1;
+	free(h->var_value);
 	return (new_str);
 }
 
