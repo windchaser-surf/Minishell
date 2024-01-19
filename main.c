@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 21:17:11 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/19 21:26:07 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <readline/history.h>
 //#include <termios.h>
 
-void	ft_print_parser_list(t_list **parser_head)
+/*void	ft_print_parser_list(t_list **parser_head)
 {
 	t_list		*tmp;
 	t_parser	*parser_node;
@@ -68,7 +68,7 @@ void ft_print_orig_env(char **envp)
 		printf("%s\n", envp[i]);
 		i++;
 	}
-}
+}*/
 
 static void	init_main_helper(t_main_helper *h, char **argv)
 {
@@ -81,9 +81,18 @@ static void	init_main_helper(t_main_helper *h, char **argv)
 	(void)argv;
 }
 
-int g_sig = 0;
+int	g_sig = 0;
 
-int main(int argc, char **argv, char **envp)
+void	ft_normie_shortener(t_main_helper *h)
+{
+	h->lexed_list = ft_lexer(h->command, &h->exit_code);
+	h->lexed_list = ft_expander(&h->lexed_list, &h->env_copy, h->exit_code);
+	h->parsed_list = ft_parser(h->lexed_list, &h->env_copy);
+	ft_free_lexer(h->lexed_list);
+	free(h->command);
+}
+
+int	main(int argc, char **argv, char **envp)
 {
 	t_main_helper	h;
 
@@ -109,20 +118,14 @@ int main(int argc, char **argv, char **envp)
 		ft_init_signals(NOT_INPUT);
 		if (!h.command)
 			break ;
-		add_history(h.command); 
+		add_history(h.command);
 		if (ft_basic_error_checker(&h.command, &h.exit_code) == 1)
 			continue ;
-		h.lexed_list = ft_lexer(h.command, &h.exit_code);
-		h.lexed_list = ft_expander(&h.lexed_list, &h.env_copy, h.exit_code);
-		h.parsed_list = ft_parser(h.lexed_list, &h.env_copy);
-		ft_free_lexer(h.lexed_list);
-		free(h.command);
+		ft_normie_shortener(&h);
 		if (!h.parsed_list)
 			continue ;
 		h.exit_code = execution_main(h.parsed_list, &h.env_copy, h.exit_code);
 		ft_free_parser(h.parsed_list);
 	}
-	clear_history();
-	ft_lstclear(&h.env_copy, del);
-	return (h.exit_code);
+	return (clear_history(), ft_lstclear(&h.env_copy, del), h.exit_code);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/01 17:41:49 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 20:43:31 by fwechsle         ###   ########.fr       */
+/*   Created: 2024/01/19 21:29:14 by rluari            #+#    #+#             */
+/*   Updated: 2024/01/19 21:42:00 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,33 +31,33 @@
 # include <stdbool.h>
 
 //for checking paths
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+# include <dirent.h>
+# include <sys/types.h>
+# include <sys/stat.h>
 
 //inclide other header files
 
-#define MALLOC_ERR 1 
-#define CMD_NOT_FOUND 127
+# define MALLOC_ERR 1 
+# define CMD_NOT_FOUND 127
 
-#define EMSG_SYN "Minishell: syntax error near unexpected token `"
-#define EMSG_MAL "Minishell: Malloc error\n"
+# define EMSG_SYN "Minishell: syntax error near unexpected token `"
+# define EMSG_MAL "Minishell: Malloc error\n"
 
-typedef struct t_variable
+typedef struct s_variable
 {
 	char	*name;
 	char	*value;
-	bool	is_quoted;
+	_Bool	is_quoted;
 	char	quoted_value;
 }	t_variable;
 
 typedef enum WordTyp
 {
-	WORD,
-	REDIR,	//>
-	INFILE,	//<
-	D_REDIR, //>>
-	HEREDOC	//<<
+	WORD = 1,
+	REDIR = 2,	//>
+	INFILE = 3,	//<
+	D_REDIR = 4, //>>
+	HEREDOC	= 5//<<
 }	WordTyp;
 
 typedef enum SigTyp
@@ -83,8 +83,6 @@ typedef struct s_pipex
 	int	*p;
 	int exit_code;
 }			t_pipex;
-
-//extern int g_sig;
 
 typedef struct s_lexer
 {
@@ -346,12 +344,11 @@ void	ft_handle_redirs(t_parser **parser_node, t_lexer *lexed_item, WordTyp type)
 void	ft_handle_input(t_parser **parser_node, t_lexer *lexed_item, _Bool *error);
 void	ft_handle_heredoc(t_parser **parser_node, t_lexer *lexed_item, _Bool *error, t_list **env_copy);
 _Bool	ft_handle_word(t_parser_h *helper, t_list **env_copy);
-
 void	ft_init_expander_helper_nulls(t_expander_helper *h, t_list **env_copy);
 char	*ft_free_for_expand_inline(char *new_str, char *str, t_expander_helper *h);
 char	*ft_expand_inline(char *str, t_list **env_copy, _Bool had_quotes);
 void	ft_get_heredoc(t_parser **parser_node, char *delim);
-int	ft_checking_for_handle_word(t_parser_h *h, t_list **env_copy);
+int		ft_checking_for_handle_word(t_parser_h *h, t_list **env_copy);
 void	ft_init_parser_helper_struct(t_parser_h *helper);
 _Bool	ft_is_empty_lexed_lode(t_list **lexed_list);
 void	ft_free_parser_makefiles(t_list *p_list_head);
@@ -361,32 +358,21 @@ void	ft_free_p_node(t_parser **parser_node);
 char	**ft_realloc_array(char **array, char *new_item);
 void	ft_perror_and_free(char *str);
 
-//_Bool	ft_ends_with_slash(char *str);
-int	ft_dir_accession(char *cmd, t_parser **parser_n);
-int	ft_is_path_invalid(char *cmd, t_parser **parser_n);
-int	get_pos_of_char(char *str, char c);
+int		ft_dir_accession(char *cmd, t_parser **parser_n);
+int		ft_is_path_invalid(char *cmd, t_parser **parser_n);
+int		get_pos_of_char(char *str, char c);
 char	*ft_get_cmd_name(char *cmd_with_path);
 _Bool	ft_is_builtin(char *cmd);
 char	*ft_cut_until_equal(char *str);
 char	*ft_get_env_value(t_list *env, char *var_name);
 _Bool	ft_cmd_is_dot(char *cmd, t_parser **parser_node);
 char	*ft_get_path(t_list **env, char *cmd, t_parser **parser_node);
-int	is_directory(const char *path);
-int	ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item);
-//_Bool	ft_set_exit_err_empty_arg(t_parser **parser_node, int exit_code);
+int		is_directory(const char *path);
+int		ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item);
 _Bool	ft_str_has_quote(char *str);
-int	ft_count_amount_of_quotes(char *str);
+int		ft_count_amount_of_quotes(char *str);
 char	*ft_just_remove_quotes(char *str);
-
-
-
-
-
-
-
-
-
-char	*ft_remove_backslash(char *str, int *i);
-void	ft_print_parser_list(t_list **parser_head);
+/*char	*ft_remove_backslash(char *str, int *i);
+void	ft_print_parser_list(t_list **parser_head);*/
 
 #endif
