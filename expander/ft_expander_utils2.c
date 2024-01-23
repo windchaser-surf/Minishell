@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_utils2.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 20:31:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 22:09:30 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/23 11:00:15 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ char	*ft_concat_rest(char *str, t_ex_h *h, char *new_str, \
 	rest = ft_substr(str, h->orig_i + h->vns, \
 		ft_strlen(str) - (h->orig_i + h->vns));
 	if (!rest)
-		return (perror("Malloc failed"), NULL);
+		return (ft_putstr_fd(EMSG_MAL, 2), NULL);
 	new_str = ft_strjoin_free(new_str, rest);
 	free(rest);
 	return (new_str);

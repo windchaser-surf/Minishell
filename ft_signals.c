@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_signals.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 19:56:13 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 21:46:42 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/23 10:52:25 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	ft_sighandle_cmd(int sig)
 {
 	if (sig == SIGINT)
 	{
-		g_sig = CNTRL_C;
+		g_ec = 130;
 		ft_putstr_fd("\n", STDERR_FILENO);
 		rl_on_new_line();
 		rl_replace_line("", 0);
@@ -29,7 +29,7 @@ void	ft_sighandle_heredoc(int sig)
 {
 	if (sig == SIGINT)
 	{
-		g_sig = CNTRL_C;
+		g_ec = 130;
 		ioctl(STDOUT_FILENO, TIOCSTI, "\n");
 		rl_on_new_line();
 		rl_replace_line("", 0);
@@ -50,7 +50,7 @@ void	ft_init_signals(t_SigTyp sig_situation)
 	}
 	else if (sig_situation == CHILD)
 	{
-		signal(SIGINT, SIG_DFL);
+		signal(SIGINT, &ft_sighandle_heredoc);
 		signal(SIGQUIT, SIG_DFL);
 	}
 	else if (sig_situation == HEREDOC_INP)

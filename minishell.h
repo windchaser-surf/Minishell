@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 21:29:14 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 22:02:35 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/22 14:05:21 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,7 +227,7 @@ void	free_2d(char **str);
 
 //Signals
 
-extern int	g_sig;
+extern int	g_ec;
 
 void	ft_init_signals(t_SigTyp sig_situation);
 

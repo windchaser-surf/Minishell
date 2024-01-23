@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser_handlers_2.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 19:47:16 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 22:08:37 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/22 14:45:49 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void	ft_get_heredoc(t_parser **parser_node, char *delim)
 			break ;
 		}
 		tmp = readline("> ");
-		if (tmp == NULL || g_sig == CNTRL_C || ft_strcmp(delim, tmp) == 0)
+		if (tmp == NULL || g_ec > 0 || ft_strcmp(delim, tmp) == 0)
 			break ;
 		(*parser_node)->heredoc = ft_strjoin_free((*parser_node)->heredoc, tmp);
 		(*parser_node)->heredoc = \

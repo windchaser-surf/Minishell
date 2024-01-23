@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_utils3.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 20:36:10 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 22:02:35 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/23 11:00:19 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ char	*ft_expand_with_split(t_ex_h *h, int *exit_code)
 		return ((h->i)++, o_node->word);
 	new_str = malloc(sizeof(char) * ft_strlen(o_node->word) + 1);
 	if (!new_str)
-		return (perror("Malloc failed"), NULL);
+		return (ft_putstr_fd(EMSG_MAL, 2), NULL);
 	ft_strncpy(new_str, o_node->word, (size_t)h->i);
 	new_str[h->i] = '\0';
 	if (o_node->word[(h->i) + 1] == '?')

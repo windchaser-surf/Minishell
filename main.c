@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 21:26:07 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/22 14:48:14 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,12 +81,12 @@ static void	init_main_helper(t_main_helper *h, char **argv)
 	(void)argv;
 }
 
-int	g_sig = 0;
+int	g_ec = 0;
 
 void	ft_normie_shortener(t_main_helper *h)
 {
-	h->lexed_list = ft_lexer(h->command, &h->exit_code);
-	h->lexed_list = ft_expander(&h->lexed_list, &h->env_copy, h->exit_code);
+	h->lexed_list = ft_lexer(h->command, &g_ec);
+	h->lexed_list = ft_expander(&h->lexed_list, &h->env_copy, g_ec);
 	h->parsed_list = ft_parser(h->lexed_list, &h->env_copy);
 	ft_free_lexer(h->lexed_list);
 	free(h->command);
@@ -101,9 +101,9 @@ int	main(int argc, char **argv, char **envp)
 	init_main_helper(&h, argv);
 	if (init_env(envp, &h.env_copy) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
+	g_ec = 0;
 	while (1)
 	{
-		g_sig = 0;
 		ft_init_signals(INPUT);
 		if (isatty(fileno(stdin)))
 			h.command = readline("Minishell> ");
@@ -119,13 +119,13 @@ int	main(int argc, char **argv, char **envp)
 		if (!h.command)
 			break ;
 		add_history(h.command);
-		if (ft_basic_error_checker(&h.command, &h.exit_code) == 1)
+		if (ft_basic_error_checker(&h.command, &g_ec) == 1)
 			continue ;
 		ft_normie_shortener(&h);
 		if (!h.parsed_list)
 			continue ;
-		h.exit_code = execution_main(h.parsed_list, &h.env_copy, h.exit_code);
+		g_ec = execution_main(h.parsed_list, &h.env_copy, g_ec);
 		ft_free_parser(h.parsed_list);
 	}
-	return (clear_history(), ft_lstclear(&h.env_copy, del), h.exit_code);
+	return (clear_history(), ft_lstclear(&h.env_copy, del), g_ec);
 }

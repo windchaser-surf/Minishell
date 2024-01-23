@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_basic_error_checker.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/06 12:12:24 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/19 21:43:24 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/23 11:21:47 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,11 +89,13 @@ _Bool	ft_ends_with_pipe(char **command, char *new_command)
 		return (free(*command), 1);
 	add_history(attach_to_end);
 	new_command = ft_strjoin(*command, attach_to_end);
+	if (attach_to_end[0] == EOF)
+		return (g_ec = 2, 0);
 	free(attach_to_end);
 	free(*command);
 	*command = malloc(ft_strlen(new_command) + 1);
 	if (*command == NULL)
-		return (perror("Malloc failed"), free(new_command), 1);
+		return (ft_putstr_fd(EMSG_MAL, 2), free(new_command), 1);
 	ft_strcpy(*command, new_command);
 	free(new_command);
 	return (0);
@@ -112,13 +114,12 @@ _Bool	ft_basic_error_checker(char **command, int *exit_code)
 		return (1);
 	if (ft_valid_red(*command))
 		return (1);
-	ft_init_signals(INPUT);
+	ft_init_signals(HEREDOC_INP);
 	while (ft_ends_with_spec(*command, exit_code) == 1)
 	{
-		if (ft_ends_with_pipe(command, new_command) == 1)
+		if (ft_ends_with_pipe(command, new_command) == 1 || *exit_code > 0)
 			return (1);
 	}
-	ft_init_signals(NOT_INPUT);
 	free(new_command);
 	return (0);
 }

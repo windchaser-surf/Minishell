@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_expander_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 20:29:42 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 22:16:46 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/23 11:00:09 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ char	*ft_make_new_str_for_expanstion(int *i, char *str, int *j)
 
 	new_str = malloc(sizeof(char) * ft_strlen(str) - 2 + 1);
 	if (!(new_str))
-		return (perror("Malloc failed"), NULL);
+		return (ft_putstr_fd(EMSG_MAL, 2), NULL);
 	ft_strncpy(new_str, str, (size_t)(*i));
 	new_str[*i] = '\0';
 	(*i)++;
