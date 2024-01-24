@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/05 18:10:12 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/22 14:06:09 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/24 19:09:36 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ _Bool	ft_make_parser_list(t_parser_h *h, t_list **ll_head, t_list **env)
 			h->parser_n->heredoc_tmp = NULL;
 			ft_handle_heredoc(&(h->parser_n), h->lexed_i, &(h->error), env);
 			if (h->error || g_ec > 0)
-				return (ft_free_p_node(&h->parser_n),
+				return (ft_free_p_node(&h->parser_n), free(h->parser_n),
 					ft_free_parser(h->p_list_head), 1);
 		}
 		*ll_head = (*ll_head)->next;

@@ -14,22 +14,24 @@ CC			= cc
 
 LDFLAGS 	= -lreadline
 
-CFLAGS		= -Wall -Werror -Wextra -Wno-error=unused-result -g #-fsanitize=address,undefined,leak -fno-omit-frame-pointer
+CFLAGS		= -Wall -Werror -Wextra #-g -fsanitize=address,undefined,leak -fno-omit-frame-pointer
 
 RM			= rm -rf
 
 all: $(NAME) 
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) 
 	$(MAKE) -C libft all bonus
 	$(CC) $(CFLAGS) $(OBJS) -L. libft/libft.a -o $(NAME) $(LDFLAGS)
 
 clean:
 	$(RM) $(OBJS)
-	$(MAKE) -C libft fclean
+	$(MAKE) -C libft clean
 
 fclean:	clean
 	$(RM) $(NAME)
+	$(MAKE) -C libft fclean
+
 
 re:	fclean all
 
