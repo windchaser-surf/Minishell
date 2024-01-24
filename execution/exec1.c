@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 11:17:48 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/24 09:43:50 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/24 09:52:02 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	child_process(t_parser *command, t_list **env_copy)
 		}
 	}
 	ft_file_closer_single(command);
-	signal(SIGINT, &ft_sighandle_heredoc);
+	signal(SIGINT, &ft_sighandle_child);
 	execution(command, *env_copy);
 }
 
@@ -140,7 +140,6 @@ void	exec_path(t_parser *command, t_list **env_copy)
 	ft_init_signals(NOT_INPUT);
 	status = WEXITSTATUS(status);
 	free(data.pid);
-	printf("exit code: %d\n", g_ec);
 	ft_file_closer_single(command);
 	if (g_ec != 130)
 		g_ec = status;
