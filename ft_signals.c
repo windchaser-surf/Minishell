@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 19:56:13 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/23 10:52:25 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/23 21:20:53 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,21 @@ void	ft_sighandle_heredoc(int sig)
 	{
 		g_ec = 130;
 		ioctl(STDOUT_FILENO, TIOCSTI, "\n");
+        rl_on_new_line();
+        rl_replace_line("", 0);
+	}
+}
+
+void	ft_sighandle_child(int sig)
+{
+	if (sig == SIGINT)
+	{
+		g_ec = 130;
+		printf("exit code: %d\n", g_ec);
 		rl_on_new_line();
-		rl_replace_line("", 0);
+        rl_replace_line("", 0);
+        rl_redisplay();
+        write(STDOUT_FILENO, "\n", 1);
 	}
 }
 
@@ -50,7 +63,7 @@ void	ft_init_signals(t_SigTyp sig_situation)
 	}
 	else if (sig_situation == CHILD)
 	{
-		signal(SIGINT, &ft_sighandle_heredoc);
+		signal(SIGINT, &ft_sighandle_child);
 		signal(SIGQUIT, SIG_DFL);
 	}
 	else if (sig_situation == HEREDOC_INP)

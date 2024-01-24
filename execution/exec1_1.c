@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec1_1.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 18:03:55 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 18:21:59 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/23 18:06:03 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	exec_builtins(t_parser *command, t_list **env_copy, int exit_code, \
+void	exec_builtins(t_parser *command, t_list **env_copy, \
 	t_list *tokens)
 {
 	if (command->fd_in != -1)
@@ -27,9 +27,10 @@ int	exec_builtins(t_parser *command, t_list **env_copy, int exit_code, \
 		{
 			perror("dup: ");
 			ft_file_closer_single(command);
-			return (EXIT_FAILURE);
+			g_ec = EXIT_FAILURE;
+			return ;
 		}
 		close (command->fd_out);
 	}
-	return (run_builtins_parent(command, env_copy, exit_code, tokens));
+	return (run_builtins_parent(command, env_copy, tokens));
 }

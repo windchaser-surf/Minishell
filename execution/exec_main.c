@@ -3,26 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   exec_main.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 13:19:01 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 17:57:07 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/23 18:06:13 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	execution_main(t_list *tokens, t_list **env_copy, int exit_code)
+void	execution_main(t_list *tokens, t_list **env_copy)
 {
 	int	p_nbr;
 
 	p_nbr = ft_lstsize(tokens);
 	if (p_nbr == 1)
 		return (one_execution((t_parser *)(tokens->content), env_copy, \
-			exit_code, tokens));
+			tokens));
 	else if (p_nbr > 1)
-		return (n_execution(tokens, env_copy, exit_code));
-	return (EXIT_SUCCESS);
+		return (n_execution(tokens, env_copy));
 }
 
 char	**free_error(char **arr, int i)

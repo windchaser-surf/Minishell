@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:29:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 18:18:01 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/23 18:04:10 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int	preperation_for_child(t_pipex *data, t_list *tokens)
 	return (EXIT_SUCCESS);
 }
 
-int	waiting_for_childs(t_pipex *data, int n)
+void	waiting_for_childs(t_pipex *data, int n)
 {
 	int	status;
 
@@ -106,24 +106,24 @@ int	waiting_for_childs(t_pipex *data, int n)
 	status = WEXITSTATUS(status);
 	free(data->pid);
 	free(data->p);
-	return (status);
+	g_ec = status;
 }
 
-int	n_execution(t_list *tokens, t_list **env_copy, int exit_code)
+void	n_execution(t_list *tokens, t_list **env_copy)
 {
 	t_pipex	data;
 	t_list	*tmp;
 
 	tmp = tokens;
 	data.n2 = 0;
-	data.exit_code = exit_code;
+	data.exit_code = g_ec;
 	if (preperation_for_child(&data, tokens))
-		return (EXIT_FAILURE);
+		g_ec = EXIT_FAILURE;
 	while (tmp != NULL)
 	{
 		if (n_child_process((t_parser *)(tmp->content), env_copy, \
 			&data, tokens))
-			return (EXIT_FAILURE);
+			g_ec = EXIT_FAILURE;
 		data.n2++;
 		tmp = tmp->next;
 	}

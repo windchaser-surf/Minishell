@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_builtin.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:07:31 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 17:47:47 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/23 17:22:50 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	run_builtins(t_parser *command, t_list **env_copy, int error_code, \
 	return (exit_code);
 }
 
-int	run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, \
+void	run_builtins_parent(t_parser *command, t_list **env_copy, \
 	t_list *tokens)
 {
 	int	exit_code;
@@ -68,7 +68,7 @@ int	run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, \
 	if (!ft_strncmp(command->cmd_args[0], "cd", 3))
 		exit_code = cd_builtin(command->cmd_args, env_copy);
 	else if (!ft_strncmp(command->cmd_args[0], "exit", 5))
-		exit_code = builtin_exit_parent(command->cmd_args, error_code, tokens, \
+		exit_code = builtin_exit_parent(command->cmd_args, tokens, \
 		env_copy);
 	else if (!ft_strncmp(command->cmd_args[0], "pwd", 4))
 		exit_code = ft_pwd_builtin();
@@ -85,7 +85,7 @@ int	run_builtins_parent(t_parser *command, t_list **env_copy, int error_code, \
 		dup2(command->fd_in, 1);
 		close(command->fd_in);
 	}
-	return (exit_code);
+	g_ec = exit_code;
 }
 
 //run builtins spliten 

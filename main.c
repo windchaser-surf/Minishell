@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:43:48 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/22 14:48:14 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/23 18:23:39 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ int	main(int argc, char **argv, char **envp)
 		ft_normie_shortener(&h);
 		if (!h.parsed_list)
 			continue ;
-		g_ec = execution_main(h.parsed_list, &h.env_copy, g_ec);
+		execution_main(h.parsed_list, &h.env_copy);
 		ft_free_parser(h.parsed_list);
 	}
 	return (clear_history(), ft_lstclear(&h.env_copy, del), g_ec);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 16:45:35 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 16:49:20 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/23 13:31:39 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	builtin_exit(char **arg, int exit_code, int pid_check)
 	return (EXIT_SUCCESS);
 }
 
-int	builtin_exit_parent(char **arg, int exit_code, t_list *tokens, \
+int	builtin_exit_parent(char **arg, t_list *tokens, \
 	t_list **env_copy)
 {
 	int	i;
@@ -49,7 +49,7 @@ int	builtin_exit_parent(char **arg, int exit_code, t_list *tokens, \
 		ft_lstclear(env_copy, free);
 		clear_history();
 		ft_free_parser(tokens);
-		exit (exit_code);
+		exit (g_ec);
 	}
 	check = check_for_number(arg[1]);
 	if (check == 0 && i > 2)

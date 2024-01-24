@@ -6,7 +6,7 @@
 /*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 21:29:14 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/22 14:05:21 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/23 18:10:39 by rluari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ int		export_builtin(char **cmd, t_list **env_copy);
 int		builtin_unset(t_list **env_copy, char **var, int i);
 
 //exec_main.c
-int		execution_main(t_list *tokens, t_list **env_copy, int exit_code);
+void	execution_main(t_list *tokens, t_list **env_copy);
 char	**convert_lst_to_arr(t_list *env_copy);
 void	execution(t_parser *command, t_list *env_copy);
 void	free_2d(char **str);
@@ -169,13 +169,13 @@ void	close_fds(int *fds);
 
 //exec1.c
 void	ft_file_closer_single(t_parser *command);
-int		child_process(t_parser *command, t_list **env_copy);
-int		cmd_path_null(t_parser *command);
-int		one_execution(t_parser *command, t_list **env_copy, int exit_code, \
+void	child_process(t_parser *command, t_list **env_copy);
+void		cmd_path_null(t_parser *command);
+void	one_execution(t_parser *command, t_list **env_copy, \
 	t_list *tokens);
 
 //exec1_1.c
-int		exec_builtins(t_parser *command, t_list **env_copy, int exit_code, \
+void	exec_builtins(t_parser *command, t_list **env_copy, \
 	t_list *tokens);
 
 //exec2.c
@@ -183,8 +183,8 @@ int		n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, \
 	t_list *tokens);
 int		create_pipes(t_pipex *data);
 int		preperation_for_child(t_pipex *data, t_list *tokens);
-int		waiting_for_childs(t_pipex *data, int n);
-int		n_execution(t_list *tokens, t_list **env_copy, int exit_code);
+void	waiting_for_childs(t_pipex *data, int n);
+void	n_execution(t_list *tokens, t_list **env_copy);
 
 //exec2_2.c
 void	dup_output(t_parser *command, t_pipex *data, t_list *tokens, \
@@ -204,8 +204,8 @@ void	cmd_not_found(t_parser *command, t_list *tokens, t_pipex *data, \
 int		check_builtin(char *str);
 int		run_builtins(t_parser *command, t_list **env_copy, int error_code, \
 	int pid_check);
-int		run_builtins_parent(t_parser *command, t_list **env_copy, \
-	int error_code, t_list *tokens);
+void	run_builtins_parent(t_parser *command, t_list **env_copy, \
+	t_list *tokens);
 
 //exit.c
 long	ft_atoi_long(const char *str);
@@ -217,7 +217,7 @@ int		exit_with_number(int pid_check, char *numb, t_list *tokens, \
 
 //exit2.c
 int		builtin_exit(char **arg, int exit_code, int pid_check);
-int		builtin_exit_parent(char **arg, int exit_code, t_list *tokens, \
+int		builtin_exit_parent(char **arg, t_list *tokens, \
 	t_list **env_copy);
 
 //free. currently in cd file
@@ -388,5 +388,12 @@ int		ft_count_amount_of_quotes(char *str);
 char	*ft_just_remove_quotes(char *str);
 /*char	*ft_remove_backslash(char *str, int *i);
 void	ft_print_parser_list(t_list **parser_head);*/
+
+
+
+
+
+void	ft_sighandle_child(int sig);
+void	ft_sighandle_heredoc(int sig);
 
 #endif
