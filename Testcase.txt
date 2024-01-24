@@ -1,0 +1,224 @@
+Minishell> echo "hello $PWD"
+==179310== Invalid read of size 1
+==179310==    at 0x405063: ft_expand_dquote (ft_expander.c:104)
+==179310==    by 0x405C31: ft_expander (ft_expander.c:335)
+==179310==    by 0x4015C0: main (main.c:141)
+==179310==  Address 0x4b64657 is 23 bytes after a block of size 16 in arena "client"
+==179310== 
+==179310== Invalid read of size 1
+==179310==    at 0x404FA0: ft_copy_whats_after_the_quote (ft_expander.c:89)
+==179310==    by 0x4051D3: ft_expand_dquote (ft_expander.c:121)
+==179310==    by 0x405C31: ft_expander (ft_expander.c:335)
+==179310==    by 0x4015C0: main (main.c:141)
+==179310==  Address 0x4b64658 is 24 bytes after a block of size 16 in arena "client"
+==179310== 
+==179310== Invalid read of size 1
+==179310==    at 0x404FBC: ft_copy_whats_after_the_quote (ft_expander.c:90)
+==179310==    by 0x4051D3: ft_expand_dquote (ft_expander.c:121)
+==179310==    by 0x405C31: ft_expander (ft_expander.c:335)
+==179310==    by 0x4015C0: main (main.c:141)
+==179310==  Address 0x4b64658 is 24 bytes after a block of size 16 in arena "client"
+==179310== 
+
+
+Minishell> env | grep PATH
+cmd_path: BUILTIN
+cmd_args: env |
+fd_in: -1
+fd_out: -1
+exit_code: 0
+heredoc: (null)
+
+cmd_path: /usr/bin/grep
+cmd_args: grep |PATH |
+fd_in: -1
+fd_out: -1
+exit_code: 0
+heredoc: (null)
+
+LD_LIBRARY_PATH=/usr/lib/debug
+XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0
+PATH=/nfs/homes/fwechsle/.local/funcheck/host:/nfs/homes/fwechsle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+XDG_SESSION_PATH=/org/freedesktop/DisplayManager/Session5
+==180620== 
+==180620== FILE DESCRIPTORS: 3 open (3 std) at exit.
+==180620== 
+==180620== HEAP SUMMARY:
+==180620==     in use at exit: 208,769 bytes in 245 blocks
+==180620==   total heap usage: 816 allocs, 571 frees, 236,374 bytes allocated
+==180620== 
+==180620== 230 bytes in 3 blocks are definitely lost in loss record 30 of 72
+==180620==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==180620==    by 0x408FCE: ft_substr (ft_substr.c:30)
+==180620==    by 0x402D21: ft_get_env_value (ft_getting_path.c:127)
+==180620==    by 0x404387: ft_get_var_value (ft_expander_handlers.c:24)
+==180620==    by 0x40462A: ft_expand_variable (ft_expander_handlers.c:76)
+==180620==    by 0x405176: ft_expand_dquote (ft_expander.c:112)
+==180620==    by 0x405C41: ft_expander (ft_expander.c:335)
+==180620==    by 0x4015C0: main (main.c:141)
+==180620== 
+==180620== LEAK SUMMARY:
+==180620==    definitely lost: 230 bytes in 3 blocks
+==180620==    indirectly lost: 0 bytes in 0 blocks
+==180620==      possibly lost: 0 bytes in 0 blocks
+==180620==    still reachable: 0 bytes in 0 blocks
+==180620==         suppressed: 208,539 bytes in 242 blocks
+==180620== 
+==180620== For lists of detected and suppressed errors, rerun with: -s
+==180620== ERROR SUMMARY: 9 errors from 4 contexts (suppressed: 1 from 1)
+
+
+echo $"HOME"$USER
+==776674== 
+==776674== FILE DESCRIPTORS: 7 open (3 std) at exit.
+==776674== Open file descriptor 103: /usr/share/code/v8_context_snapshot.bin
+==776674==    <inherited from parent>
+==776674== 
+==776674== Open file descriptor 38: /usr/share/code/resources/app/node_modules.asar
+==776674==    <inherited from parent>
+==776674== 
+==776674== Open AF_UNIX socket 37: <unknown>
+==776674==    <inherited from parent>
+==776674== 
+==776674== Open file descriptor 36: /nfs/homes/fwechsle/.config/Code/logs/20240119T112556/ptyhost.log
+==776674==    <inherited from parent>
+==776674== 
+==776674== 
+==776674== HEAP SUMMARY:
+==776674==     in use at exit: 208,197 bytes in 223 blocks
+==776674==   total heap usage: 670 allocs, 447 frees, 233,976 bytes allocated
+==776674== 
+==776674== 1 bytes in 1 blocks are definitely lost in loss record 1 of 64
+==776674==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==776674==    by 0x409F43: ft_strdup (ft_strdup.c:23)
+==776674==    by 0x404F1E: ft_get_var_value (ft_expander_handlers.c:27)
+==776674==    by 0x40524C: ft_expand_variable (ft_expander_handlers.c:97)
+==776674==    by 0x40626E: ft_expand_with_split (ft_expander.c:207)
+==776674==    by 0x40690D: ft_expander (ft_expander.c:340)
+==776674==    by 0x4016E1: main (main.c:116)
+==776674== 
+==776674== LEAK SUMMARY:
+==776674==    definitely lost: 1 bytes in 1 blocks
+==776674==    indirectly lost: 0 bytes in 0 blocks
+==776674==      possibly lost: 0 bytes in 0 blocks
+==776674==    still reachable: 0 bytes in 0 blocks
+==776674==         suppressed: 208,196 bytes in 222 blocks
+==776674== 
+==776674== For lists of detected and suppressed errors, rerun with: -s
+==776674== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+
+COMPARE PARSING
+/bin/echo $"HOME"$USER
+
+/bin/echo $"HOM"E$USER
+
+/bin/echo "exit_code ->$? user ->$USER home -> $HOME"
+
+/bin/echo \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\$USER \$PATH \\$PWD
+
+/bin/echo "text"   "$USER"    "$USER"
+
+/bin/echo "text"   "$USER"    "$USER"
+
+/bin/echo $USER'$USER'text oui oui     oui  oui $USER oui      $USER ''
+
+/bin/echo "text" "text$USER" ... "$USER"
+
+/bin/echo ""'totally logical'""
+
+
+
+
+PARSING HELL
+>> "$USER'$USER'"
+cat "$USER'$USER'"
+/bin/rm -f "$USER'$USER'"
+
+export T=nnnnnnnn
+echo "-""$T"nnnnnnnnnnnnn -nnnnnnnn"$T" '-'"$T"
+
+export T=nnnnnnnn
+echo "-""$T"nnnnnnnnnnnnn -nnnnnnnn"$T" '-''$T'
+
+export T=e E=c S=h L=o
+$T$E"c"$L -nn
+
+export T=e E=c S=h L=o
+$T$E"C"$L -nn
+
+export T=e E=c S=h L=o
+$T$E"C"$L "" -""n
+
+export T='|'
+echo $T echo lala $T echo $T echo ?
+
+echo '$'$'$'$'$'
+
+echo '$'$'$'$'$'$'$'
+
+echo "$"$'$'$"$"$"$"$'$'
+
+echo $/ $/ 
+
+
+
+BUILTINS
+echo $"HOME"$USER
+
+echo $"HOM"E$USER
+
+echo "exit_code ->$? user ->$USER home -> $HOME"
+
+echo \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\$USER \$PATH \\$PWD
+
+
+PIPELINES
+ls -l | awk '$1 ~ /^d/ {print $9}'
+
+
+
+
+
+SCMD
+touch "
+"
+
+
+
+
+VARIABLES
+/bin/echo $"HOME"$USER
+
+/bin/echo $"HOM"E$USER
+
+/bin/echo $"'HOM'E"$USER
+
+/bin/echo $'HOM'E$USER
+
+
+
+CORRECTIONS
+echo $USE"R"$HOME
+
+echo $"HOME"$USER
+
+echo $"HOM"E$USER
+
+echo $"'HOM'E"$USER
+
+echo $'HOM'E$USER
+
+SYNATAX ERRORS
+< >
+
+
+WILD
+echo "env | /usr/bin/wc -l" | env -i $MINISHELL_PATH"/"$EXECUTABLE
+echo $?
+
+echo "ls" | env -i $MINISHELL_PATH"/"$EXECUTABLE
+echo $?
+
+echo "unset PATH" | env -i $MINISHELL_PATH"/"$EXECUTABLE
+echo $?

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_signals.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 19:56:13 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/24 09:52:04 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/24 14:02:49 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	ft_init_signals(t_SigTyp sig_situation)
 	}
 	else if (sig_situation == CHILD)
 	{
-		signal(SIGINT, &ft_sighandle_child);
+		signal(SIGINT, SIG_DFL);/*&ft_sighandle_child*&);*/
 		signal(SIGQUIT, SIG_DFL);
 	}
 	else if (sig_situation == HEREDOC_INP)

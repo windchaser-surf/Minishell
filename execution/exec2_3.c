@@ -6,7 +6,7 @@
 /*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 18:17:42 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/19 18:22:24 by fwechsle         ###   ########.fr       */
+/*   Updated: 2024/01/24 16:27:00 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,4 +35,18 @@ void	cmd_not_found(t_parser *command, t_list *tokens, t_pipex *data, \
 	ft_file_closer_single(command);
 	ft_free_child(data, tokens, env_copy);
 	exit (CMD_NOT_FOUND);
+}
+
+void	ft_file_closer_single(t_parser *command)
+{
+	if (command->fd_in != -1)
+	{
+		close (command->fd_in);
+		command->fd_in = -1;
+	}
+	if (command->fd_out != -1)
+	{
+		close (command->fd_out);
+		command->fd_out = -1;
+	}
 }

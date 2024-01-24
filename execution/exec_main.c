@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_main.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 13:19:01 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/23 18:06:13 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/24 14:02:10 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ void	execution(t_parser *command, t_list *env_copy)
 	envp = convert_lst_to_arr(tmp);
 	if (envp == NULL)
 		exit (MALLOC_ERR);
+	ft_init_signals(CHILD);
 	if (execve(command->cmd_path, command->cmd_args, envp) == -1)
 	{
 		free_2d(envp);

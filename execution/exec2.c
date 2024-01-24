@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:29:47 by fwechsle          #+#    #+#             */
-/*   Updated: 2024/01/23 18:04:10 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/24 16:21:14 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 int	n_child_process(t_parser *command, t_list **env_copy, t_pipex *data, \
 	t_list *tokens)
 {
+	ft_init_signals(NOT_INPUT);
 	data->pid[data->n2] = fork();
 	if (data->pid[data->n2] == -1)
 		return (perror("fork: "), EXIT_FAILURE);
 	if (data->pid[data->n2] == 0)
 	{
-		ft_init_signals(CHILD);
 		dup_input(command, data, tokens, env_copy);
 		dup_output(command, data, tokens, env_copy);
 		ft_pipe_closer(data);
@@ -93,7 +93,9 @@ int	preperation_for_child(t_pipex *data, t_list *tokens)
 void	waiting_for_childs(t_pipex *data, int n)
 {
 	int	status;
+	int	first;
 
+	first = 0;
 	status = 0;
 	data->n = n;
 	ft_pipe_closer(data);
@@ -102,11 +104,18 @@ void	waiting_for_childs(t_pipex *data, int n)
 	{
 		waitpid(data->pid[n], &status, 0);
 		n++;
+		if (WIFEXITED(status))
+			g_ec = WEXITSTATUS(status);
+		if (WIFSIGNALED(status))
+			g_ec = WTERMSIG(status) + 128;
+		if (first == 0 && status == 2)
+		{
+			ft_putchar_fd('\n', 2);
+			first = 1;
+		}
 	}
-	status = WEXITSTATUS(status);
 	free(data->pid);
 	free(data->p);
-	g_ec = status;
 }
 
 void	n_execution(t_list *tokens, t_list **env_copy)
@@ -118,12 +127,18 @@ void	n_execution(t_list *tokens, t_list **env_copy)
 	data.n2 = 0;
 	data.exit_code = g_ec;
 	if (preperation_for_child(&data, tokens))
+	{
 		g_ec = EXIT_FAILURE;
+		return ;
+	}
 	while (tmp != NULL)
 	{
 		if (n_child_process((t_parser *)(tmp->content), env_copy, \
 			&data, tokens))
+		{
 			g_ec = EXIT_FAILURE;
+			return ;
+		}
 		data.n2++;
 		tmp = tmp->next;
 	}

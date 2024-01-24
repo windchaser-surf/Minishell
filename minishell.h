@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rluari <rluari@student.42vienna.com>       +#+  +:+       +#+        */
+/*   By: fwechsle <fwechsle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 21:29:14 by rluari            #+#    #+#             */
-/*   Updated: 2024/01/23 18:10:39 by rluari           ###   ########.fr       */
+/*   Updated: 2024/01/24 14:36:44 by fwechsle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ void	close_fds(int *fds);
 //exec1.c
 void	ft_file_closer_single(t_parser *command);
 void	child_process(t_parser *command, t_list **env_copy);
-void		cmd_path_null(t_parser *command);
+void	cmd_path_null(t_parser *command);
 void	one_execution(t_parser *command, t_list **env_copy, \
 	t_list *tokens);
 
@@ -386,13 +386,6 @@ int		ft_handle_absolute_command(t_parser **parser_node, t_lexer *lexed_item);
 _Bool	ft_str_has_quote(char *str);
 int		ft_count_amount_of_quotes(char *str);
 char	*ft_just_remove_quotes(char *str);
-/*char	*ft_remove_backslash(char *str, int *i);
-void	ft_print_parser_list(t_list **parser_head);*/
-
-
-
-
-
 void	ft_sighandle_child(int sig);
 void	ft_sighandle_heredoc(int sig);
 
