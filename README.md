@@ -1,6 +1,6 @@
 # Overview
 
-The Minishell project is a personal project where I created a simple shell similar to bash using the C programming language. This project helped me understand how shells work, including command execution, process management, and file handling in a Unix-like environment.
+The Minishell project is a group project where we created a simple shell similar to bash using the C programming language. This project helped me understand how shells work, including command execution, process management, and file handling in a Unix-like environment.
 
 ## Objectives
 
