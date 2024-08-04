@@ -42,6 +42,17 @@ Through this project, I learned about:
 - The details of process management and command execution.
 - Debugging techniques and memory management in C.
 
+## Installation
+
+To run the `minishell` project, clone the repository:
+
+```
+git clone https://github.com/windchaser-surf/minishell.git
+cd minishell
+bash minishell
+```
+
+
 ## Conclusion
 
 The Minishell project was a valuable experience that enhanced my understanding of operating systems and shell programming. I am excited to share this project on GitHub, and I hope it serves as a helpful resource for others interested in shell development.
