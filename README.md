@@ -47,9 +47,10 @@ Through this project, I learned about:
 To run the `minishell` project, clone the repository:
 
 ```
-git clone https://github.com/windchaser-surf/minishell.git
-cd minishell
-bash minishell
+git clone https://github.com/windchaser-surf/Minishell.git
+cd Minishell
+make
+./minishell
 ```
 
 
